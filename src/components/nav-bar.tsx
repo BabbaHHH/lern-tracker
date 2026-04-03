@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Calendar, BookOpen, GraduationCap } from "lucide-react";
+import { LayoutDashboard, Calendar, BookOpen, GraduationCap, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -22,6 +22,11 @@ export function NavBar() {
         <Link href="/" className="hidden md:flex items-center gap-2 font-bold text-lg mr-8">
           <GraduationCap className="h-6 w-6 text-emerald-600" />
           <span>Lern-Tracker</span>
+        </Link>
+
+        {/* Admin/Settings - nur Desktop */}
+        <Link href="/admin" className="hidden md:flex items-center ml-auto">
+          <Settings className="h-4 w-4 text-gray-400 hover:text-gray-600" />
         </Link>
 
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {

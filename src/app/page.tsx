@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavBar } from "@/components/nav-bar";
 import { Countdown } from "@/components/countdown";
 import { TopicGrid } from "@/components/topic-grid";
 import { CheckinChat } from "@/components/checkin-chat";
+import { getOnboarding } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,11 +13,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { GraduationCap, MessageCircle, Settings } from "lucide-react";
+import { GraduationCap, MessageCircle, Sparkles, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
   const [checkinOpen, setCheckinOpen] = useState(false);
+  const [onboardingDone, setOnboardingDone] = useState(true);
+
+  useEffect(() => {
+    setOnboardingDone(getOnboarding().completed);
+  }, []);
 
   return (
     <>
@@ -28,12 +34,30 @@ export default function DashboardPage() {
             <GraduationCap className="h-7 w-7 text-emerald-600" />
             <h1 className="text-xl font-bold">Lern-Tracker</h1>
           </div>
-          <Link href="/admin" className="hidden md:block">
-            <Button variant="ghost" size="icon" title="KI-Einstellungen">
-              <Settings className="h-4 w-4 text-gray-400" />
+          <Link href="/onboarding" className="md:hidden">
+            <Button variant="ghost" size="sm" className="text-gray-500">
+              <RotateCcw className="h-4 w-4 mr-1" />
+              Onboarding
             </Button>
           </Link>
         </div>
+
+        {/* Onboarding Banner */}
+        {!onboardingDone && (
+          <Link href="/onboarding">
+            <div className="mb-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 p-4 text-white cursor-pointer hover:shadow-lg transition-shadow">
+              <div className="flex items-center gap-3">
+                <Sparkles className="h-8 w-8 shrink-0" />
+                <div>
+                  <h2 className="font-bold text-lg">Lernplan erstellen</h2>
+                  <p className="text-sm text-emerald-100">
+                    Starte das Onboarding — die KI erstellt deinen individuellen Examensplan.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Link>
+        )}
 
         {/* Countdown */}
         <div className="mb-6">

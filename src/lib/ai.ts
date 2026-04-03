@@ -9,6 +9,13 @@ function getModel(tier: ModelTier): string {
   return process.env.OPENROUTER_MODEL_CHEAP || "anthropic/claude-haiku-4";
 }
 
+function getApiKey(tier: ModelTier): string {
+  if (tier === "strong") {
+    return process.env.OPENROUTER_API_KEY_STRONG || process.env.OPENROUTER_API_KEY || "";
+  }
+  return process.env.OPENROUTER_API_KEY_CHEAP || process.env.OPENROUTER_API_KEY || "";
+}
+
 export interface AiMessage {
   role: "system" | "user" | "assistant";
   content: string;
@@ -18,10 +25,12 @@ export async function chatCompletion(
   messages: AiMessage[],
   tier: ModelTier = "cheap",
 ): Promise<string> {
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  const apiKey = getApiKey(tier);
   if (!apiKey || apiKey.includes("DEIN_KEY")) {
     throw new Error("OpenRouter API Key nicht konfiguriert. Bitte in .env.local setzen.");
   }
+
+  const model = getModel(tier);
 
   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
@@ -32,7 +41,7 @@ export async function chatCompletion(
       "X-Title": "Lern-Tracker Staatsexamen",
     },
     body: JSON.stringify({
-      model: getModel(tier),
+      model,
       messages,
       max_tokens: 2048,
       temperature: 0.7,
@@ -41,6 +50,10 @@ export async function chatCompletion(
 
   if (!response.ok) {
     const error = await response.text();
+    // Bei Model-Fehler: hilfreiche Meldung
+    if (response.status === 404 || response.status === 400) {
+      throw new Error(`Modell "${model}" nicht verfügbar. Bitte in /admin oder .env.local ein anderes Modell wählen. Details: ${error}`);
+    }
     throw new Error(`OpenRouter API Fehler: ${response.status} — ${error}`);
   }
 

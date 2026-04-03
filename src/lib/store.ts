@@ -111,6 +111,66 @@ export function getExamDate(): string {
   return load<string>(STORAGE_KEYS.examDate, "2026-10-26");
 }
 
+export function getLernstart(): string {
+  return load<string>("lerntracker-lernstart", "2026-04-06");
+}
+
+export function setLernstart(date: string): void {
+  save("lerntracker-lernstart", date);
+}
+
+// === Onboarding ===
+
+export interface OnboardingData {
+  completed: boolean;
+  bundesland: string;
+  examDate: string;
+  lernstart: string;
+  agDay: string;
+  agTopic: string;
+  repDay: string;
+  kaiserDates: string[];
+  probeexamen1Start: string;
+  probeexamen2Start: string;
+  freeDayPerWeek: string;
+  vacationDates: string[];
+  selfAssessment: Record<string, number>;
+  documents: { name: string; type: string; summary?: string }[];
+  notes: string;
+}
+
+const ONBOARDING_KEY = "lerntracker-onboarding";
+
+const DEFAULT_ONBOARDING: OnboardingData = {
+  completed: false,
+  bundesland: "Berlin",
+  examDate: "2026-10-26",
+  lernstart: "2026-04-06",
+  agDay: "Montag",
+  agTopic: "",
+  repDay: "Mittwoch",
+  kaiserDates: [],
+  probeexamen1Start: "2026-06-01",
+  probeexamen2Start: "2026-07-06",
+  freeDayPerWeek: "Sonntag",
+  vacationDates: [],
+  selfAssessment: {},
+  documents: [],
+  notes: "",
+};
+
+export function getOnboarding(): OnboardingData {
+  return load<OnboardingData>(ONBOARDING_KEY, DEFAULT_ONBOARDING);
+}
+
+export function saveOnboarding(data: OnboardingData): void {
+  save(ONBOARDING_KEY, data);
+}
+
+export function resetOnboarding(): void {
+  save(ONBOARDING_KEY, DEFAULT_ONBOARDING);
+}
+
 export function setExamDate(date: string): void {
   save(STORAGE_KEYS.examDate, date);
 }
