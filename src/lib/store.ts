@@ -108,7 +108,7 @@ export function updateScheduleItem(item: ScheduleItem): ScheduleItem[] {
 // === Exam Date ===
 
 export function getExamDate(): string {
-  return load<string>(STORAGE_KEYS.examDate, "2026-10-26");
+  return load<string>(STORAGE_KEYS.examDate, "2026-09-03");
 }
 
 export function getLernstart(): string {
@@ -144,7 +144,7 @@ const ONBOARDING_KEY = "lerntracker-onboarding";
 const DEFAULT_ONBOARDING: OnboardingData = {
   completed: false,
   bundesland: "Berlin",
-  examDate: "2026-10-26",
+  examDate: "2026-09-03",
   lernstart: "2026-04-06",
   agDay: "Montag",
   agTopic: "",

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lern-Tracker — 2. Staatsexamen",
+  title: "Stex Tracker — 2. Staatsexamen",
   description: "Intelligenter Lernfortschritts-Tracker für das 2. juristische Staatsexamen",
 };
 
@@ -34,7 +34,7 @@ export default function RootLayout({
       lang="de"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-gray-50">
+      <body className="min-h-full flex flex-col bg-slate-50/50 gradient-mesh">
         <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>

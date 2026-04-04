@@ -5,8 +5,6 @@ import { TOPICS, buildTopicTree, getLeafTopics } from "@/lib/topics";
 import { getProgress } from "@/lib/store";
 import { Topic, Area, AREA_LABELS, AREA_COLORS_LIGHT } from "@/lib/types";
 import { TopicTile } from "./topic-tile";
-import { Badge } from "@/components/ui/badge";
-import { Progress as ProgressBar } from "@/components/ui/progress";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,11 +29,8 @@ export function TopicGrid() {
   const toggleGroup = useCallback((groupId: string) => {
     setExpandedGroups(prev => {
       const next = new Set(prev);
-      if (next.has(groupId)) {
-        next.delete(groupId);
-      } else {
-        next.add(groupId);
-      }
+      if (next.has(groupId)) next.delete(groupId);
+      else next.add(groupId);
       return next;
     });
   }, []);
@@ -43,103 +38,107 @@ export function TopicGrid() {
   const tree = buildTopicTree(TOPICS);
   const leafTopics = getLeafTopics(TOPICS);
 
-  // Gesamtfortschritt berechnen
   const totalProgress = leafTopics.length > 0
     ? Math.round(leafTopics.reduce((sum, t) => sum + (progressMap[t.id] || 0), 0) / leafTopics.length)
     : 0;
 
-  // Fortschritt pro Rechtsgebiet
   const areaProgress = (area: Area) => {
     const areaLeafs = leafTopics.filter(t => t.area === area);
     if (areaLeafs.length === 0) return 0;
     return Math.round(areaLeafs.reduce((sum, t) => sum + (progressMap[t.id] || 0), 0) / areaLeafs.length);
   };
 
-  // Fortschritt für eine Gruppe (Zwischenebene)
   const groupProgress = (groupId: string) => {
-    const children = TOPICS.filter(t => t.parentId === groupId);
-    const groupLeafs = children.filter(t => !TOPICS.some(other => other.parentId === t.id));
-    if (groupLeafs.length === 0) {
-      // Check deeper
-      const deepLeafs = leafTopics.filter(t => {
-        let current = TOPICS.find(x => x.id === t.id);
-        while (current) {
-          if (current.parentId === groupId) return true;
-          current = TOPICS.find(x => x.id === current!.parentId);
-        }
-        return false;
-      });
-      if (deepLeafs.length === 0) return 0;
-      return Math.round(deepLeafs.reduce((sum, t) => sum + (progressMap[t.id] || 0), 0) / deepLeafs.length);
-    }
-    return Math.round(groupLeafs.reduce((sum, t) => sum + (progressMap[t.id] || 0), 0) / groupLeafs.length);
+    const deepLeafs = leafTopics.filter(t => {
+      let current = TOPICS.find(x => x.id === t.id);
+      while (current) {
+        if (current.parentId === groupId) return true;
+        current = TOPICS.find(x => x.id === current!.parentId);
+      }
+      return false;
+    });
+    if (deepLeafs.length === 0) return 0;
+    return Math.round(deepLeafs.reduce((sum, t) => sum + (progressMap[t.id] || 0), 0) / deepLeafs.length);
   };
 
   const filteredTree = filterArea === "all"
     ? tree
     : tree.filter(t => t.area === filterArea);
 
+  const areaConfig: { area: Area; gradient: string; ring: string }[] = [
+    { area: "zr", gradient: "from-blue-500 to-indigo-500", ring: "ring-blue-500/30" },
+    { area: "oeffr", gradient: "from-amber-500 to-orange-500", ring: "ring-amber-500/30" },
+    { area: "sr", gradient: "from-rose-500 to-red-500", ring: "ring-rose-500/30" },
+  ];
+
   return (
     <div className="space-y-6">
-      {/* Gesamtfortschritt */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-600">Gesamtfortschritt</span>
-          <span className="text-lg font-bold text-emerald-600">{totalProgress}%</span>
-        </div>
-        <ProgressBar value={totalProgress} className="h-3" />
-
-        {/* Pro Rechtsgebiet */}
-        <div className="grid grid-cols-3 gap-3 mt-4">
-          {(["zr", "oeffr", "sr"] as Area[]).map(area => (
+      {/* Area Filter Chips */}
+      <div className="flex gap-2">
+        {areaConfig.map(({ area, gradient, ring }) => {
+          const p = areaProgress(area);
+          const isActive = filterArea === area;
+          return (
             <button
               key={area}
               onClick={() => setFilterArea(filterArea === area ? "all" : area)}
               className={cn(
-                "rounded-lg p-2 text-center transition-all",
-                filterArea === area ? "ring-2 ring-emerald-500" : "",
-                AREA_COLORS_LIGHT[area]
+                "flex-1 relative overflow-hidden rounded-2xl p-3 text-center transition-all card-hover border",
+                isActive ? `ring-2 ${ring} border-transparent` : "border-slate-200 bg-white"
               )}
             >
-              <div className="text-xs font-medium text-gray-600">{AREA_LABELS[area]}</div>
-              <div className="text-lg font-bold">{areaProgress(area)}%</div>
+              {/* Background gradient when active */}
+              {isActive && (
+                <div className={cn("absolute inset-0 bg-gradient-to-br opacity-10", gradient)} />
+              )}
+              <div className="relative">
+                <div className="text-[11px] font-medium text-slate-500 mb-0.5">{AREA_LABELS[area]}</div>
+                <div className="text-xl font-black tabular-nums text-slate-900">{p}%</div>
+                {/* Mini bar */}
+                <div className="mt-1.5 h-1 bg-slate-100 rounded-full overflow-hidden">
+                  <div className={cn("h-full rounded-full bg-gradient-to-r", gradient)} style={{ width: `${p}%` }} />
+                </div>
+              </div>
             </button>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
-      {/* Themen-Kacheln nach Rechtsgebiet */}
+      {/* Topic Groups */}
       {filteredTree.map(rootTopic => (
-        <div key={rootTopic.id} className="space-y-3">
-          <h2 className="text-lg font-bold flex items-center gap-2">
-            <Badge variant="outline" className={cn("text-xs", AREA_COLORS_LIGHT[rootTopic.area])}>
-              {AREA_LABELS[rootTopic.area]}
-            </Badge>
-          </h2>
-
+        <div key={rootTopic.id} className="space-y-2">
           {rootTopic.children?.map(group => {
             const isExpanded = expandedGroups.has(group.id);
             const gProgress = groupProgress(group.id);
             const hasChildren = group.children && group.children.length > 0;
 
             return (
-              <div key={group.id} className="bg-white rounded-xl shadow-sm border overflow-hidden">
+              <div key={group.id} className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden card-hover">
                 <button
                   onClick={() => toggleGroup(group.id)}
-                  className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50/50 transition-colors"
                 >
                   {hasChildren ? (
-                    isExpanded ? <ChevronDown className="h-4 w-4 text-gray-400" /> : <ChevronRight className="h-4 w-4 text-gray-400" />
+                    isExpanded
+                      ? <ChevronDown className="h-4 w-4 text-slate-400" />
+                      : <ChevronRight className="h-4 w-4 text-slate-400" />
                   ) : <div className="w-4" />}
-                  <span className="font-medium text-sm flex-1 text-left">{group.label}</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-gray-100 rounded-full overflow-hidden">
+
+                  <span className="font-semibold text-sm flex-1 text-left text-slate-800">{group.label}</span>
+
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-emerald-500 rounded-full transition-all"
+                        className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-500"
                         style={{ width: `${gProgress}%` }}
                       />
                     </div>
-                    <span className="text-xs font-medium text-gray-500 w-8 text-right">{gProgress}%</span>
+                    <span className={cn(
+                      "text-xs font-bold tabular-nums w-8 text-right",
+                      gProgress >= 80 ? "text-emerald-600" : gProgress > 0 ? "text-slate-500" : "text-slate-300"
+                    )}>
+                      {gProgress}%
+                    </span>
                   </div>
                 </button>
 
