@@ -4,8 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { NavBar } from "@/components/nav-bar";
 import { TOPICS, getLeafTopics } from "@/lib/topics";
-import { getProgress, getCalendarEvents, getOnboarding, getLernstart, getExamDate } from "@/lib/store";
-import { AREA_LABELS, type Area } from "@/lib/types";
+import { getProgress, getCalendarEvents, getOnboarding, getLernstart, getExamDate, getTrackingEntries, getKlausuren } from "@/lib/store";
+import { AREA_LABELS, ACTIVITY_LABELS, type Area, type ActivityType } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -56,6 +56,69 @@ function buildProgressSnapshot(): ProgressSnapshot[] {
       strongest: sorted.filter(t => t.percent >= 80).slice(-3).reverse(),
     };
   });
+}
+
+function buildTrackingContext(): string {
+  const tracking = getTrackingEntries();
+  const klausuren = getKlausuren();
+
+  if (tracking.length === 0) return "LERN-TRACKING:\nNoch keine Lernaktivitäten eingetragen.";
+
+  // Zusammenfassung nach Aktivitätstyp
+  const byType: Record<string, { count: number; totalMinutes: number; avgRating: number; ratings: number[] }> = {};
+  tracking.forEach(t => {
+    if (!byType[t.activityType]) {
+      byType[t.activityType] = { count: 0, totalMinutes: 0, avgRating: 0, ratings: [] };
+    }
+    byType[t.activityType].count++;
+    byType[t.activityType].totalMinutes += t.durationMinutes;
+    if (t.rating) byType[t.activityType].ratings.push(t.rating);
+  });
+
+  const typeSummary = Object.entries(byType).map(([type, data]) => {
+    const avg = data.ratings.length > 0
+      ? (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(1)
+      : "-";
+    return `- ${ACTIVITY_LABELS[type as ActivityType] || type}: ${data.count}x, ${Math.round(data.totalMinutes / 60)}h gesamt, Ø-Rating: ${avg}/5`;
+  }).join("\n");
+
+  // Klausuren-History
+  const klausurEntries = tracking.filter(t => t.activityType === "klausur" && t.klausurId);
+  const klausurSummary = klausurEntries.length > 0
+    ? klausurEntries.map(t => {
+        const k = klausuren.find(kl => kl.id === t.klausurId);
+        return `- ${t.date}: "${k?.title || "Unbekannt"}" (${k?.area || "?"}) — Rating: ${t.rating || "-"}/5${t.note ? ` — "${t.note}"` : ""}`;
+      }).join("\n")
+    : "Noch keine Klausuren geschrieben.";
+
+  // Letzte 7 Tage Aktivität
+  const now = new Date();
+  const last7 = tracking.filter(t => {
+    const d = parseISO(t.date);
+    return differenceInWeeks(now, d) < 1;
+  });
+  const last7Summary = last7.length > 0
+    ? `${last7.length} Sessions, ${Math.round(last7.reduce((s, t) => s + t.durationMinutes, 0) / 60)}h`
+    : "Keine Aktivität";
+
+  // Themen-Frequenz (wie oft wurde jedes Thema bearbeitet)
+  const topicFreq = new Map<string, number>();
+  tracking.forEach(t => t.topicIds.forEach(tid => {
+    topicFreq.set(tid, (topicFreq.get(tid) || 0) + 1);
+  }));
+  const leafTopics = getLeafTopics(TOPICS);
+  const neverStudied = leafTopics.filter(t => !topicFreq.has(t.id)).map(t => t.label);
+
+  return `LERN-TRACKING (${tracking.length} Einträge gesamt):
+${typeSummary}
+
+GESCHRIEBENE KLAUSUREN:
+${klausurSummary}
+
+LETZTE 7 TAGE: ${last7Summary}
+
+NIE BEARBEITETE THEMEN (${neverStudied.length}):
+${neverStudied.length > 0 ? neverStudied.slice(0, 20).join(", ") + (neverStudied.length > 20 ? ` ... und ${neverStudied.length - 20} weitere` : "") : "Alle Themen mindestens 1x bearbeitet!"}`;
 }
 
 function buildFullContext(): string {
@@ -116,7 +179,9 @@ ONBOARDING-DATEN:
 - Rep: ${onboarding.repDay}
 - Freier Tag: ${onboarding.freeDayPerWeek}
 - Probeexamen 1: ${onboarding.probeexamen1Start}
-- Probeexamen 2: ${onboarding.probeexamen2Start}`;
+- Probeexamen 2: ${onboarding.probeexamen2Start}
+
+${buildTrackingContext()}`;
 }
 
 export default function PlanPage() {
@@ -162,6 +227,8 @@ ANALYSE-FRAMEWORK:
 4. SPACED REPETITION: Welche Themen wurden vor >14 Tagen gelernt und brauchen Wiederholung?
 5. PHASE: In welcher Phase sollte der Kandidat jetzt sein (Aufbau/Output/Puffer/Tapering)?
 6. KLAUSUREN: Wird mind. 1 Klausur/Woche geschrieben? Wenn nicht: einplanen!
+7. TRACKING-ANALYSE: Nutze die Lern-Tracking-Daten um zu verstehen: Wie viel wird TATSÄCHLICH gelernt vs. geplant? Welche Themen werden NIE bearbeitet? Wie sind die Selbstbewertungen — gibt es ein Muster (z.B. Strafrecht immer schlecht)?
+8. KLAUSUR-EMPFEHLUNG: Basierend auf den geschriebenen Klausuren und deren Ratings: Welche Rechtsgebiete brauchen mehr Klausurpraxis?
 
 FESTE REGELN:
 - 90-Minuten-Sprints, 4 pro Tag

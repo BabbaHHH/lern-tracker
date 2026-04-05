@@ -64,3 +64,57 @@ export const AREA_COLORS_LIGHT: Record<Area, string> = {
   oeffr: "bg-amber-100",
   sr: "bg-red-100",
 };
+
+// === Klausur-Datenbank ===
+
+export type KlausurDifficulty = "leicht" | "mittel" | "schwer";
+
+export interface Klausur {
+  id: string;
+  title: string;
+  area: Area;
+  /** IDs aus dem Topic-Tree die diese Klausur abdeckt */
+  topicIds: string[];
+  difficulty: KlausurDifficulty;
+  /** Quelle: z.B. "Probeexamen 2024", "Kaiser-Klausurenkurs" */
+  source: string;
+  /** Freitext-Lösung / Lösungsskizze */
+  solution: string;
+  /** Sachverhalt / Aufgabenstellung */
+  sachverhalt: string;
+  /** Geschätzte Bearbeitungszeit in Minuten (default 300 = 5h) */
+  durationMinutes: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// === Erweitertes Lern-Tracking ===
+
+export type ActivityType = "theorie" | "klausur" | "wiederholung" | "karteikarten" | "ag" | "rep";
+
+export interface TrackingEntry {
+  id: string;
+  date: string; // ISO date (YYYY-MM-DD)
+  /** Was wurde gemacht? */
+  activityType: ActivityType;
+  /** Welche Themen wurden behandelt? */
+  topicIds: string[];
+  /** Referenz auf geschriebene Klausur (optional) */
+  klausurId?: string;
+  /** Wie lange in Minuten? */
+  durationMinutes: number;
+  /** Selbsteinschätzung 1-5 (wie gut lief es?) */
+  rating?: number;
+  /** Notizen */
+  note: string;
+  createdAt: string;
+}
+
+export const ACTIVITY_LABELS: Record<ActivityType, string> = {
+  theorie: "Theorie",
+  klausur: "Klausur",
+  wiederholung: "Wiederholung",
+  karteikarten: "Karteikarten",
+  ag: "AG",
+  rep: "Rep",
+};

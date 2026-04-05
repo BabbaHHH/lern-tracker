@@ -2,13 +2,17 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { getPrompts, savePrompts, DEFAULT_PROMPTS, type SystemPrompt } from "@/lib/prompts";
+import {
+  getRecommenderWeights, saveRecommenderWeights, resetRecommenderWeights,
+  DEFAULT_WEIGHTS, WEIGHT_LABELS, type RecommenderWeights,
+} from "@/lib/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Save, RotateCcw, ArrowLeft, Sparkles, Loader2, Send } from "lucide-react";
+import { Save, RotateCcw, ArrowLeft, Sparkles, Loader2, Send, Scale, Sliders } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -22,8 +26,13 @@ export default function AdminPage() {
   const [aiInstruction, setAiInstruction] = useState<Record<string, string>>({});
   const [aiLoading, setAiLoading] = useState<string | null>(null);
 
+  // Recommender Weights
+  const [weights, setWeights] = useState<RecommenderWeights>(DEFAULT_WEIGHTS);
+  const [weightsSaved, setWeightsSaved] = useState(false);
+
   useEffect(() => {
     setPrompts(getPrompts());
+    setWeights(getRecommenderWeights());
   }, []);
 
   const handleSave = useCallback(() => {
@@ -165,6 +174,77 @@ Bitte ändere ihn wie folgt: ${instruction}`,
               </Button>
               {apiKeyStatus === "ok" && <Badge className="bg-green-100 text-green-700">Verbunden</Badge>}
               {apiKeyStatus === "error" && <Badge className="bg-red-100 text-red-700">Fehler — Key prüfen</Badge>}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Separator className="my-6" />
+
+        {/* Recommender Weights */}
+        <Card className="mb-6">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Sliders className="h-4 w-4 text-orange-500" />
+                Klausur-Empfehlung — Gewichtung
+              </CardTitle>
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    resetRecommenderWeights();
+                    setWeights(DEFAULT_WEIGHTS);
+                  }}
+                  title="Auf Standard zurücksetzen"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500">
+              Steuert wie die tägliche Klausur-Empfehlung berechnet wird. Positive Werte = bevorzugen, negative = bestrafen.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {(Object.keys(WEIGHT_LABELS) as (keyof RecommenderWeights)[]).map(key => (
+                <div key={key} className="flex items-center gap-3">
+                  <label className="text-xs text-slate-600 flex-1 min-w-0">
+                    {WEIGHT_LABELS[key]}
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="range"
+                      min={key === "kuerzlichGeschrieben" ? -100 : 0}
+                      max={100}
+                      value={weights[key]}
+                      onChange={e => setWeights(prev => ({ ...prev, [key]: parseInt(e.target.value) }))}
+                      className="w-24 h-1.5 accent-orange-500"
+                    />
+                    <input
+                      type="number"
+                      value={weights[key]}
+                      onChange={e => setWeights(prev => ({ ...prev, [key]: parseInt(e.target.value) || 0 }))}
+                      className="w-14 text-xs text-center border rounded-lg px-1 py-1 bg-white"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex gap-2">
+              <Button
+                size="sm"
+                onClick={() => {
+                  saveRecommenderWeights(weights);
+                  setWeightsSaved(true);
+                  setTimeout(() => setWeightsSaved(false), 2000);
+                }}
+                className="bg-orange-500 hover:bg-orange-600 text-xs rounded-lg"
+              >
+                <Save className="h-3 w-3 mr-1" />
+                {weightsSaved ? "Gespeichert!" : "Gewichte speichern"}
+              </Button>
             </div>
           </CardContent>
         </Card>

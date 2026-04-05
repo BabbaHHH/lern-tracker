@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Calendar, BookOpen, Sparkles, Settings } from "lucide-react";
+import { LayoutDashboard, Calendar, BookOpen, Scale, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { href: "/", label: "Home", icon: LayoutDashboard },
   { href: "/wochenplan", label: "Woche", icon: Calendar },
   { href: "/themen", label: "Themen", icon: BookOpen },
-  { href: "/onboarding", label: "Plan", icon: Sparkles },
+  { href: "/klausuren", label: "Klausuren", icon: Scale },
 ];
 
 export function NavBar() {

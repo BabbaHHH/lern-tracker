@@ -13,6 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { KlausurDesTages } from "@/components/klausur-des-tages";
+import { TrackingFab } from "@/components/tracking-fab";
 import { MessageCircle, Sparkles, Settings, Brain } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -76,6 +78,11 @@ export default function DashboardPage() {
           <Countdown />
         </div>
 
+        {/* Klausur des Tages */}
+        <div className="mb-5">
+          <KlausurDesTages />
+        </div>
+
         {/* Plan Adjust Button */}
         <Link href="/plan">
           <div className="mb-5 bg-white rounded-2xl border border-slate-200 p-3.5 flex items-center gap-3 card-hover cursor-pointer">
@@ -93,6 +100,9 @@ export default function DashboardPage() {
         {/* Topic Grid */}
         <TopicGrid />
       </main>
+
+      {/* Tracking FAB */}
+      <TrackingFab />
 
       {/* Check-in FAB */}
       <button

@@ -1,4 +1,4 @@
-import { Progress, LearningEntry, CalendarEvent, ScheduleItem } from "./types";
+import { Progress, LearningEntry, CalendarEvent, ScheduleItem, Klausur, TrackingEntry } from "./types";
 
 const STORAGE_KEYS = {
   progress: "lerntracker-progress",
@@ -6,6 +6,9 @@ const STORAGE_KEYS = {
   calendar: "lerntracker-calendar",
   schedule: "lerntracker-schedule",
   examDate: "lerntracker-exam-date",
+  klausuren: "lerntracker-klausuren",
+  tracking: "lerntracker-tracking",
+  recommenderWeights: "lerntracker-recommender-weights",
 } as const;
 
 function load<T>(key: string, fallback: T): T {
@@ -173,4 +176,113 @@ export function resetOnboarding(): void {
 
 export function setExamDate(date: string): void {
   save(STORAGE_KEYS.examDate, date);
+}
+
+// === Klausur-Datenbank ===
+
+export function getKlausuren(): Klausur[] {
+  return load<Klausur[]>(STORAGE_KEYS.klausuren, []);
+}
+
+export function addKlausur(klausur: Omit<Klausur, "id" | "createdAt" | "updatedAt">): Klausur[] {
+  const all = getKlausuren();
+  const now = new Date().toISOString();
+  all.push({ ...klausur, id: crypto.randomUUID(), createdAt: now, updatedAt: now });
+  save(STORAGE_KEYS.klausuren, all);
+  return all;
+}
+
+export function updateKlausur(id: string, updates: Partial<Omit<Klausur, "id" | "createdAt">>): Klausur[] {
+  const all = getKlausuren();
+  const idx = all.findIndex(k => k.id === id);
+  if (idx >= 0) {
+    all[idx] = { ...all[idx], ...updates, updatedAt: new Date().toISOString() };
+  }
+  save(STORAGE_KEYS.klausuren, all);
+  return all;
+}
+
+export function removeKlausur(id: string): Klausur[] {
+  const all = getKlausuren().filter(k => k.id !== id);
+  save(STORAGE_KEYS.klausuren, all);
+  return all;
+}
+
+export function getKlausurById(id: string): Klausur | undefined {
+  return getKlausuren().find(k => k.id === id);
+}
+
+// === Erweitertes Tracking ===
+
+export function getTrackingEntries(): TrackingEntry[] {
+  return load<TrackingEntry[]>(STORAGE_KEYS.tracking, []);
+}
+
+export function addTrackingEntry(entry: Omit<TrackingEntry, "id" | "createdAt">): TrackingEntry[] {
+  const all = getTrackingEntries();
+  all.unshift({ ...entry, id: crypto.randomUUID(), createdAt: new Date().toISOString() });
+  save(STORAGE_KEYS.tracking, all);
+  return all;
+}
+
+export function getTrackingForDate(date: string): TrackingEntry[] {
+  return getTrackingEntries().filter(e => e.date === date);
+}
+
+export function getTrackingForTopic(topicId: string): TrackingEntry[] {
+  return getTrackingEntries().filter(e => e.topicIds.includes(topicId));
+}
+
+export function getKlausurenWritten(): TrackingEntry[] {
+  return getTrackingEntries().filter(e => e.activityType === "klausur");
+}
+
+// === Recommender Gewichte ===
+
+export interface RecommenderWeights {
+  tagesplanOverlap: number;
+  schwacheThemen: number;
+  nochNieGeschrieben: number;
+  spacedRepetition: number;
+  rechtsgebietsBalance: number;
+  kuerzlichGeschrieben: number;
+  schwierigkeitsMatch: number;
+  neuheitsBonus: number;
+  wiederholungsDistanz: number;
+}
+
+export const DEFAULT_WEIGHTS: RecommenderWeights = {
+  tagesplanOverlap: 40,
+  schwacheThemen: 20,
+  nochNieGeschrieben: 30,
+  spacedRepetition: 15,
+  rechtsgebietsBalance: 20,
+  kuerzlichGeschrieben: -50,
+  schwierigkeitsMatch: 10,
+  neuheitsBonus: 25,
+  wiederholungsDistanz: 10,
+};
+
+export const WEIGHT_LABELS: Record<keyof RecommenderWeights, string> = {
+  tagesplanOverlap: "Tagesplan-Overlap (pro Thema)",
+  schwacheThemen: "Schwache Themen abdecken (pro Thema)",
+  nochNieGeschrieben: "Noch nie geschrieben",
+  spacedRepetition: "Spaced Repetition (pro Thema >14d)",
+  rechtsgebietsBalance: "Rechtsgebiets-Balance (3:2:2)",
+  kuerzlichGeschrieben: "Kürzlich geschrieben (<7 Tage)",
+  schwierigkeitsMatch: "Schwierigkeits-Match",
+  neuheitsBonus: "Neuheits-Bonus (neuere Klausuren)",
+  wiederholungsDistanz: "Gute Wiederholungs-Distanz (>21d)",
+};
+
+export function getRecommenderWeights(): RecommenderWeights {
+  return load<RecommenderWeights>(STORAGE_KEYS.recommenderWeights, DEFAULT_WEIGHTS);
+}
+
+export function saveRecommenderWeights(weights: RecommenderWeights): void {
+  save(STORAGE_KEYS.recommenderWeights, weights);
+}
+
+export function resetRecommenderWeights(): void {
+  save(STORAGE_KEYS.recommenderWeights, DEFAULT_WEIGHTS);
 }
