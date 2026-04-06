@@ -19,6 +19,19 @@ function scoreKlausuren(date: string): KlausurScore[] {
   const schedule = getSchedule();
   const today = parseISO(date);
 
+  // Letztes Datum pro Anspruchsgrundlage aus geschriebenen Klausuren
+  const lastAgTrained = new Map<string, string>();
+  tracking
+    .filter(t => t.activityType === "klausur" && t.klausurId)
+    .forEach(t => {
+      const k = klausuren.find(kl => kl.id === t.klausurId);
+      if (!k?.anspruchsgrundlagen) return;
+      k.anspruchsgrundlagen.forEach(ag => {
+        const existing = lastAgTrained.get(ag);
+        if (!existing || t.date > existing) lastAgTrained.set(ag, t.date);
+      });
+    });
+
   // Themen die heute auf dem Plan stehen
   const todaysTopicIds = schedule
     .filter(s => s.date === date && s.status !== "skipped")
@@ -126,7 +139,20 @@ function scoreKlausuren(date: string): KlausurScore[] {
     if (k.difficulty === "mittel" && avgProgress >= 30 && avgProgress < 70) score += w.schwierigkeitsMatch;
     if (k.difficulty === "schwer" && avgProgress >= 70) score += w.schwierigkeitsMatch;
 
-    // 7. Neuheits-Bonus: neuere Klausuren bevorzugen
+    // 7. Anspruchsgrundlagen-Frische: AGs die lange nicht in Klausuren trainiert wurden
+    if (k.anspruchsgrundlagen && k.anspruchsgrundlagen.length > 0) {
+      const staleAgs = k.anspruchsgrundlagen.filter(ag => {
+        const last = lastAgTrained.get(ag);
+        if (!last) return true;
+        return differenceInDays(today, parseISO(last)) > 21;
+      });
+      if (staleAgs.length > 0) {
+        score += staleAgs.length * w.anspruchsgrundlagenFrische;
+        reasons.push(`${staleAgs.length} AG lange nicht geübt`);
+      }
+    }
+
+    // 8. Neuheits-Bonus: neuere Klausuren bevorzugen
     if (createdRange > 0 && w.neuheitsBonus !== 0) {
       const createdTime = new Date(k.createdAt).getTime();
       const freshness = (createdTime - oldestCreated) / createdRange; // 0..1

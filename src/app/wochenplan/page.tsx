@@ -11,8 +11,10 @@ import { addWeeks, startOfWeek, format, addDays, isWithinInterval, parseISO } fr
 import { de } from "date-fns/locale";
 import { getExamDate, getCalendarEvents } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { recommendKlausur } from "@/lib/klausur-recommender";
+import Link from "next/link";
 
 // Phasen-Logik basierend auf Wochen bis Examen
 function getPhase(weeksUntilExam: number): { label: string; color: string; description: string } {
@@ -77,7 +79,9 @@ export default function WochenplanPage() {
     const mainTopics = todoTopics.filter(t => t.area === mainArea).slice(0, 2);
     const subTopics = todoTopics.filter(t => t.area === subArea).slice(0, 1);
 
-    return { date, dateStr, dayEvents, isFree, hasAG, hasRep, mainArea, subArea, mainTopics, subTopics };
+    const klausurRec = !isFree ? recommendKlausur(dateStr) : null;
+
+    return { date, dateStr, dayEvents, isFree, hasAG, hasRep, mainArea, subArea, mainTopics, subTopics, klausurRec };
   });
 
   return (
@@ -160,6 +164,26 @@ export default function WochenplanPage() {
                       <div className="text-xs text-gray-400 text-center mt-1">
                         12:05 Mittagspause + Sport
                       </div>
+
+                      {/* Klausur-Empfehlung */}
+                      {day.klausurRec && day.klausurRec.score > 0 && (
+                        <Link
+                          href="/klausuren"
+                          className="block mt-2 rounded-lg border border-emerald-200 bg-emerald-50/60 hover:bg-emerald-50 p-2 transition-colors"
+                        >
+                          <div className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-700 mb-0.5">
+                            <Scale className="h-3 w-3" /> Klausur-Tipp
+                          </div>
+                          <div className="text-xs font-medium text-slate-800 line-clamp-2">
+                            {day.klausurRec.klausur.title}
+                          </div>
+                          {day.klausurRec.reasons[0] && (
+                            <div className="text-[10px] text-slate-500 mt-0.5 line-clamp-1">
+                              {day.klausurRec.reasons[0]}
+                            </div>
+                          )}
+                        </Link>
+                      )}
                     </div>
                   )}
                 </CardContent>

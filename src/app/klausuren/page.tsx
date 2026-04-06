@@ -19,6 +19,7 @@ import { Klausur, KlausurDifficulty, Area, AREA_LABELS } from "@/lib/types";
 import {
   Plus, FileText, ArrowLeft, Trash2, Edit3, Search,
   BookOpen, Scale, Tag, Clock, ChevronDown, ChevronRight, Check,
+  Upload, AlertTriangle, Gavel, Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -50,6 +51,10 @@ interface KlausurForm {
   sachverhalt: string;
   solution: string;
   durationMinutes: number;
+  materialSchwerpunkt: string;
+  prozessualSchwerpunkt: string;
+  klassischeProbleme: string[];
+  anspruchsgrundlagen: string[];
 }
 
 const emptyForm: KlausurForm = {
@@ -61,6 +66,10 @@ const emptyForm: KlausurForm = {
   sachverhalt: "",
   solution: "",
   durationMinutes: 300,
+  materialSchwerpunkt: "",
+  prozessualSchwerpunkt: "",
+  klassischeProbleme: [],
+  anspruchsgrundlagen: [],
 };
 
 function TopicPicker({
@@ -184,6 +193,9 @@ export default function KlausurenPage() {
   const [filter, setFilter] = useState<Area | "all">("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [importOpen, setImportOpen] = useState(false);
+  const [importJson, setImportJson] = useState("");
+  const [importResult, setImportResult] = useState<{ ok: number; skipped: number; errors: string[] } | null>(null);
 
   useEffect(() => {
     setKlausuren(getKlausuren());
@@ -214,9 +226,88 @@ export default function KlausurenPage() {
       sachverhalt: k.sachverhalt,
       solution: k.solution,
       durationMinutes: k.durationMinutes,
+      materialSchwerpunkt: k.materialSchwerpunkt || "",
+      prozessualSchwerpunkt: k.prozessualSchwerpunkt || "",
+      klassischeProbleme: k.klassischeProbleme ? [...k.klassischeProbleme] : [],
+      anspruchsgrundlagen: k.anspruchsgrundlagen ? [...k.anspruchsgrundlagen] : [],
     });
     setEditingId(k.id);
     setDialogOpen(true);
+  };
+
+  const handleImport = () => {
+    setImportResult(null);
+    let parsed: unknown;
+    try {
+      const cleaned = importJson.trim().replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+      parsed = JSON.parse(cleaned);
+    } catch (e) {
+      setImportResult({ ok: 0, skipped: 0, errors: [`Ungültiges JSON: ${(e as Error).message}`] });
+      return;
+    }
+    if (!Array.isArray(parsed)) {
+      setImportResult({ ok: 0, skipped: 0, errors: ["JSON muss ein Array sein"] });
+      return;
+    }
+
+    const validTopicIds = new Set(getLeafTopics(TOPICS).map(t => t.id));
+    let ok = 0;
+    let skipped = 0;
+    const errors: string[] = [];
+
+    parsed.forEach((raw, idx) => {
+      const r = raw as Record<string, unknown>;
+      if (!r.title || typeof r.title !== "string") {
+        errors.push(`#${idx}: title fehlt`);
+        skipped++;
+        return;
+      }
+      if (!["zr", "oeffr", "sr"].includes(r.area as string)) {
+        errors.push(`#${idx} (${r.title}): area ungültig`);
+        skipped++;
+        return;
+      }
+      const topicIds = Array.isArray(r.topicIds)
+        ? (r.topicIds as string[]).filter(id => validTopicIds.has(id))
+        : [];
+      const difficulty: KlausurDifficulty = ["leicht", "mittel", "schwer"].includes(r.difficulty as string)
+        ? (r.difficulty as KlausurDifficulty)
+        : "mittel";
+
+      addKlausur({
+        title: String(r.title).slice(0, 200),
+        area: r.area as Area,
+        topicIds,
+        difficulty,
+        source: typeof r.source === "string" ? r.source : "",
+        sachverhalt: typeof r.sachverhalt === "string" ? r.sachverhalt : "",
+        solution: typeof r.solution === "string" ? r.solution : "",
+        durationMinutes: typeof r.durationMinutes === "number" ? r.durationMinutes : 300,
+        materialSchwerpunkt: typeof r.materialSchwerpunkt === "string" ? r.materialSchwerpunkt : undefined,
+        prozessualSchwerpunkt: typeof r.prozessualSchwerpunkt === "string" ? r.prozessualSchwerpunkt : undefined,
+        klassischeProbleme: Array.isArray(r.klassischeProbleme) ? (r.klassischeProbleme as string[]) : undefined,
+        anspruchsgrundlagen: Array.isArray(r.anspruchsgrundlagen) ? (r.anspruchsgrundlagen as string[]) : undefined,
+        solutionMatched: typeof r.solutionMatched === "boolean" ? r.solutionMatched : undefined,
+      });
+      ok++;
+    });
+
+    setKlausuren(getKlausuren());
+    setImportResult({ ok, skipped, errors });
+    if (ok > 0 && skipped === 0) {
+      setTimeout(() => {
+        setImportOpen(false);
+        setImportJson("");
+        setImportResult(null);
+      }, 2000);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    setImportJson(text);
   };
 
   const handleSave = () => {
@@ -267,9 +358,18 @@ export default function KlausurenPage() {
             <h1 className="text-xl font-bold tracking-tight">Klausur-Datenbank</h1>
             <p className="text-xs text-slate-500">{klausuren.length} Klausuren gespeichert</p>
           </div>
+          <Button
+            onClick={() => { setImportOpen(true); setImportResult(null); }}
+            size="sm"
+            variant="outline"
+            className="rounded-xl"
+          >
+            <Upload className="h-4 w-4 mr-1" />
+            Import
+          </Button>
           <Button onClick={openNew} size="sm" className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl">
             <Plus className="h-4 w-4 mr-1" />
-            Neue Klausur
+            Neu
           </Button>
         </div>
 
@@ -361,6 +461,61 @@ export default function KlausurenPage() {
 
                   {isExpanded && (
                     <div className="border-t border-slate-100 p-3.5 space-y-3 bg-slate-50/50">
+                      {/* Schwerpunkte */}
+                      {(k.materialSchwerpunkt || k.prozessualSchwerpunkt) && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {k.materialSchwerpunkt && (
+                            <div className="bg-blue-50 rounded-xl p-2.5">
+                              <div className="text-[10px] font-semibold text-blue-700 mb-0.5 flex items-center gap-1">
+                                <BookOpen className="h-3 w-3" /> Materiell
+                              </div>
+                              <p className="text-xs text-slate-700">{k.materialSchwerpunkt}</p>
+                            </div>
+                          )}
+                          {k.prozessualSchwerpunkt && (
+                            <div className="bg-purple-50 rounded-xl p-2.5">
+                              <div className="text-[10px] font-semibold text-purple-700 mb-0.5 flex items-center gap-1">
+                                <Gavel className="h-3 w-3" /> Prozessual
+                              </div>
+                              <p className="text-xs text-slate-700">{k.prozessualSchwerpunkt}</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Anspruchsgrundlagen */}
+                      {k.anspruchsgrundlagen && k.anspruchsgrundlagen.length > 0 && (
+                        <div>
+                          <div className="text-[11px] font-semibold text-slate-500 mb-1 flex items-center gap-1">
+                            <Zap className="h-3 w-3" /> Anspruchsgrundlagen
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {k.anspruchsgrundlagen.map((ag, i) => (
+                              <Badge key={i} className="text-[10px] bg-amber-100 text-amber-800 font-mono">
+                                {ag}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Klassische Probleme */}
+                      {k.klassischeProbleme && k.klassischeProbleme.length > 0 && (
+                        <div>
+                          <div className="text-[11px] font-semibold text-slate-500 mb-1 flex items-center gap-1">
+                            <AlertTriangle className="h-3 w-3" /> Klassische Probleme
+                          </div>
+                          <ul className="space-y-0.5">
+                            {k.klassischeProbleme.map((p, i) => (
+                              <li key={i} className="text-xs text-slate-600 flex items-start gap-1.5">
+                                <div className="w-1 h-1 rounded-full bg-slate-400 mt-1.5 shrink-0" />
+                                {p}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
                       {/* Topics */}
                       {k.topicIds.length > 0 && (
                         <div>
@@ -528,12 +683,119 @@ export default function KlausurenPage() {
               />
             </div>
 
+            {/* Materieller / Prozessualer Schwerpunkt */}
+            <div className="grid grid-cols-1 gap-3">
+              <div>
+                <label className="text-xs font-medium text-slate-600 mb-1 block">Materieller Schwerpunkt</label>
+                <Input
+                  value={form.materialSchwerpunkt}
+                  onChange={e => setForm(prev => ({ ...prev, materialSchwerpunkt: e.target.value }))}
+                  placeholder="z.B. Kaufrecht mit Sachmangel und Rücktritt"
+                  className="rounded-xl text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-600 mb-1 block">Prozessualer Schwerpunkt</label>
+                <Input
+                  value={form.prozessualSchwerpunkt}
+                  onChange={e => setForm(prev => ({ ...prev, prozessualSchwerpunkt: e.target.value }))}
+                  placeholder="z.B. Zahlungsklage, Urteil verfassen"
+                  className="rounded-xl text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-600 mb-1 block">
+                  Anspruchsgrundlagen (Komma-getrennt)
+                </label>
+                <Input
+                  value={form.anspruchsgrundlagen.join(", ")}
+                  onChange={e => setForm(prev => ({
+                    ...prev,
+                    anspruchsgrundlagen: e.target.value.split(",").map(s => s.trim()).filter(Boolean),
+                  }))}
+                  placeholder="§ 433 II BGB, § 280 I BGB"
+                  className="rounded-xl text-sm font-mono"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-slate-600 mb-1 block">
+                  Klassische Probleme (Komma-getrennt)
+                </label>
+                <Input
+                  value={form.klassischeProbleme.join(", ")}
+                  onChange={e => setForm(prev => ({
+                    ...prev,
+                    klassischeProbleme: e.target.value.split(",").map(s => s.trim()).filter(Boolean),
+                  }))}
+                  placeholder="Abgrenzung Sach-/Rechtsmangel, Nacherfüllung"
+                  className="rounded-xl text-sm"
+                />
+              </div>
+            </div>
+
             <Button
               onClick={handleSave}
               disabled={!form.title.trim()}
               className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl h-10"
             >
               {editingId ? "Speichern" : "Klausur anlegen"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Import Dialog */}
+      <Dialog open={importOpen} onOpenChange={setImportOpen}>
+        <DialogContent className="max-w-lg mx-auto max-h-[85vh] overflow-y-auto rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-sm font-semibold">Klausuren importieren (JSON)</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 pt-2">
+            <p className="text-xs text-slate-500">
+              JSON-Array aus NotebookLM. Datei hochladen oder direkt einfügen.
+            </p>
+            <div>
+              <label className="text-xs font-medium text-slate-600 mb-1 block">JSON-Datei</label>
+              <input
+                type="file"
+                accept=".json,application/json"
+                onChange={handleFileUpload}
+                className="block w-full text-xs file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-emerald-50 file:text-emerald-700 file:font-medium"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-600 mb-1 block">Oder JSON einfügen</label>
+              <Textarea
+                value={importJson}
+                onChange={e => setImportJson(e.target.value)}
+                placeholder='[{"title": "...", "area": "zr", ...}]'
+                rows={8}
+                className="resize-none rounded-xl text-xs font-mono"
+              />
+            </div>
+            {importResult && (
+              <div className={cn(
+                "rounded-xl p-3 text-xs",
+                importResult.errors.length === 0 ? "bg-emerald-50 text-emerald-800" : "bg-amber-50 text-amber-800"
+              )}>
+                <div className="font-semibold mb-1">
+                  {importResult.ok} importiert, {importResult.skipped} übersprungen
+                </div>
+                {importResult.errors.length > 0 && (
+                  <ul className="space-y-0.5 text-[11px] max-h-24 overflow-y-auto">
+                    {importResult.errors.slice(0, 10).map((err, i) => (
+                      <li key={i}>• {err}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+            <Button
+              onClick={handleImport}
+              disabled={!importJson.trim()}
+              className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl h-10"
+            >
+              <Upload className="h-4 w-4 mr-1" /> Importieren
             </Button>
           </div>
         </DialogContent>

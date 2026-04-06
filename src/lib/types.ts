@@ -84,6 +84,16 @@ export interface Klausur {
   sachverhalt: string;
   /** Geschätzte Bearbeitungszeit in Minuten (default 300 = 5h) */
   durationMinutes: number;
+  /** 1-2 Sätze: Materiell-rechtlicher Kern */
+  materialSchwerpunkt?: string;
+  /** 1-2 Sätze: Prozessuale Lage / Klausurtyp */
+  prozessualSchwerpunkt?: string;
+  /** Liste klassischer Probleme die in dieser Klausur vorkommen */
+  klassischeProbleme?: string[];
+  /** Zentrale Anspruchsgrundlagen / Normen (z.B. "§ 433 II BGB") */
+  anspruchsgrundlagen?: string[];
+  /** True wenn NotebookLM die Lösung eindeutig zuordnen konnte */
+  solutionMatched?: boolean;
   createdAt: string;
   updatedAt: string;
 }

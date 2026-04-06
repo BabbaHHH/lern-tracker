@@ -249,6 +249,7 @@ export interface RecommenderWeights {
   schwierigkeitsMatch: number;
   neuheitsBonus: number;
   wiederholungsDistanz: number;
+  anspruchsgrundlagenFrische: number;
 }
 
 export const DEFAULT_WEIGHTS: RecommenderWeights = {
@@ -261,6 +262,7 @@ export const DEFAULT_WEIGHTS: RecommenderWeights = {
   schwierigkeitsMatch: 10,
   neuheitsBonus: 25,
   wiederholungsDistanz: 10,
+  anspruchsgrundlagenFrische: 12,
 };
 
 export const WEIGHT_LABELS: Record<keyof RecommenderWeights, string> = {
@@ -273,6 +275,7 @@ export const WEIGHT_LABELS: Record<keyof RecommenderWeights, string> = {
   schwierigkeitsMatch: "Schwierigkeits-Match",
   neuheitsBonus: "Neuheits-Bonus (neuere Klausuren)",
   wiederholungsDistanz: "Gute Wiederholungs-Distanz (>21d)",
+  anspruchsgrundlagenFrische: "Anspruchsgrundlagen-Frische (pro AG >21d)",
 };
 
 export function getRecommenderWeights(): RecommenderWeights {
