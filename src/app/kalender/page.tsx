@@ -27,7 +27,7 @@ const EVENT_TYPES = [
   { value: "klausur", label: "Klausur", color: "bg-red-100 text-red-700" },
   { value: "urlaub", label: "Urlaub", color: "bg-green-100 text-green-700" },
   { value: "frei", label: "Freier Tag", color: "bg-gray-100 text-gray-700" },
-  { value: "sport", label: "Sport", color: "bg-teal-100 text-teal-700" },
+  { value: "sport", label: "Sport", color: "bg-indigo-100 text-indigo-700" },
 ] as const;
 
 function getEventStyle(eventType: string) {
@@ -94,12 +94,12 @@ export default function KalenderPage() {
     <>
       <NavBar />
       <main className="flex-1 pb-20 pt-4 md:pt-20 px-4 max-w-4xl mx-auto w-full">
-        <h1 className="text-xl font-bold mb-4">Kalender</h1>
+        <h1 className="text-2xl font-bold mb-5 tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent">Kalender</h1>
 
         {/* Examenstermin */}
         <Card className="mb-4">
           <CardContent className="pt-4 flex items-center gap-3">
-            <GraduationCap className="h-5 w-5 text-emerald-600 shrink-0" />
+            <GraduationCap className="h-5 w-5 text-indigo-600 shrink-0" />
             <span className="text-sm font-medium">Examenstermin:</span>
             <Input
               type="date"
@@ -153,7 +153,7 @@ export default function KalenderPage() {
                 >
                   <span className={cn(
                     "text-xs font-medium",
-                    isToday && "bg-emerald-600 text-white rounded-full w-6 h-6 flex items-center justify-center",
+                    isToday && "bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center",
                     isExam && "bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center",
                   )}>
                     {format(day, "d")}
@@ -251,7 +251,7 @@ export default function KalenderPage() {
                 placeholder="z.B. AG Zivilrecht"
               />
             </div>
-            <Button onClick={handleAddEvent} className="w-full bg-emerald-600 hover:bg-emerald-700">
+            <Button onClick={handleAddEvent} className="w-full bg-indigo-600 hover:bg-indigo-700">
               <Plus className="h-4 w-4 mr-2" />
               Termin hinzufügen
             </Button>

@@ -129,13 +129,13 @@ export function TopicGrid() {
                   <div className="flex items-center gap-2.5">
                     <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-indigo-400 to-indigo-500 rounded-full transition-all duration-500"
                         style={{ width: `${gProgress}%` }}
                       />
                     </div>
                     <span className={cn(
                       "text-xs font-bold tabular-nums w-8 text-right",
-                      gProgress >= 80 ? "text-emerald-600" : gProgress > 0 ? "text-slate-500" : "text-slate-300"
+                      gProgress >= 80 ? "text-indigo-600" : gProgress > 0 ? "text-slate-500" : "text-slate-300"
                     )}>
                       {gProgress}%
                     </span>

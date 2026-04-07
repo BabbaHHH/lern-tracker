@@ -23,9 +23,9 @@ import { format } from "date-fns";
 import Link from "next/link";
 
 const AREA_GRADIENT: Record<Area, string> = {
-  zr: "from-blue-500 to-indigo-600",
+  zr: "from-indigo-500 to-blue-600",
   oeffr: "from-amber-500 to-orange-600",
-  sr: "from-rose-500 to-red-600",
+  sr: "from-rose-500 to-pink-600",
 };
 
 export function KlausurDesTages() {
@@ -77,15 +77,15 @@ export function KlausurDesTages() {
   if (!hasKlausuren) {
     return (
       <Link href="/klausuren">
-        <div className="bg-white rounded-2xl border border-slate-200 p-3.5 flex items-center gap-3 card-hover cursor-pointer">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shrink-0">
-            <Scale className="h-4 w-4 text-white" />
+        <div className="group bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] p-4 flex items-center gap-3 transition-all cursor-pointer">
+          <div className="p-2.5 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 ring-1 ring-slate-200/60 text-slate-700 group-hover:from-indigo-50 group-hover:to-indigo-100/60 group-hover:text-indigo-700 group-hover:ring-indigo-200/60 transition-all">
+            <Scale className="h-4 w-4" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-slate-800">Klausur-Datenbank</div>
-            <div className="text-[11px] text-slate-400">Klausuren eintragen & täglich die passende üben</div>
+            <div className="text-sm font-semibold text-slate-900 tracking-tight">Klausur-Datenbank</div>
+            <div className="text-[11px] text-slate-500">Klausuren eintragen & täglich die passende üben</div>
           </div>
-          <ChevronRight className="h-4 w-4 text-slate-300" />
+          <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" />
         </div>
       </Link>
     );
@@ -99,35 +99,36 @@ export function KlausurDesTages() {
     <>
       <div
         onClick={() => setDetailOpen(true)}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 p-4 text-white cursor-pointer card-hover"
+        className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-5 text-white cursor-pointer ring-1 ring-white/5 shadow-[0_10px_40px_-12px_rgba(15,23,42,0.45)] hover:shadow-[0_16px_50px_-12px_rgba(15,23,42,0.6)] transition-all"
       >
-        <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-xl -translate-y-6 translate-x-6" />
+        <div className="pointer-events-none absolute -top-8 -right-8 w-40 h-40 bg-indigo-400/20 rounded-full blur-3xl group-hover:bg-indigo-400/30 transition-colors" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
         <div className="relative">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2.5 mb-3">
             <div className={cn(
-              "w-7 h-7 rounded-lg bg-gradient-to-br flex items-center justify-center",
+              "p-1.5 rounded-lg bg-gradient-to-br shadow-md ring-1 ring-white/10",
               AREA_GRADIENT[k.area]
             )}>
               <Scale className="h-3.5 w-3.5 text-white" />
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wider">Klausur des Tages</span>
+                <span className="text-[10px] font-semibold text-indigo-400 uppercase tracking-[0.16em]">Klausur des Tages</span>
                 <Zap className="h-3 w-3 text-amber-400" />
               </div>
             </div>
-            <Badge className="bg-white/10 text-white/80 text-[10px] border-0">
+            <Badge className="bg-white/10 text-white/80 text-[10px] border-0 backdrop-blur-sm">
               {AREA_LABELS[k.area]}
             </Badge>
           </div>
 
-          <h3 className="font-bold text-sm mb-1.5 line-clamp-1">{k.title}</h3>
+          <h3 className="font-bold text-[15px] mb-2 line-clamp-1 tracking-tight">{k.title}</h3>
 
           <div className="flex items-center gap-3 text-[11px] text-white/60">
             {recommendation.reasons.slice(0, 2).map((r, i) => (
-              <span key={i} className="flex items-center gap-1">
-                <div className="w-1 h-1 rounded-full bg-emerald-400" />
+              <span key={i} className="flex items-center gap-1.5">
+                <div className="w-1 h-1 rounded-full bg-indigo-400" />
                 {r}
               </span>
             ))}
@@ -162,14 +163,14 @@ export function KlausurDesTages() {
             </div>
 
             {/* Warum diese Klausur */}
-            <div className="bg-emerald-50 rounded-xl p-3">
-              <div className="text-[11px] font-semibold text-emerald-700 mb-1.5 flex items-center gap-1">
+            <div className="bg-indigo-50 rounded-xl p-3">
+              <div className="text-[11px] font-semibold text-indigo-700 mb-1.5 flex items-center gap-1">
                 <Zap className="h-3 w-3" /> Warum heute?
               </div>
               <ul className="space-y-1">
                 {recommendation.reasons.map((r, i) => (
-                  <li key={i} className="text-xs text-emerald-600 flex items-center gap-1.5">
-                    <div className="w-1 h-1 rounded-full bg-emerald-400 shrink-0" />
+                  <li key={i} className="text-xs text-indigo-600 flex items-center gap-1.5">
+                    <div className="w-1 h-1 rounded-full bg-indigo-400 shrink-0" />
                     {r}
                   </li>
                 ))}
@@ -218,7 +219,7 @@ export function KlausurDesTages() {
             <div className="flex gap-2 pt-2">
               <Button
                 onClick={() => { setDetailOpen(false); setDoneDialogOpen(true); }}
-                className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl"
+                className="flex-1 bg-gradient-to-r from-slate-900 to-indigo-600 rounded-xl"
               >
                 <Check className="h-4 w-4 mr-1" />
                 Geschrieben — Eintragen
@@ -237,8 +238,8 @@ export function KlausurDesTages() {
 
           {saved ? (
             <div className="text-center py-6">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
-                <Check className="h-6 w-6 text-emerald-600" />
+              <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mx-auto mb-3">
+                <Check className="h-6 w-6 text-indigo-600" />
               </div>
               <p className="font-semibold text-slate-800">Eingetragen!</p>
               <p className="text-xs text-slate-500 mt-1">Fortschritt wird getrackt</p>
@@ -279,7 +280,7 @@ export function KlausurDesTages() {
                 />
               </div>
 
-              <Button onClick={handleDone} className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl">
+              <Button onClick={handleDone} className="w-full bg-gradient-to-r from-slate-900 to-indigo-600 rounded-xl">
                 Eintragen
               </Button>
             </div>

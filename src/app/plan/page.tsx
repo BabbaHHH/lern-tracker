@@ -279,7 +279,7 @@ ${adjustmentRequest ? `\nMEINE FRAGE / ANPASSUNGSWUNSCH:\n${adjustmentRequest}` 
             </Button>
           </Link>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">Lernplan anpassen</h1>
+            <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent">Lernplan anpassen</h1>
             <p className="text-xs text-slate-500">Claude Opus 4.6 analysiert deinen Fortschritt</p>
           </div>
         </div>
@@ -294,7 +294,7 @@ ${adjustmentRequest ? `\nMEINE FRAGE / ANPASSUNGSWUNSCH:\n${adjustmentRequest}` 
                 <div className="text-[11px] text-slate-500 font-medium">{snap.areaLabel}</div>
                 <div className={cn(
                   "text-2xl font-black tabular-nums mt-0.5",
-                  isWeak ? "text-red-500" : isStrong ? "text-emerald-600" : "text-amber-500"
+                  isWeak ? "text-red-500" : isStrong ? "text-indigo-600" : "text-amber-500"
                 )}>
                   {snap.avgProgress}%
                 </div>

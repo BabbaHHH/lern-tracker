@@ -54,13 +54,13 @@ export function TopicTile({ topic, progress, onProgressChange }: TopicTileProps)
     setNote("");
   }, [note, topic.id]);
 
-  // Dynamische Farbe basierend auf Fortschritt
+  // Dynamische Farbe basierend auf Fortschritt — edel & zurückhaltend
   const getBg = () => {
-    if (progress === 0) return "bg-white border-slate-200";
-    if (progress < 30) return "bg-emerald-50/60 border-emerald-200/60";
-    if (progress < 60) return "bg-emerald-100/70 border-emerald-300/60";
-    if (progress < 90) return "bg-emerald-200/70 border-emerald-400/50";
-    return "bg-emerald-300/70 border-emerald-500/50";
+    if (progress === 0) return "bg-white/80 border-slate-200/60";
+    if (progress < 30) return "bg-white/90 border-slate-200/70";
+    if (progress < 60) return "bg-indigo-50/60 border-indigo-200/50";
+    if (progress < 90) return "bg-indigo-50 border-indigo-300/60";
+    return "bg-gradient-to-br from-indigo-50 to-indigo-100/60 border-indigo-400/60";
   };
 
   return (
@@ -68,22 +68,27 @@ export function TopicTile({ topic, progress, onProgressChange }: TopicTileProps)
       <button
         onClick={handleOpen}
         className={cn(
-          "relative rounded-xl border p-3 text-left text-[13px] font-medium transition-all card-hover",
-          "min-h-[56px] flex items-center gap-2",
+          "relative rounded-xl border p-3 text-left text-[13px] font-medium transition-all backdrop-blur-sm",
+          "min-h-[56px] flex items-center gap-2.5",
+          "shadow-[0_2px_12px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_24px_rgb(0,0,0,0.06)] hover:-translate-y-0.5",
           getBg(),
         )}
       >
-        <div className={cn("w-1.5 h-8 rounded-full shrink-0", AREA_COLORS[topic.area])} />
+        <div className={cn("w-1 h-8 rounded-full shrink-0", AREA_COLORS[topic.area])} />
         <span className={cn(
-          "flex-1 leading-tight",
-          progress >= 80 ? "text-emerald-900" : "text-slate-700"
+          "flex-1 leading-tight tracking-tight",
+          progress >= 90 ? "text-indigo-900" : "text-slate-700"
         )}>
           {topic.label}
         </span>
         {progress > 0 && (
           <span className={cn(
-            "text-[11px] font-bold tabular-nums shrink-0 px-1.5 py-0.5 rounded-md",
-            progress >= 80 ? "bg-emerald-500/20 text-emerald-800" : "bg-slate-100 text-slate-500"
+            "text-[10px] font-bold tabular-nums shrink-0 px-1.5 py-0.5 rounded-md",
+            progress >= 90
+              ? "bg-indigo-500/15 text-indigo-700 ring-1 ring-indigo-500/20"
+              : progress >= 60
+              ? "bg-indigo-100/70 text-indigo-700"
+              : "bg-slate-100 text-slate-500"
           )}>
             {progress}%
           </span>
@@ -104,7 +109,7 @@ export function TopicTile({ topic, progress, onProgressChange }: TopicTileProps)
             <div className="bg-slate-50 rounded-xl p-4">
               <div className="flex justify-between text-sm mb-3">
                 <span className="text-slate-500 font-medium">Fortschritt</span>
-                <span className="font-bold text-emerald-600 text-lg tabular-nums">{localProgress}%</span>
+                <span className="font-bold text-indigo-600 text-lg tabular-nums">{localProgress}%</span>
               </div>
               <Slider
                 value={[localProgress]}

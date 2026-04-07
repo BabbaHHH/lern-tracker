@@ -77,7 +77,7 @@ export function TrackingFab() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-[72px] left-4 md:bottom-6 md:left-6 z-40 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl p-3.5 shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all active:scale-95"
+        className="fixed bottom-[80px] left-4 md:bottom-6 md:left-6 z-40 bg-gradient-to-br from-slate-900 to-slate-700 text-white rounded-2xl p-3.5 shadow-[0_10px_30px_-8px_rgba(15,23,42,0.5)] hover:shadow-[0_16px_40px_-8px_rgba(15,23,42,0.6)] hover:-translate-y-0.5 transition-all active:scale-95 ring-1 ring-white/10"
         title="Lernsession eintragen"
       >
         <ClipboardCheck className="h-5 w-5" />
@@ -96,8 +96,8 @@ export function TrackingFab() {
 
           {saved ? (
             <div className="text-center py-8">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
-                <Check className="h-6 w-6 text-emerald-600" />
+              <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mx-auto mb-3">
+                <Check className="h-6 w-6 text-indigo-600" />
               </div>
               <p className="font-semibold text-slate-800">Eingetragen!</p>
             </div>

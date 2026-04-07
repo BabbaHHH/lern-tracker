@@ -133,13 +133,13 @@ ${topicList}`;
             )}>
               <div className={cn(
                 "w-7 h-7 rounded-full flex items-center justify-center shrink-0",
-                msg.role === "user" ? "bg-emerald-100" : "bg-blue-100"
+                msg.role === "user" ? "bg-indigo-100" : "bg-blue-100"
               )}>
-                {msg.role === "user" ? <User className="h-4 w-4 text-emerald-700" /> : <Bot className="h-4 w-4 text-blue-700" />}
+                {msg.role === "user" ? <User className="h-4 w-4 text-indigo-700" /> : <Bot className="h-4 w-4 text-blue-700" />}
               </div>
               <div className={cn(
                 "rounded-xl px-3 py-2 text-sm max-w-[80%]",
-                msg.role === "user" ? "bg-emerald-600 text-white" : "bg-gray-100 text-gray-800"
+                msg.role === "user" ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-800"
               )}>
                 {msg.content}
               </div>
@@ -149,12 +149,12 @@ ${topicList}`;
             {msg.progressSuggestions && msg.progressSuggestions.length > 0 && (
               <div className="ml-9 mt-2 space-y-1">
                 {msg.progressSuggestions.map(s => (
-                  <div key={s.topicId} className="flex items-center gap-2 bg-emerald-50 rounded-lg px-3 py-1.5">
+                  <div key={s.topicId} className="flex items-center gap-2 bg-indigo-50 rounded-lg px-3 py-1.5">
                     <span className="text-xs flex-1">
                       {getTopicLabel(s.topicId)}: <strong>{s.percent}%</strong>
                     </span>
                     {appliedSuggestions.has(s.topicId) ? (
-                      <Badge className="bg-emerald-100 text-emerald-700 text-xs">
+                      <Badge className="bg-indigo-100 text-indigo-700 text-xs">
                         <Check className="h-3 w-3 mr-1" />
                         Übernommen
                       </Badge>
@@ -197,7 +197,7 @@ ${topicList}`;
           disabled={loading}
           autoFocus
         />
-        <Button onClick={sendMessage} disabled={loading || !input.trim()} size="icon" className="bg-emerald-600 hover:bg-emerald-700">
+        <Button onClick={sendMessage} disabled={loading || !input.trim()} size="icon" className="bg-indigo-600 hover:bg-indigo-700">
           <Send className="h-4 w-4" />
         </Button>
       </div>

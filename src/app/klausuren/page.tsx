@@ -154,14 +154,14 @@ function TopicPicker({
                       className={cn(
                         "flex items-center gap-2 w-full text-left text-xs py-1 px-2 rounded-md transition-colors",
                         selectedIds.includes(t.id)
-                          ? "bg-emerald-100 text-emerald-800"
+                          ? "bg-indigo-100 text-indigo-800"
                           : "hover:bg-slate-100 text-slate-600"
                       )}
                     >
                       <div className={cn(
                         "w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0",
                         selectedIds.includes(t.id)
-                          ? "bg-emerald-500 border-emerald-500"
+                          ? "bg-indigo-500 border-indigo-500"
                           : "border-slate-300"
                       )}>
                         {selectedIds.includes(t.id) && <Check className="h-2.5 w-2.5 text-white" />}
@@ -179,7 +179,7 @@ function TopicPicker({
         )}
       </div>
       {selectedIds.length > 0 && (
-        <p className="text-[11px] text-emerald-600 font-medium">{selectedIds.length} Themen ausgewählt</p>
+        <p className="text-[11px] text-indigo-600 font-medium">{selectedIds.length} Themen ausgewählt</p>
       )}
     </div>
   );
@@ -346,42 +346,42 @@ export default function KlausurenPage() {
   return (
     <>
       <NavBar />
-      <main className="flex-1 pb-20 pt-3 md:pt-16 px-4 max-w-3xl mx-auto w-full">
+      <main className="flex-1 pb-24 pt-4 md:pt-20 px-4 max-w-3xl mx-auto w-full">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-5">
+        <div className="flex items-center gap-3 mb-6">
           <Link href="/">
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl bg-white/60 hover:bg-white border border-slate-200/60 text-slate-600">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           <div className="flex-1">
-            <h1 className="text-xl font-bold tracking-tight">Klausur-Datenbank</h1>
-            <p className="text-xs text-slate-500">{klausuren.length} Klausuren gespeichert</p>
+            <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent">Klausur-Datenbank</h1>
+            <p className="text-xs text-slate-500 mt-0.5">{klausuren.length} Klausuren gespeichert</p>
           </div>
           <Button
             onClick={() => { setImportOpen(true); setImportResult(null); }}
             size="sm"
             variant="outline"
-            className="rounded-xl"
+            className="rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 bg-white/60 backdrop-blur-sm"
           >
             <Upload className="h-4 w-4 mr-1" />
             Import
           </Button>
-          <Button onClick={openNew} size="sm" className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl">
+          <Button onClick={openNew} size="sm" className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-md shadow-slate-900/10">
             <Plus className="h-4 w-4 mr-1" />
             Neu
           </Button>
         </div>
 
         {/* Filter Bar */}
-        <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+        <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
           <div className="relative flex-1 max-w-xs">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
             <Input
               placeholder="Suchen..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="pl-8 h-9 text-sm rounded-xl"
+              className="pl-9 h-9 text-sm rounded-xl bg-slate-50 hover:bg-white border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
             />
           </div>
           {(["all", "zr", "oeffr", "sr"] as const).map(area => (
@@ -389,10 +389,10 @@ export default function KlausurenPage() {
               key={area}
               onClick={() => setFilter(area)}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-colors",
+                "px-3.5 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all",
                 filter === area
-                  ? "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200"
-                  : "bg-white text-slate-500 hover:bg-slate-50 border border-slate-200"
+                  ? "bg-slate-900 text-white shadow-md shadow-slate-900/10"
+                  : "bg-white/70 text-slate-600 hover:bg-white border border-slate-200/60"
               )}
             >
               {area === "all" ? "Alle" : AREA_LABELS[area]}
@@ -424,15 +424,15 @@ export default function KlausurenPage() {
             {filtered.map(k => {
               const isExpanded = expandedId === k.id;
               return (
-                <Card key={k.id} className="overflow-hidden">
+                <Card key={k.id} className="overflow-hidden rounded-2xl border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgb(0,0,0,0.06)] transition-all">
                   <button
                     type="button"
                     onClick={() => setExpandedId(isExpanded ? null : k.id)}
                     className="w-full text-left p-3.5 flex items-start gap-3"
                   >
                     <div className={cn(
-                      "w-9 h-9 rounded-xl flex items-center justify-center shrink-0",
-                      k.area === "zr" ? "bg-blue-100" : k.area === "oeffr" ? "bg-amber-100" : "bg-rose-100"
+                      "p-2.5 rounded-xl flex items-center justify-center shrink-0 ring-1 ring-inset",
+                      k.area === "zr" ? "bg-blue-50 ring-blue-200/60" : k.area === "oeffr" ? "bg-amber-50 ring-amber-200/60" : "bg-rose-50 ring-rose-200/60"
                     )}>
                       <Scale className={cn(
                         "h-4 w-4",
@@ -604,7 +604,7 @@ export default function KlausurenPage() {
                 <select
                   value={form.area}
                   onChange={e => setForm(prev => ({ ...prev, area: e.target.value as Area, topicIds: [] }))}
-                  className="w-full h-9 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full h-9 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 >
                   <option value="zr">Zivilrecht</option>
                   <option value="oeffr">Öffentliches Recht</option>
@@ -616,7 +616,7 @@ export default function KlausurenPage() {
                 <select
                   value={form.difficulty}
                   onChange={e => setForm(prev => ({ ...prev, difficulty: e.target.value as KlausurDifficulty }))}
-                  className="w-full h-9 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full h-9 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 >
                   <option value="leicht">Leicht</option>
                   <option value="mittel">Mittel</option>
@@ -736,7 +736,7 @@ export default function KlausurenPage() {
             <Button
               onClick={handleSave}
               disabled={!form.title.trim()}
-              className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl h-10"
+              className="w-full bg-gradient-to-r from-slate-900 to-indigo-600 rounded-xl h-10"
             >
               {editingId ? "Speichern" : "Klausur anlegen"}
             </Button>
@@ -760,7 +760,7 @@ export default function KlausurenPage() {
                 type="file"
                 accept=".json,application/json"
                 onChange={handleFileUpload}
-                className="block w-full text-xs file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-emerald-50 file:text-emerald-700 file:font-medium"
+                className="block w-full text-xs file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-medium"
               />
             </div>
             <div>
@@ -776,7 +776,7 @@ export default function KlausurenPage() {
             {importResult && (
               <div className={cn(
                 "rounded-xl p-3 text-xs",
-                importResult.errors.length === 0 ? "bg-emerald-50 text-emerald-800" : "bg-amber-50 text-amber-800"
+                importResult.errors.length === 0 ? "bg-indigo-50 text-indigo-800" : "bg-amber-50 text-amber-800"
               )}>
                 <div className="font-semibold mb-1">
                   {importResult.ok} importiert, {importResult.skipped} übersprungen
@@ -793,7 +793,7 @@ export default function KlausurenPage() {
             <Button
               onClick={handleImport}
               disabled={!importJson.trim()}
-              className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl h-10"
+              className="w-full bg-gradient-to-r from-slate-900 to-indigo-600 rounded-xl h-10"
             >
               <Upload className="h-4 w-4 mr-1" /> Importieren
             </Button>

@@ -44,8 +44,8 @@ function TopicNode({
     <div>
       <div
         className={cn(
-          "flex items-center gap-2 py-2 px-3 rounded-lg transition-colors hover:bg-gray-50",
-          depth === 0 && "bg-white shadow-sm border mt-3",
+          "flex items-center gap-2.5 py-2 px-3 rounded-xl transition-all hover:bg-slate-50/70",
+          depth === 0 && "bg-white/80 backdrop-blur-sm shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-slate-200/60 mt-3 px-3.5 py-3",
           depth === 1 && "ml-4",
           depth >= 2 && "ml-8"
         )}
@@ -79,7 +79,7 @@ function TopicNode({
             />
             <span className={cn(
               "text-xs font-bold w-8 text-right",
-              progress >= 80 ? "text-emerald-600" : progress >= 40 ? "text-amber-600" : "text-gray-400"
+              progress >= 80 ? "text-indigo-600" : progress >= 40 ? "text-amber-600" : "text-gray-400"
             )}>
               {progress}%
             </span>
@@ -87,7 +87,7 @@ function TopicNode({
         ) : (
           <div className="flex items-center gap-2 shrink-0">
             <div className="w-16 h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${childProgress}%` }} />
+              <div className="h-full bg-indigo-500 rounded-full transition-all" style={{ width: `${childProgress}%` }} />
             </div>
             <span className="text-xs text-gray-500 w-8 text-right">{childProgress}%</span>
           </div>
@@ -169,17 +169,18 @@ export default function ThemenPage() {
   return (
     <>
       <NavBar />
-      <main className="flex-1 pb-20 pt-4 md:pt-20 px-4 max-w-4xl mx-auto w-full">
-        <h1 className="text-xl font-bold mb-4">Alle Themen</h1>
+      <main className="flex-1 pb-24 pt-4 md:pt-24 px-4 max-w-4xl mx-auto w-full">
+        <h1 className="text-2xl font-bold mb-1 tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent">Alle Themen</h1>
+        <p className="text-xs text-slate-500 mb-5">Hierarchischer Themenbaum mit Fortschrittssteuerung</p>
 
         {/* Suche */}
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <div className="relative mb-5">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Thema suchen..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 h-10 rounded-xl bg-slate-50 hover:bg-white border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
           />
         </div>
 

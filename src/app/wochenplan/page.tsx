@@ -87,24 +87,36 @@ export default function WochenplanPage() {
   return (
     <>
       <NavBar />
-      <main className="flex-1 pb-20 pt-4 md:pt-20 px-4 max-w-4xl mx-auto w-full">
+      <main className="flex-1 pb-24 pt-4 md:pt-24 px-4 max-w-4xl mx-auto w-full">
         {/* Wochen-Navigation */}
-        <div className="flex items-center justify-between mb-4">
-          <Button variant="ghost" size="icon" onClick={() => setWeekOffset(w => w - 1)}>
+        <div className="flex items-center justify-between mb-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setWeekOffset(w => w - 1)}
+            className="h-10 w-10 rounded-xl bg-white/60 hover:bg-white border border-slate-200/60 text-slate-600"
+          >
             <ChevronLeft className="h-5 w-5" />
           </Button>
           <div className="text-center">
-            <h1 className="text-lg font-bold">
+            <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent">
               {format(weekStart, "dd. MMM", { locale: de })} – {format(addDays(weekStart, 6), "dd. MMM yyyy", { locale: de })}
             </h1>
-            <Badge className={cn("mt-1", phase.color)}>{phase.label} — noch {weeksUntilExam} Wochen</Badge>
+            <Badge className={cn("mt-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide ring-1 ring-inset border-0", phase.color)}>
+              {phase.label} · noch {weeksUntilExam} Wochen
+            </Badge>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => setWeekOffset(w => w + 1)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setWeekOffset(w => w + 1)}
+            className="h-10 w-10 rounded-xl bg-white/60 hover:bg-white border border-slate-200/60 text-slate-600"
+          >
             <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
 
-        <p className="text-sm text-gray-500 text-center mb-6">{phase.description}</p>
+        <p className="text-xs text-slate-500 text-center mb-6 tracking-tight">{phase.description}</p>
 
         {/* Wochenansicht */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -112,18 +124,23 @@ export default function WochenplanPage() {
             const isToday = format(today, "yyyy-MM-dd") === day.dateStr;
             return (
               <Card key={day.dateStr} className={cn(
-                "transition-all",
-                isToday && "ring-2 ring-emerald-500",
-                day.isFree && "opacity-60 bg-gray-50"
+                "rounded-2xl border-slate-200/60 bg-white/80 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.07)] transition-all",
+                isToday && "ring-2 ring-indigo-500/60 shadow-[0_12px_40px_-8px_rgba(99,102,241,0.25)]",
+                day.isFree && "opacity-70 bg-slate-50/80"
               )}>
-                <CardHeader className="pb-2 pt-3 px-3">
+                <CardHeader className="pb-2 pt-3.5 px-3.5">
                   <CardTitle className="text-sm flex items-center justify-between">
-                    <span className={cn(isToday && "text-emerald-600 font-bold")}>
-                      {WEEKDAYS[i]} {format(day.date, "dd.MM.")}
+                    <span className={cn(
+                      "tracking-tight",
+                      isToday ? "text-indigo-700 font-bold" : "text-slate-800 font-semibold"
+                    )}>
+                      {WEEKDAYS[i]} <span className="text-slate-400 font-normal">{format(day.date, "dd.MM.")}</span>
                     </span>
-                    {day.isFree && <Badge variant="secondary" className="text-xs">Frei</Badge>}
-                    {day.hasAG && <Badge className="text-xs bg-blue-100 text-blue-700">AG</Badge>}
-                    {day.hasRep && <Badge className="text-xs bg-purple-100 text-purple-700">Rep</Badge>}
+                    <div className="flex gap-1">
+                      {day.isFree && <Badge className="text-[10px] bg-slate-100 text-slate-500 border-0">Frei</Badge>}
+                      {day.hasAG && <Badge className="text-[10px] bg-blue-50 text-blue-700 ring-1 ring-blue-200/60 border-0">AG</Badge>}
+                      {day.hasRep && <Badge className="text-[10px] bg-purple-50 text-purple-700 ring-1 ring-purple-200/60 border-0">Rep</Badge>}
+                    </div>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="px-3 pb-3">
@@ -134,10 +151,12 @@ export default function WochenplanPage() {
                       {/* Sprints */}
                       {sprints.map((sprint, si) => (
                         <div key={si} className="flex items-center gap-2 text-xs">
-                          <span className="text-gray-400 w-20 shrink-0">{sprint.time.split("–")[0]}</span>
+                          <span className="text-slate-400 w-12 shrink-0 tabular-nums tracking-tight">{sprint.time.split("–")[0]}</span>
                           <div className={cn(
-                            "flex-1 rounded px-2 py-1",
-                            si < 2 ? "bg-emerald-50" : si === 2 ? "bg-blue-50" : "bg-gray-50"
+                            "flex-1 rounded-lg px-2.5 py-1.5 ring-1 ring-inset",
+                            si < 2 ? "bg-indigo-50/70 ring-indigo-200/40 text-indigo-900" :
+                            si === 2 ? "bg-amber-50/70 ring-amber-200/50 text-amber-900" :
+                            "bg-slate-50 ring-slate-200/60 text-slate-600"
                           )}>
                             {si === 0 && day.mainTopics[0] && (
                               <span className="font-medium">{day.mainTopics[0].label}</span>
@@ -161,17 +180,17 @@ export default function WochenplanPage() {
                       ))}
 
                       {/* Sport-Pause */}
-                      <div className="text-xs text-gray-400 text-center mt-1">
-                        12:05 Mittagspause + Sport
+                      <div className="text-[10px] text-slate-400 text-center mt-1.5 tracking-tight">
+                        12:05 · Mittagspause + Sport
                       </div>
 
                       {/* Klausur-Empfehlung */}
                       {day.klausurRec && day.klausurRec.score > 0 && (
                         <Link
                           href="/klausuren"
-                          className="block mt-2 rounded-lg border border-emerald-200 bg-emerald-50/60 hover:bg-emerald-50 p-2 transition-colors"
+                          className="block mt-2 rounded-lg border border-indigo-200 bg-indigo-50/60 hover:bg-indigo-50 p-2 transition-colors"
                         >
-                          <div className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-700 mb-0.5">
+                          <div className="flex items-center gap-1.5 text-[10px] font-semibold text-indigo-700 mb-0.5">
                             <Scale className="h-3 w-3" /> Klausur-Tipp
                           </div>
                           <div className="text-xs font-medium text-slate-800 line-clamp-2">
