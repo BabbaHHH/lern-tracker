@@ -23,7 +23,7 @@ import { format } from "date-fns";
 import Link from "next/link";
 
 const AREA_GRADIENT: Record<Area, string> = {
-  zr: "from-indigo-500 to-blue-600",
+  zr: "from-accent-500 to-blue-600",
   oeffr: "from-amber-500 to-orange-600",
   sr: "from-rose-500 to-pink-600",
 };
@@ -78,7 +78,7 @@ export function KlausurDesTages() {
     return (
       <Link href="/klausuren">
         <div className="group bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] p-4 flex items-center gap-3 transition-all cursor-pointer">
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 ring-1 ring-slate-200/60 text-slate-700 group-hover:from-indigo-50 group-hover:to-indigo-100/60 group-hover:text-indigo-700 group-hover:ring-indigo-200/60 transition-all">
+          <div className="p-2.5 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 ring-1 ring-slate-200/60 text-slate-700 group-hover:from-accent-50 group-hover:to-accent-100/60 group-hover:text-accent-700 group-hover:ring-accent-200/60 transition-all">
             <Scale className="h-4 w-4" />
           </div>
           <div className="flex-1 min-w-0">
@@ -101,7 +101,7 @@ export function KlausurDesTages() {
         onClick={() => setDetailOpen(true)}
         className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-5 text-white cursor-pointer ring-1 ring-white/5 shadow-[0_10px_40px_-12px_rgba(15,23,42,0.45)] hover:shadow-[0_16px_50px_-12px_rgba(15,23,42,0.6)] transition-all"
       >
-        <div className="pointer-events-none absolute -top-8 -right-8 w-40 h-40 bg-indigo-400/20 rounded-full blur-3xl group-hover:bg-indigo-400/30 transition-colors" />
+        <div className="pointer-events-none absolute -top-8 -right-8 w-40 h-40 bg-accent-400/20 rounded-full blur-3xl group-hover:bg-accent-400/30 transition-colors" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
         <div className="relative">
@@ -114,7 +114,7 @@ export function KlausurDesTages() {
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-semibold text-indigo-400 uppercase tracking-[0.16em]">Klausur des Tages</span>
+                <span className="text-[10px] font-semibold text-accent-400 uppercase tracking-[0.16em]">Klausur des Tages</span>
                 <Zap className="h-3 w-3 text-amber-400" />
               </div>
             </div>
@@ -128,7 +128,7 @@ export function KlausurDesTages() {
           <div className="flex items-center gap-3 text-[11px] text-white/60">
             {recommendation.reasons.slice(0, 2).map((r, i) => (
               <span key={i} className="flex items-center gap-1.5">
-                <div className="w-1 h-1 rounded-full bg-indigo-400" />
+                <div className="w-1 h-1 rounded-full bg-accent-400" />
                 {r}
               </span>
             ))}
@@ -163,14 +163,14 @@ export function KlausurDesTages() {
             </div>
 
             {/* Warum diese Klausur */}
-            <div className="bg-indigo-50 rounded-xl p-3">
-              <div className="text-[11px] font-semibold text-indigo-700 mb-1.5 flex items-center gap-1">
+            <div className="bg-accent-50 rounded-xl p-3">
+              <div className="text-[11px] font-semibold text-accent-700 mb-1.5 flex items-center gap-1">
                 <Zap className="h-3 w-3" /> Warum heute?
               </div>
               <ul className="space-y-1">
                 {recommendation.reasons.map((r, i) => (
-                  <li key={i} className="text-xs text-indigo-600 flex items-center gap-1.5">
-                    <div className="w-1 h-1 rounded-full bg-indigo-400 shrink-0" />
+                  <li key={i} className="text-xs text-accent-600 flex items-center gap-1.5">
+                    <div className="w-1 h-1 rounded-full bg-accent-400 shrink-0" />
                     {r}
                   </li>
                 ))}
@@ -219,7 +219,7 @@ export function KlausurDesTages() {
             <div className="flex gap-2 pt-2">
               <Button
                 onClick={() => { setDetailOpen(false); setDoneDialogOpen(true); }}
-                className="flex-1 bg-gradient-to-r from-slate-900 to-indigo-600 rounded-xl"
+                className="flex-1 bg-gradient-to-r from-slate-900 to-accent-600 rounded-xl"
               >
                 <Check className="h-4 w-4 mr-1" />
                 Geschrieben — Eintragen
@@ -238,8 +238,8 @@ export function KlausurDesTages() {
 
           {saved ? (
             <div className="text-center py-6">
-              <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mx-auto mb-3">
-                <Check className="h-6 w-6 text-indigo-600" />
+              <div className="w-12 h-12 rounded-full bg-accent-100 flex items-center justify-center mx-auto mb-3">
+                <Check className="h-6 w-6 text-accent-600" />
               </div>
               <p className="font-semibold text-slate-800">Eingetragen!</p>
               <p className="text-xs text-slate-500 mt-1">Fortschritt wird getrackt</p>
@@ -280,7 +280,7 @@ export function KlausurDesTages() {
                 />
               </div>
 
-              <Button onClick={handleDone} className="w-full bg-gradient-to-r from-slate-900 to-indigo-600 rounded-xl">
+              <Button onClick={handleDone} className="w-full bg-gradient-to-r from-slate-900 to-accent-600 rounded-xl">
                 Eintragen
               </Button>
             </div>

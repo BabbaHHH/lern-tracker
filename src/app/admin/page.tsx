@@ -148,7 +148,7 @@ Bitte ändere ihn wie folgt: ${instruction}`,
             </Link>
             <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent">KI-Einstellungen</h1>
           </div>
-          <Button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700">
+          <Button onClick={handleSave} className="bg-accent-600 hover:bg-accent-700">
             <Save className="h-4 w-4 mr-2" />
             {saved ? "Gespeichert!" : "Speichern"}
           </Button>
@@ -306,7 +306,7 @@ Bitte ändere ihn wie folgt: ${instruction}`,
                               onClick={() => handlePromptChange(prompt.id, "modelTier", tier)}
                               className={cn(
                                 "text-xs px-3 py-1 rounded-full border",
-                                prompt.modelTier === tier ? "bg-indigo-100 border-indigo-300" : "bg-gray-50"
+                                prompt.modelTier === tier ? "bg-accent-100 border-accent-300" : "bg-gray-50"
                               )}
                             >
                               {tier === "strong" ? "Stark (Sonnet)" : "Günstig (Gemini Flash)"}

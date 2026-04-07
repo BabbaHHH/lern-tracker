@@ -2,6 +2,13 @@
 
 **Intelligenter Lernfortschritts-Tracker für das 2. juristische Staatsexamen (Berlin/GJPA)**
 
+> **⚠️ TODO — Persistenz-Migration:** Hochgeladene Dokumente (`lerntracker-documents`),
+> AG-Wochen-Overrides (`lerntracker-ag-weeks`) und Theme-Präferenz (`lerntracker-theme`)
+> werden aktuell als Base64/JSON im **localStorage** gespeichert (Limit ~5 MB, global pro
+> Browser, kein Sync zwischen Geräten). Bei Umzug auf Supabase: Dokumente in **Supabase
+> Storage**, Theme/AG-Wochen in **`user_preferences`** migrieren. Siehe
+> `src/lib/store.ts` → `getDocuments`, `getAgWeekOverrides`, `getTheme`.
+
 Repository: [github.com/BabbaHHH/lern-tracker](https://github.com/BabbaHHH/lern-tracker)
 
 ---

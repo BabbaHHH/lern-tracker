@@ -79,7 +79,7 @@ function TopicNode({
             />
             <span className={cn(
               "text-xs font-bold w-8 text-right",
-              progress >= 80 ? "text-indigo-600" : progress >= 40 ? "text-amber-600" : "text-gray-400"
+              progress >= 80 ? "text-accent-600" : progress >= 40 ? "text-amber-600" : "text-gray-400"
             )}>
               {progress}%
             </span>
@@ -87,7 +87,7 @@ function TopicNode({
         ) : (
           <div className="flex items-center gap-2 shrink-0">
             <div className="w-16 h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-indigo-500 rounded-full transition-all" style={{ width: `${childProgress}%` }} />
+              <div className="h-full bg-accent-500 rounded-full transition-all" style={{ width: `${childProgress}%` }} />
             </div>
             <span className="text-xs text-gray-500 w-8 text-right">{childProgress}%</span>
           </div>
@@ -180,7 +180,7 @@ export default function ThemenPage() {
             placeholder="Thema suchen..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-10 rounded-xl bg-slate-50 hover:bg-white border-slate-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+            className="pl-10 h-10 rounded-xl bg-slate-50 hover:bg-white border-slate-200 focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-all"
           />
         </div>
 

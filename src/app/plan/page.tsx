@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { NavBar } from "@/components/nav-bar";
 import { TOPICS, getLeafTopics } from "@/lib/topics";
-import { getProgress, getCalendarEvents, getOnboarding, getLernstart, getExamDate, getTrackingEntries, getKlausuren } from "@/lib/store";
+import { getProgress, getCalendarEvents, getOnboarding, getLernstart, getExamDate, getTrackingEntries, getKlausuren, getDocuments } from "@/lib/store";
+import { DocumentManager } from "@/components/document-manager";
 import { AREA_LABELS, ACTIVITY_LABELS, type Area, type ActivityType } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -181,7 +182,17 @@ ONBOARDING-DATEN:
 - Probeexamen 1: ${onboarding.probeexamen1Start}
 - Probeexamen 2: ${onboarding.probeexamen2Start}
 
-${buildTrackingContext()}`;
+${buildTrackingContext()}
+
+${buildDocumentContext()}`;
+}
+
+function buildDocumentContext(): string {
+  const docs = getDocuments().filter((d) => d.includeInNextPlan);
+  if (docs.length === 0) return "MATERIALIEN: Keine Dokumente für Planung ausgewählt.";
+  return `MATERIALIEN (${docs.length} Dokumente für Plan einbezogen):\n${docs
+    .map((d) => `- ${d.name} (${d.type})${d.summary ? `: ${d.summary}` : ""}`)
+    .join("\n")}`;
 }
 
 export default function PlanPage() {
@@ -294,7 +305,7 @@ ${adjustmentRequest ? `\nMEINE FRAGE / ANPASSUNGSWUNSCH:\n${adjustmentRequest}` 
                 <div className="text-[11px] text-slate-500 font-medium">{snap.areaLabel}</div>
                 <div className={cn(
                   "text-2xl font-black tabular-nums mt-0.5",
-                  isWeak ? "text-red-500" : isStrong ? "text-indigo-600" : "text-amber-500"
+                  isWeak ? "text-red-500" : isStrong ? "text-accent-600" : "text-amber-500"
                 )}>
                   {snap.avgProgress}%
                 </div>
@@ -350,6 +361,10 @@ ${adjustmentRequest ? `\nMEINE FRAGE / ANPASSUNGSWUNSCH:\n${adjustmentRequest}` 
           </div>
         )}
 
+        <div className="mb-5">
+          <DocumentManager />
+        </div>
+
         <Separator className="my-5" />
 
         {/* Adjustment Input */}
@@ -371,7 +386,7 @@ ${adjustmentRequest ? `\nMEINE FRAGE / ANPASSUNGSWUNSCH:\n${adjustmentRequest}` 
           <Button
             onClick={handleAdjust}
             disabled={loading}
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-xl h-11"
+            className="w-full bg-gradient-to-r from-purple-600 to-accent-600 hover:from-purple-700 hover:to-accent-700 rounded-xl h-11"
             size="lg"
           >
             {loading ? (

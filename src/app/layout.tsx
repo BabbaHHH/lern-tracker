@@ -45,7 +45,14 @@ export default function RootLayout({
       lang="de"
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${newsreader.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-slate-50/50 gradient-mesh">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('lerntracker-theme');if(t){document.documentElement.dataset.theme=JSON.parse(t);}else{document.documentElement.dataset.theme='indigo';}}catch(e){document.documentElement.dataset.theme='indigo';}})();`,
+          }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col bg-white">
         <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>

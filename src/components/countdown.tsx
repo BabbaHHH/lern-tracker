@@ -30,8 +30,8 @@ export function Countdown() {
     <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 text-white shadow-[0_10px_40px_-12px_rgba(15,23,42,0.45)] ring-1 ring-white/5">
       {/* Subtle ambient glow */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.18]">
-        <div className="absolute -top-10 -right-10 w-72 h-72 bg-indigo-400 rounded-full blur-[110px]" />
-        <div className="absolute -bottom-16 -left-10 w-56 h-56 bg-indigo-500 rounded-full blur-[90px]" />
+        <div className="absolute -top-10 -right-10 w-72 h-72 bg-accent-400 rounded-full blur-[110px]" />
+        <div className="absolute -bottom-16 -left-10 w-56 h-56 bg-accent-500 rounded-full blur-[90px]" />
       </div>
       {/* fine grain top highlight */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
@@ -73,7 +73,7 @@ export function Countdown() {
       {/* Progress bar */}
       <div className="relative mt-5 h-1 bg-white/[0.06] rounded-full overflow-hidden">
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-indigo-400 via-indigo-300 to-amber-300 transition-all"
+          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-accent-400 via-accent-300 to-amber-300 transition-all"
           style={{ width: `${progress}%` }}
         />
       </div>

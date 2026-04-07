@@ -289,3 +289,133 @@ export function saveRecommenderWeights(weights: RecommenderWeights): void {
 export function resetRecommenderWeights(): void {
   save(STORAGE_KEYS.recommenderWeights, DEFAULT_WEIGHTS);
 }
+
+// === Theme ===
+
+export type ThemeId = "indigo" | "azure" | "sapphire" | "bordeaux" | "forest" | "graphite";
+
+export const THEMES: { id: ThemeId; label: string; hue: string; description: string }[] = [
+  { id: "indigo",   label: "Indigo",   hue: "#4f46e5", description: "Tiefes Blauviolett — Default" },
+  { id: "azure",    label: "Azure",    hue: "#2563eb", description: "Lebendiges Mittelblau" },
+  { id: "sapphire", label: "Sapphire", hue: "#0369a1", description: "Edles Dunkelblau" },
+  { id: "bordeaux", label: "Bordeaux", hue: "#b91c1c", description: "Tiefes Weinrot" },
+  { id: "forest",   label: "Forest",   hue: "#15803d", description: "Gedeckter Tannengrün" },
+  { id: "graphite", label: "Graphite", hue: "#475569", description: "Reduzierte Monochromie" },
+];
+
+const THEME_KEY = "lerntracker-theme";
+
+export function getTheme(): ThemeId {
+  return load<ThemeId>(THEME_KEY, "indigo");
+}
+
+export function setTheme(id: ThemeId): void {
+  save(THEME_KEY, id);
+  if (typeof document !== "undefined") {
+    document.documentElement.dataset.theme = id;
+  }
+}
+
+// === AG-Wochen (flexibel pro Kalenderwoche) ===
+
+/**
+ * ISO-Wochenschlüssel: "2026-W15"
+ * weekdays: 0=Mo, 1=Di, 2=Mi, 3=Do, 4=Fr, 5=Sa, 6=So
+ */
+export interface AgWeekOverride {
+  weekKey: string;
+  agDays: number[];
+  source: "default" | "manual" | "ai";
+}
+
+const AG_WEEKS_KEY = "lerntracker-ag-weeks";
+
+export function getWeekKey(date: Date): string {
+  // ISO 8601 week
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
+}
+
+const WEEKDAY_TO_INDEX: Record<string, number> = {
+  Montag: 0, Dienstag: 1, Mittwoch: 2, Donnerstag: 3,
+  Freitag: 4, Samstag: 5, Sonntag: 6,
+};
+
+export function getAgWeekOverrides(): Record<string, AgWeekOverride> {
+  return load<Record<string, AgWeekOverride>>(AG_WEEKS_KEY, {});
+}
+
+export function getAgDaysForWeek(weekKey: string): number[] {
+  const overrides = getAgWeekOverrides();
+  if (overrides[weekKey]) return overrides[weekKey].agDays;
+  // Fallback: onboarding.agDay
+  const fallbackDay = getOnboarding().agDay;
+  const idx = WEEKDAY_TO_INDEX[fallbackDay];
+  return idx !== undefined ? [idx] : [];
+}
+
+export function setAgDaysForWeek(weekKey: string, agDays: number[], source: AgWeekOverride["source"] = "manual"): void {
+  const all = getAgWeekOverrides();
+  all[weekKey] = { weekKey, agDays, source };
+  save(AG_WEEKS_KEY, all);
+}
+
+export function clearAgWeekOverride(weekKey: string): void {
+  const all = getAgWeekOverrides();
+  delete all[weekKey];
+  save(AG_WEEKS_KEY, all);
+}
+
+// === Dokumente (localStorage, base64 — MVP, später ggf. Supabase Storage) ===
+
+export interface StoredDocument {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  dataUrl: string; // base64 data URL
+  uploadedAt: string;
+  tags: string[];
+  includeInNextPlan: boolean;
+  summary?: string;
+}
+
+const DOCUMENTS_KEY = "lerntracker-documents";
+
+export function getDocuments(): StoredDocument[] {
+  return load<StoredDocument[]>(DOCUMENTS_KEY, []);
+}
+
+export function addDocument(doc: Omit<StoredDocument, "id" | "uploadedAt">): StoredDocument[] {
+  const all = getDocuments();
+  all.unshift({ ...doc, id: crypto.randomUUID(), uploadedAt: new Date().toISOString() });
+  save(DOCUMENTS_KEY, all);
+  return all;
+}
+
+export function removeDocument(id: string): StoredDocument[] {
+  const all = getDocuments().filter(d => d.id !== id);
+  save(DOCUMENTS_KEY, all);
+  return all;
+}
+
+export function toggleDocumentInclude(id: string): StoredDocument[] {
+  const all = getDocuments();
+  const idx = all.findIndex(d => d.id === id);
+  if (idx >= 0) all[idx].includeInNextPlan = !all[idx].includeInNextPlan;
+  save(DOCUMENTS_KEY, all);
+  return all;
+}
+
+export async function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}

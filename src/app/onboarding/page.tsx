@@ -226,8 +226,8 @@ Bitte erstelle meinen individuellen Lernplan!`,
               onClick={() => setStep(i)}
               className={cn(
                 "flex-1 h-1.5 rounded-full transition-all",
-                i <= step ? "bg-indigo-500" : "bg-gray-200",
-                i < step && "bg-indigo-300",
+                i <= step ? "bg-accent-500" : "bg-gray-200",
+                i < step && "bg-accent-300",
               )}
             />
           ))}
@@ -239,7 +239,7 @@ Bitte erstelle meinen individuellen Lernplan!`,
         <div className="flex items-center gap-2 mb-6">
           {(() => {
             const Icon = currentStep.icon;
-            return <Icon className="h-6 w-6 text-indigo-600" />;
+            return <Icon className="h-6 w-6 text-accent-600" />;
           })()}
           <h2 className="text-xl font-bold tracking-tight text-slate-900">{currentStep.label}</h2>
           <Badge variant="outline" className="ml-auto text-xs">
@@ -488,7 +488,7 @@ Bitte erstelle meinen individuellen Lernplan!`,
               onDragOver={e => e.preventDefault()}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/50 transition-colors"
+              className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-accent-400 hover:bg-accent-50/50 transition-colors"
             >
               <Upload className="h-10 w-10 text-gray-400 mx-auto mb-3" />
               <p className="text-sm font-medium text-gray-600">Dateien hierher ziehen</p>
@@ -535,7 +535,7 @@ Bitte erstelle meinen individuellen Lernplan!`,
             {!aiResult && !aiLoading && (
               <Card>
                 <CardContent className="pt-6 text-center space-y-4">
-                  <Sparkles className="h-12 w-12 text-indigo-600 mx-auto" />
+                  <Sparkles className="h-12 w-12 text-accent-600 mx-auto" />
                   <div>
                     <h3 className="text-lg font-bold">Bereit für deinen Lernplan!</h3>
                     <p className="text-sm text-gray-500 mt-1">
@@ -558,7 +558,7 @@ Bitte erstelle meinen individuellen Lernplan!`,
 
                   <Button
                     onClick={handleGeneratePlan}
-                    className="bg-indigo-600 hover:bg-indigo-700 w-full"
+                    className="bg-accent-600 hover:bg-accent-700 w-full"
                     size="lg"
                   >
                     <Sparkles className="h-5 w-5 mr-2" />
@@ -571,7 +571,7 @@ Bitte erstelle meinen individuellen Lernplan!`,
             {aiLoading && (
               <Card>
                 <CardContent className="pt-6 text-center space-y-4">
-                  <Loader2 className="h-12 w-12 text-indigo-600 mx-auto animate-spin" />
+                  <Loader2 className="h-12 w-12 text-accent-600 mx-auto animate-spin" />
                   <div>
                     <h3 className="text-lg font-bold">Plan wird erstellt...</h3>
                     <p className="text-sm text-gray-500 mt-1">
@@ -588,7 +588,7 @@ Bitte erstelle meinen individuellen Lernplan!`,
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-sm flex items-center gap-2">
-                        <Check className="h-4 w-4 text-indigo-600" />
+                        <Check className="h-4 w-4 text-accent-600" />
                         Dein Lernplan
                       </CardTitle>
                       <Button variant="outline" size="sm" onClick={handleGeneratePlan} disabled={aiLoading}>
@@ -606,7 +606,7 @@ Bitte erstelle meinen individuellen Lernplan!`,
 
                 <Button
                   onClick={() => router.push("/")}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700"
+                  className="w-full bg-accent-600 hover:bg-accent-700"
                   size="lg"
                 >
                   Zum Dashboard
@@ -630,7 +630,7 @@ Bitte erstelle meinen individuellen Lernplan!`,
           {step < STEPS.length - 1 && (
             <Button
               onClick={() => setStep(s => s + 1)}
-              className="bg-indigo-600 hover:bg-indigo-700"
+              className="bg-accent-600 hover:bg-accent-700"
             >
               Weiter
               <ArrowRight className="h-4 w-4 ml-1" />
