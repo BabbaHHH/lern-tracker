@@ -138,13 +138,19 @@ lern-tracker/
 
 ### Klausur-Datenbank & tägliche Empfehlung
 - **Klausur-Verwaltung** (`/klausuren`): CRUD für Klausuren mit Titel, Rechtsgebiet, Schwierigkeit, Sachverhalt, Lösungsskizze und Themen-Tags (direkt aus dem Topic-Tree)
-- **Klausur des Tages**: Scoring-Algorithmus empfiehlt morgens die optimale Klausur basierend auf:
+- **Erweiterte Klassifizierung**: Materieller & prozessualer Schwerpunkt, Anspruchsgrundlagen, klassische Probleme — befüllbar manuell oder via NotebookLM-Import
+- **JSON-Import** (`/klausuren` → "Import"): Massen-Import strukturierter Klausuren aus NotebookLM (Datei-Upload oder Paste), Validierung gegen Topic-Tree
+- **NotebookLM-Prompt** (`docs/notebooklm-klausur-import-prompt.md`): Vorgefertigter Prompt zum paarweisen Klassifizieren von Klausur+Lösungs-PDFs
+- **Klausur des Tages**: Lokaler Scoring-Algorithmus (kein LLM) empfiehlt morgens die optimale Klausur basierend auf:
   - Themen-Overlap mit Tagesplan
   - Schwache Themen abdecken
   - Noch nie geschrieben / Spaced Repetition
   - Rechtsgebiets-Balance (3:2:2)
+  - Schwierigkeits-Match zur aktuellen Phase
+  - **Anspruchsgrundlagen-Frische** (länger nicht geübte AGs werden bevorzugt)
   - Neuheits-Bonus (neuere Klausuren bevorzugen)
-- **Gewichtung konfigurierbar** in `/admin` (Slider + Zahleneingabe pro Faktor)
+- **Wochenplan-Integration**: Pro Tag im `/wochenplan` wird die individuell empfohlene Klausur als klickbare Karte angezeigt
+- **Gewichtung konfigurierbar** in `/admin` (Slider + Zahleneingabe pro Faktor, Reset-Button)
 
 ### Erweitertes Lern-Tracking
 - **Tracking-FAB** auf dem Dashboard: Jede Lernaktivität eintragen (Theorie, Klausur, Wiederholung, Karteikarten, AG, Rep)
