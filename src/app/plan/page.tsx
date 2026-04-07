@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { NavBar } from "@/components/nav-bar";
 import { TOPICS, getLeafTopics } from "@/lib/topics";
-import { getProgress, getCalendarEvents, getOnboarding, getLernstart, getExamDate, getTrackingEntries, getKlausuren, getDocuments } from "@/lib/store";
+import { getProgress, getCalendarEvents, getOnboarding, getLernstart, getExamDate, getTrackingEntries, getKlausuren, getDocuments, getLearningEntries, getTasksSince } from "@/lib/store";
 import { DocumentManager } from "@/components/document-manager";
 import { AREA_LABELS, ACTIVITY_LABELS, type Area, type ActivityType } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -184,7 +184,50 @@ ONBOARDING-DATEN:
 
 ${buildTrackingContext()}
 
+${buildTaskContext()}
+
+${buildLearningNotesContext()}
+
+${buildSelfAssessmentContext()}
+
 ${buildDocumentContext()}`;
+}
+
+function buildTaskContext(): string {
+  const tasks = getTasksSince(14);
+  if (tasks.length === 0) return "TAGES-AUFGABEN (letzte 14 Tage): Keine.";
+  const leafs = getLeafTopics(TOPICS);
+  const topicLabel = (id?: string) => leafs.find((t) => t.id === id)?.label || "— nicht zugeordnet";
+  const done = tasks.filter((t) => t.done);
+  const open = tasks.filter((t) => !t.done);
+  const doneLines = done
+    .map((t) => `- [✓] ${t.date}: "${t.title}" → ${topicLabel(t.linkedTopicId)}${t.source === "manual" ? " (eigene)" : ""}`)
+    .join("\n");
+  const openLines = open
+    .map((t) => `- [ ] ${t.date}: "${t.title}" → ${topicLabel(t.linkedTopicId)}`)
+    .join("\n");
+  return `TAGES-AUFGABEN (letzte 14 Tage, ${done.length} erledigt / ${open.length} offen):
+Erledigt:
+${doneLines || "—"}
+Offen:
+${openLines || "—"}`;
+}
+
+function buildLearningNotesContext(): string {
+  const entries = getLearningEntries().slice(0, 40);
+  if (entries.length === 0) return "LERN-NOTIZEN: Keine.";
+  const leafs = getLeafTopics(TOPICS);
+  const topicLabel = (id: string) => leafs.find((t) => t.id === id)?.label || id;
+  return `LERN-NOTIZEN (letzte ${entries.length}):
+${entries.map((e) => `- ${e.createdAt.slice(0, 10)} · ${topicLabel(e.topicId)}: "${e.note.slice(0, 200)}"`).join("\n")}`;
+}
+
+function buildSelfAssessmentContext(): string {
+  const sa = getOnboarding().selfAssessment;
+  const keys = Object.keys(sa);
+  if (keys.length === 0) return "SELBSTEINSCHÄTZUNG: Keine Daten.";
+  return `SELBSTEINSCHÄTZUNG (aus Onboarding):
+${keys.map((k) => `- ${k}: ${sa[k]}%`).join("\n")}`;
 }
 
 function buildDocumentContext(): string {

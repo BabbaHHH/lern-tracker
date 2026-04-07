@@ -411,6 +411,110 @@ export function toggleDocumentInclude(id: string): StoredDocument[] {
   return all;
 }
 
+// === Tages-Aufgaben (persistent pro Tag) ===
+
+export interface DailyTask {
+  id: string;
+  date: string; // "YYYY-MM-DD"
+  title: string;
+  done: boolean;
+  doneAt?: string;
+  linkedTopicId?: string;
+  source: "auto" | "manual";
+  createdAt: string;
+  trackingEntryId?: string;
+}
+
+const TASKS_KEY = "lerntracker-tasks";
+
+export function getTasks(): DailyTask[] {
+  return load<DailyTask[]>(TASKS_KEY, []);
+}
+
+export function getTasksForDate(date: string): DailyTask[] {
+  return getTasks().filter((t) => t.date === date);
+}
+
+export function getTasksSince(daysBack: number): DailyTask[] {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - daysBack);
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+  return getTasks().filter((t) => t.date >= cutoffStr);
+}
+
+export function addTask(task: Omit<DailyTask, "id" | "createdAt" | "done">): DailyTask[] {
+  const all = getTasks();
+  all.unshift({
+    ...task,
+    id: crypto.randomUUID(),
+    done: false,
+    createdAt: new Date().toISOString(),
+  });
+  save(TASKS_KEY, all);
+  return all;
+}
+
+export function updateTask(id: string, updates: Partial<DailyTask>): DailyTask[] {
+  const all = getTasks();
+  const idx = all.findIndex((t) => t.id === id);
+  if (idx >= 0) all[idx] = { ...all[idx], ...updates };
+  save(TASKS_KEY, all);
+  return all;
+}
+
+export function removeTask(id: string): DailyTask[] {
+  const all = getTasks().filter((t) => t.id !== id);
+  save(TASKS_KEY, all);
+  return all;
+}
+
+/**
+ * Abhaken einer Aufgabe: erzeugt TrackingEntry (theorie, 30 min default),
+ * schreibt KEINEN Progress-Bump — Progress kommt später via KI-Review.
+ */
+export function completeTask(id: string, durationMinutes = 30): DailyTask[] {
+  const all = getTasks();
+  const idx = all.findIndex((t) => t.id === id);
+  if (idx < 0) return all;
+  const t = all[idx];
+  if (t.done) return all;
+  const now = new Date().toISOString();
+
+  // TrackingEntry erzeugen
+  const topicIds = t.linkedTopicId ? [t.linkedTopicId] : [];
+  const trackingAll = getTrackingEntries();
+  const trackingEntry: TrackingEntry = {
+    id: crypto.randomUUID(),
+    date: t.date,
+    activityType: "theorie",
+    topicIds,
+    durationMinutes,
+    note: `[Task] ${t.title}`,
+    createdAt: now,
+  };
+  trackingAll.unshift(trackingEntry);
+  save(STORAGE_KEYS.tracking, trackingAll);
+
+  all[idx] = { ...t, done: true, doneAt: now, trackingEntryId: trackingEntry.id };
+  save(TASKS_KEY, all);
+  return all;
+}
+
+export function uncompleteTask(id: string): DailyTask[] {
+  const all = getTasks();
+  const idx = all.findIndex((t) => t.id === id);
+  if (idx < 0) return all;
+  const t = all[idx];
+  // Tracking-Entry zurücknehmen
+  if (t.trackingEntryId) {
+    const tracking = getTrackingEntries().filter((e) => e.id !== t.trackingEntryId);
+    save(STORAGE_KEYS.tracking, tracking);
+  }
+  all[idx] = { ...t, done: false, doneAt: undefined, trackingEntryId: undefined };
+  save(TASKS_KEY, all);
+  return all;
+}
+
 export async function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
