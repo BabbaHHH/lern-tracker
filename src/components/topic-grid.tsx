@@ -2,16 +2,31 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { TOPICS, buildTopicTree, getLeafTopics } from "@/lib/topics";
-import { getProgress } from "@/lib/store";
-import { Topic, Area, AREA_LABELS, AREA_COLORS_LIGHT } from "@/lib/types";
-import { TopicTile } from "./topic-tile";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { getProgress, getTopicProgress, setTopicProgress, addLearningEntry, getEntriesForTopic } from "@/lib/store";
+import { Topic, Area, AREA_LABELS } from "@/lib/types";
+import { Slider } from "@/components/ui/slider";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { de } from "date-fns/locale";
+import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function TopicGrid() {
   const [progressMap, setProgressMap] = useState<Record<string, number>>({});
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [filterArea, setFilterArea] = useState<Area | "all">("all");
+
+  // Inline-Detail-Dialog für ultra-flache Listen-Items
+  const [openTopic, setOpenTopic] = useState<Topic | null>(null);
+  const [dialogProgress, setDialogProgress] = useState(0);
+  const [dialogNote, setDialogNote] = useState("");
+  const [dialogEntries, setDialogEntries] = useState<ReturnType<typeof getEntriesForTopic>>([]);
 
   useEffect(() => {
     const p = getProgress();
@@ -23,24 +38,37 @@ export function TopicGrid() {
   }, []);
 
   const handleProgressChange = useCallback((topicId: string, percent: number) => {
+    setTopicProgress(topicId, percent);
     setProgressMap(prev => ({ ...prev, [topicId]: percent }));
   }, []);
 
-  const toggleGroup = useCallback((groupId: string) => {
-    setExpandedGroups(prev => {
-      const next = new Set(prev);
-      if (next.has(groupId)) next.delete(groupId);
-      else next.add(groupId);
-      return next;
-    });
+  const openLeaf = useCallback((topic: Topic) => {
+    setOpenTopic(topic);
+    setDialogProgress(getTopicProgress(topic.id));
+    setDialogEntries(getEntriesForTopic(topic.id));
+    setDialogNote("");
   }, []);
+
+  const handleDialogSlider = useCallback((value: number | readonly number[]) => {
+    if (!openTopic) return;
+    const v = Array.isArray(value) ? value[0] : value;
+    setDialogProgress(v);
+    handleProgressChange(openTopic.id, v);
+  }, [openTopic, handleProgressChange]);
+
+  const handleAddNote = useCallback(() => {
+    if (!openTopic || !dialogNote.trim()) return;
+    const updated = addLearningEntry({
+      topicId: openTopic.id,
+      note: dialogNote.trim(),
+      source: "manual",
+    });
+    setDialogEntries(updated.filter(e => e.topicId === openTopic.id));
+    setDialogNote("");
+  }, [dialogNote, openTopic]);
 
   const tree = buildTopicTree(TOPICS);
   const leafTopics = getLeafTopics(TOPICS);
-
-  const totalProgress = leafTopics.length > 0
-    ? Math.round(leafTopics.reduce((sum, t) => sum + (progressMap[t.id] || 0), 0) / leafTopics.length)
-    : 0;
 
   const areaProgress = (area: Area) => {
     const areaLeafs = leafTopics.filter(t => t.area === area);
@@ -61,21 +89,14 @@ export function TopicGrid() {
     return Math.round(deepLeafs.reduce((sum, t) => sum + (progressMap[t.id] || 0), 0) / deepLeafs.length);
   };
 
-  const filteredTree = filterArea === "all"
-    ? tree
-    : tree.filter(t => t.area === filterArea);
-
-  const areaConfig: { area: Area; gradient: string; ring: string }[] = [
-    { area: "zr", gradient: "from-blue-500 to-indigo-500", ring: "ring-blue-500/30" },
-    { area: "oeffr", gradient: "from-amber-500 to-orange-500", ring: "ring-amber-500/30" },
-    { area: "sr", gradient: "from-rose-500 to-red-500", ring: "ring-rose-500/30" },
-  ];
+  const filteredTree = filterArea === "all" ? tree : tree.filter(t => t.area === filterArea);
+  const areas: Area[] = ["zr", "oeffr", "sr"];
 
   return (
-    <div className="space-y-6">
-      {/* Area Filter Chips */}
-      <div className="flex gap-2">
-        {areaConfig.map(({ area, gradient, ring }) => {
+    <div className="space-y-10">
+      {/* ─── EBENE 1 — Top-Level Rechtsgebiete ───────────────────────── */}
+      <div className="grid grid-cols-3 gap-px bg-slate-200">
+        {areas.map(area => {
           const p = areaProgress(area);
           const isActive = filterArea === area;
           return (
@@ -83,82 +104,220 @@ export function TopicGrid() {
               key={area}
               onClick={() => setFilterArea(filterArea === area ? "all" : area)}
               className={cn(
-                "flex-1 relative overflow-hidden rounded-2xl p-3 text-center transition-all card-hover border",
-                isActive ? `ring-2 ${ring} border-transparent` : "border-slate-200 bg-white"
+                "group/area relative bg-white px-4 py-5 text-left transition-colors",
+                isActive ? "bg-slate-50" : "hover:bg-slate-50/70"
               )}
             >
-              {/* Background gradient when active */}
-              {isActive && (
-                <div className={cn("absolute inset-0 bg-gradient-to-br opacity-10", gradient)} />
-              )}
-              <div className="relative">
-                <div className="text-[11px] font-medium text-slate-500 mb-0.5">{AREA_LABELS[area]}</div>
-                <div className="text-xl font-black tabular-nums text-slate-900">{p}%</div>
-                {/* Mini bar */}
-                <div className="mt-1.5 h-1 bg-slate-100 rounded-full overflow-hidden">
-                  <div className={cn("h-full rounded-full bg-gradient-to-r", gradient)} style={{ width: `${p}%` }} />
-                </div>
+              <div className="text-[10px] font-sans uppercase tracking-[0.18em] text-slate-500 mb-2">
+                {AREA_LABELS[area]}
+              </div>
+              <div className="flex items-baseline justify-between">
+                <span className="font-serif text-3xl font-normal text-slate-900 tabular-nums tracking-tight">
+                  {p}
+                  <span className="text-base text-slate-400 ml-0.5">%</span>
+                </span>
+                {isActive && (
+                  <span className="font-sans text-[10px] uppercase tracking-wider text-indigo-600">
+                    aktiv
+                  </span>
+                )}
+              </div>
+              <div className="mt-3 h-px bg-slate-200 relative overflow-hidden">
+                <div
+                  className="absolute inset-y-0 left-0 bg-slate-900 transition-all"
+                  style={{ width: `${p}%` }}
+                />
               </div>
             </button>
           );
         })}
       </div>
 
-      {/* Topic Groups */}
-      {filteredTree.map(rootTopic => (
-        <div key={rootTopic.id} className="space-y-2">
-          {rootTopic.children?.map(group => {
-            const isExpanded = expandedGroups.has(group.id);
+      {/* ─── EBENE 2 — Themengruppen mit Flyout für Unterthemen ─────── */}
+      <div className="border-t border-slate-200">
+        {filteredTree.flatMap(rootTopic =>
+          (rootTopic.children || []).map(group => {
             const gProgress = groupProgress(group.id);
             const hasChildren = group.children && group.children.length > 0;
 
             return (
-              <div key={group.id} className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden card-hover">
-                <button
-                  onClick={() => toggleGroup(group.id)}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50/50 transition-colors"
-                >
-                  {hasChildren ? (
-                    isExpanded
-                      ? <ChevronDown className="h-4 w-4 text-slate-400" />
-                      : <ChevronRight className="h-4 w-4 text-slate-400" />
-                  ) : <div className="w-4" />}
+              <div
+                key={group.id}
+                className="group/grp relative border-b border-slate-200"
+                tabIndex={hasChildren ? 0 : -1}
+              >
+                {/* Header-Zeile (immer sichtbar) */}
+                <div className="flex items-center gap-4 px-1 py-4 cursor-default">
+                  {/* Area-Marker (1px-Strich statt Punkt) */}
+                  <div className="w-3 h-px bg-slate-900 shrink-0" />
 
-                  <span className="font-semibold text-sm flex-1 text-left text-slate-800">{group.label}</span>
+                  {/* Themen-Label — Serif */}
+                  <h3 className="font-serif text-[17px] font-normal text-slate-900 flex-1 tracking-tight leading-tight group-hover/grp:text-indigo-600 group-focus-within/grp:text-indigo-600 transition-colors">
+                    {group.label}
+                  </h3>
 
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-indigo-400 to-indigo-500 rounded-full transition-all duration-500"
-                        style={{ width: `${gProgress}%` }}
-                      />
-                    </div>
-                    <span className={cn(
-                      "text-xs font-bold tabular-nums w-8 text-right",
-                      gProgress >= 80 ? "text-indigo-600" : gProgress > 0 ? "text-slate-500" : "text-slate-300"
-                    )}>
-                      {gProgress}%
+                  {/* Sub-Count + Progress (Sans) */}
+                  <div className="flex items-center gap-4">
+                    <span className="font-sans text-[10px] uppercase tracking-wider text-slate-400 tabular-nums">
+                      {group.children?.length || 0} Unterthemen
                     </span>
+                    <div className="hidden sm:flex items-center gap-3">
+                      <div className="w-24 h-px bg-slate-200 relative overflow-hidden">
+                        <div
+                          className="absolute inset-y-0 left-0 bg-slate-900"
+                          style={{ width: `${gProgress}%` }}
+                        />
+                      </div>
+                      <span className="font-serif text-sm text-slate-900 tabular-nums w-10 text-right">
+                        {gProgress}<span className="text-slate-400">%</span>
+                      </span>
+                    </div>
                   </div>
-                </button>
+                </div>
 
-                {isExpanded && hasChildren && (
-                  <div className="px-3 pb-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {group.children!.map(child => (
-                      <TopicTile
-                        key={child.id}
-                        topic={child}
-                        progress={progressMap[child.id] || 0}
-                        onProgressChange={handleProgressChange}
-                      />
-                    ))}
+                {/* ─── EBENE 3 — Flyout (absolute, schiebt nichts) ─── */}
+                {hasChildren && (
+                  <div
+                    className={cn(
+                      "absolute left-0 right-0 top-full z-50 mt-px",
+                      "opacity-0 invisible pointer-events-none",
+                      "group-hover/grp:opacity-100 group-hover/grp:visible group-hover/grp:pointer-events-auto",
+                      "group-focus-within/grp:opacity-100 group-focus-within/grp:visible group-focus-within/grp:pointer-events-auto",
+                      "transition-none"
+                    )}
+                  >
+                    <div className="bg-white border border-slate-200 rounded-none shadow-none p-5">
+                      {/* Flyout-Header */}
+                      <div className="flex items-baseline justify-between mb-4 pb-3 border-b border-slate-200">
+                        <span className="font-sans text-[10px] uppercase tracking-[0.18em] text-slate-500">
+                          {group.label}
+                        </span>
+                        <span className="font-serif text-xs italic text-slate-400">
+                          {group.children!.length} Einträge
+                        </span>
+                      </div>
+
+                      {/* Ultra-flache Liste */}
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-slate-100">
+                        {group.children!.map(leaf => {
+                          const lp = progressMap[leaf.id] || 0;
+                          return (
+                            <li key={leaf.id}>
+                              <button
+                                type="button"
+                                onClick={() => openLeaf(leaf)}
+                                className="group/leaf w-full bg-white px-3 py-2.5 flex items-center gap-3 text-left hover:bg-slate-50 transition-colors"
+                              >
+                                <span className="font-sans text-[13px] text-slate-700 group-hover/leaf:text-indigo-600 flex-1 leading-tight transition-colors">
+                                  {leaf.label}
+                                </span>
+                                <div className="flex items-center gap-2 shrink-0">
+                                  <div className="w-12 h-px bg-slate-200 relative overflow-hidden">
+                                    <div
+                                      className="absolute inset-y-0 left-0 bg-slate-900"
+                                      style={{ width: `${lp}%` }}
+                                    />
+                                  </div>
+                                  <span className="font-sans text-[10px] tabular-nums text-slate-500 w-7 text-right">
+                                    {lp}%
+                                  </span>
+                                </div>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
                   </div>
                 )}
               </div>
             );
-          })}
-        </div>
-      ))}
+          })
+        )}
+      </div>
+
+      {/* ─── Inline-Detail-Dialog (gleiche Logik wie TopicTile) ─── */}
+      <Dialog open={openTopic !== null} onOpenChange={(v) => !v && setOpenTopic(null)}>
+        <DialogContent className="max-w-md mx-auto max-h-[85vh] overflow-y-auto rounded-none border border-slate-200 shadow-none p-0">
+          <div className="border-b border-slate-200 px-5 py-4">
+            <div className="font-sans text-[10px] uppercase tracking-[0.18em] text-slate-500 mb-1">
+              {openTopic && AREA_LABELS[openTopic.area]}
+            </div>
+            <DialogHeader>
+              <DialogTitle className="font-serif text-xl font-normal text-slate-900 tracking-tight leading-tight">
+                {openTopic?.label}
+              </DialogTitle>
+            </DialogHeader>
+          </div>
+
+          <div className="px-5 py-5 space-y-6">
+            {/* Fortschritt */}
+            <div>
+              <div className="flex items-baseline justify-between mb-3">
+                <span className="font-sans text-[10px] uppercase tracking-[0.18em] text-slate-500">
+                  Fortschritt
+                </span>
+                <span className="font-serif text-2xl text-slate-900 tabular-nums">
+                  {dialogProgress}<span className="text-slate-400 text-base">%</span>
+                </span>
+              </div>
+              <Slider
+                value={[dialogProgress]}
+                onValueChange={handleDialogSlider}
+                max={100}
+                step={5}
+                className="w-full"
+              />
+              <div className="flex justify-between mt-2 font-sans text-[10px] uppercase tracking-wider text-slate-400">
+                <span>Offen</span>
+                <span>Sitzt</span>
+              </div>
+            </div>
+
+            {/* Notiz */}
+            <div className="border-t border-slate-200 pt-5">
+              <div className="font-sans text-[10px] uppercase tracking-[0.18em] text-slate-500 mb-2">
+                Notiz hinzufügen
+              </div>
+              <Textarea
+                placeholder="Was hast du gelernt?"
+                value={dialogNote}
+                onChange={(e) => setDialogNote(e.target.value)}
+                rows={2}
+                className="resize-none rounded-none border-slate-200 text-sm font-sans focus:ring-0 focus:border-slate-900 shadow-none"
+              />
+              <Button
+                onClick={handleAddNote}
+                disabled={!dialogNote.trim()}
+                size="sm"
+                className="mt-2 bg-slate-900 hover:bg-slate-800 rounded-none text-xs font-sans shadow-none"
+              >
+                <Plus className="h-3.5 w-3.5 mr-1" />
+                Speichern
+              </Button>
+            </div>
+
+            {/* Lernhistorie */}
+            {dialogEntries.length > 0 && (
+              <div className="border-t border-slate-200 pt-5">
+                <div className="font-sans text-[10px] uppercase tracking-[0.18em] text-slate-500 mb-3">
+                  Lernhistorie
+                </div>
+                <div className="space-y-3 max-h-40 overflow-y-auto">
+                  {dialogEntries.map((entry) => (
+                    <div key={entry.id} className="border-l border-slate-200 pl-3">
+                      <p className="font-sans text-sm text-slate-700 leading-relaxed">{entry.note}</p>
+                      <p className="font-serif text-[11px] italic text-slate-400 mt-1">
+                        {format(new Date(entry.createdAt), "dd. MMM yyyy, HH:mm", { locale: de })}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
