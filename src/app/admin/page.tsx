@@ -27,6 +27,25 @@ export default function AdminPage() {
   const [aiInstruction, setAiInstruction] = useState<Record<string, string>>({});
   const [aiLoading, setAiLoading] = useState<string | null>(null);
 
+  // OpenRouter Credits
+  type KeyData = { usage?: number; limit?: number | null; label?: string; is_free_tier?: boolean; error?: string } | null;
+  const [creditsStrong, setCreditsStrong] = useState<KeyData>(null);
+  const [creditsCheap, setCreditsCheap] = useState<KeyData>(null);
+  const [creditsLoading, setCreditsLoading] = useState(false);
+
+  const loadCredits = useCallback(async () => {
+    setCreditsLoading(true);
+    try {
+      const res = await fetch("/api/openrouter-credits");
+      const data = await res.json() as { strong?: KeyData; cheap?: KeyData };
+      setCreditsStrong(data.strong ?? null);
+      setCreditsCheap(data.cheap ?? null);
+    } catch {
+      setCreditsStrong({ error: "Fehler beim Laden" });
+    }
+    setCreditsLoading(false);
+  }, []);
+
   // Recommender Weights
   const [weights, setWeights] = useState<RecommenderWeights>(DEFAULT_WEIGHTS);
   const [weightsSaved, setWeightsSaved] = useState(false);
@@ -206,6 +225,48 @@ Bitte ändere ihn wie folgt: ${instruction}`,
               {apiKeyStatus === "ok" && <Badge className="bg-green-100 text-green-700">Verbunden</Badge>}
               {apiKeyStatus === "error" && <Badge className="bg-red-100 text-red-700">Fehler — Key prüfen</Badge>}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* OpenRouter Credits */}
+        <Card className="mb-6">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">OpenRouter Guthaben</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button onClick={loadCredits} variant="outline" size="sm" disabled={creditsLoading}>
+              {creditsLoading ? <><Loader2 className="h-3 w-3 mr-1 animate-spin" />Lädt…</> : "Guthaben abrufen"}
+            </Button>
+            {!creditsLoading && (creditsStrong || creditsCheap) && (
+              <div className="space-y-2">
+                {[
+                  { label: "Strong (Opus / Sonnet)", data: creditsStrong },
+                  { label: "Cheap (Flash)", data: creditsCheap },
+                ].map(({ label, data }) => {
+                  if (!data) return null;
+                  if (data.error) return (
+                    <div key={label} className="text-xs text-red-500">{label}: {data.error}</div>
+                  );
+                  const used = typeof data.usage === "number" ? data.usage : null;
+                  const limit = typeof data.limit === "number" ? data.limit : null;
+                  const remaining = limit !== null && used !== null ? limit - used : null;
+                  return (
+                    <div key={label} className="flex items-center gap-4 text-sm border-t pt-2 first:border-t-0 first:pt-0">
+                      <span className="text-xs font-medium text-slate-500 w-36 shrink-0">{label}</span>
+                      {used !== null && (
+                        <span className="text-slate-600 text-xs">Verbraucht: <span className="font-semibold text-slate-900">${used.toFixed(4)}</span></span>
+                      )}
+                      {remaining !== null ? (
+                        <span className="text-slate-600 text-xs">Verfügbar: <span className={`font-semibold ${remaining < 1 ? "text-red-600" : "text-green-700"}`}>${remaining.toFixed(4)}</span></span>
+                      ) : used !== null && (
+                        <span className="text-xs text-slate-400">kein Limit gesetzt</span>
+                      )}
+                      {data.label && <span className="text-xs text-slate-400 truncate">{data.label}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
 

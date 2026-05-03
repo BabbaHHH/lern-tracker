@@ -62,15 +62,27 @@ export function DocumentManager() {
   }
 
   async function summarizeDoc(doc: StoredDocument) {
-    // Nur für Text-artige Dateien sinnvoll
-    const isText = doc.type.startsWith("text/") || /\.(md|txt|json|csv)$/i.test(doc.name);
     let textSnippet = "";
-    if (isText) {
+
+    const isParseable = /\.(pdf|docx|xlsx|xls|txt|md|csv)$/i.test(doc.name);
+    if (isParseable) {
       try {
-        const base64 = doc.dataUrl.split(",")[1] || "";
-        textSnippet = atob(base64).slice(0, 6000);
-      } catch { /* ignore */ }
+        const parseRes = await fetch("/api/docs/parse", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dataUrl: doc.dataUrl, filename: doc.name }),
+        });
+        if (parseRes.ok) {
+          const parsed = await parseRes.json() as { text?: string };
+          textSnippet = parsed.text?.slice(0, 8000) ?? "";
+          // Extrahierten Text im Dokument speichern (für spätere KI-Calls)
+          if (textSnippet) {
+            updateDocument(doc.id, { textContent: textSnippet });
+          }
+        }
+      } catch { /* silent — fallback auf Dateiname */ }
     }
+
     try {
       const res = await fetch("/api/ai", {
         method: "POST",
@@ -79,7 +91,7 @@ export function DocumentManager() {
           tier: "cheap",
           messages: [
             { role: "system", content: "Du bekommst ein Lern-Material (Jura, 2. Staatsexamen). Antworte mit EINEM Satz (max 25 Wörter): Was deckt das Material ab?" },
-            { role: "user", content: `Dateiname: ${doc.name}\nTyp: ${doc.type}${textSnippet ? `\n\nAuszug:\n${textSnippet}` : "\n(Binärdatei — schätze rein anhand des Namens)"}` },
+            { role: "user", content: `Dateiname: ${doc.name}\nTyp: ${doc.type}${textSnippet ? `\n\nInhalt (Auszug):\n${textSnippet}` : "\n(Inhalt nicht lesbar — Einschätzung nur anhand des Namens)"}` },
           ],
         }),
       });
@@ -183,13 +195,13 @@ export function DocumentManager() {
           {uploading ? "Lädt..." : "Terminpläne, Lernpläne, GJPA-Dokumente hier ablegen"}
         </div>
         <div className="font-sans text-[10px] uppercase tracking-[0.14em] font-bold text-slate-500 mt-1">
-          PDF, DOCX, TXT · max 4 MB · KI extrahiert Termine & Infos automatisch
+          PDF, DOCX, XLSX, TXT · max 4 MB · KI extrahiert Termine & Infos automatisch
         </div>
         <input
           ref={inputRef}
           type="file"
           multiple
-          accept=".pdf,.docx,.txt,.md,image/*"
+          accept=".pdf,.docx,.xlsx,.xls,.txt,.md,image/*"
           className="hidden"
           onChange={(e) => handleFiles(e.target.files)}
         />
