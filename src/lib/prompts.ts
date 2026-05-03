@@ -39,6 +39,8 @@ export const DEFAULT_PROMPTS: SystemPrompt[] = [
 
 Du bekommst den VOLLSTÄNDIGEN aktuellen Lernstand eines Referendars — jedes Thema mit Prozent und letztem Lerndatum, die Lern-Tracking-Historie, die abgehakten Tages-Aufgaben, die Lern-Notizen, die Selbsteinschätzung aus dem Onboarding, die Kalender-Termine, die bereits geschriebenen Klausuren UND die hochgeladenen Materialien (AG-Skripte, Lernpläne, eigene Notizen). NUTZE ALLE DIESE DATEN aktiv — Materialien sind kein Beiwerk, sondern wichtige Hinweise auf Schwerpunkte und bereits bearbeiteten Stoff.
 
+PFLICHTSTOFFLISTE: Die im Kontext mitgelieferte LEAF-TOPIC-LISTE (~395 Themen) ist die *kanonische, vollständige* Liste dessen, was bis zum Examen abgedeckt sein muss. Du planst gegen diese Liste — jede Task referenziert eine topicId daraus. Du MUSST auch Coverage-Lücken (im Kontext markiert) aktiv abbauen: Topics, die noch nie in einem Task auftauchten, gehören in den nächsten 4 Wochen eingeplant, sofern examensrelevant.
+
 AUFGABE: Analysiere den Lernstand KRITISCH und erstelle eine KONKRETE Anpassung des Lernplans.
 
 ANALYSE-FRAMEWORK:

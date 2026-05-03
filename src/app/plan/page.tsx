@@ -419,6 +419,10 @@ export default function PlanPage() {
             <div className="ml-auto"><PromptGear promptId="plan-adjust" /></div>
           </div>
 
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600 leading-relaxed">
+            Die KI bekommt automatisch den vollständigen Pflichtstoff (~395 Leaf-Themen) inkl. Coverage-Lücken als Kontext. <strong>Inhaltlich ist also kein zusätzlicher Upload nötig</strong> — du kannst aber gerne PDFs hochladen, wenn du Schwerpunkte, Klausurpläne, Dozenten-Hinweise o.Ä. ergänzen willst.
+          </div>
+
           <Textarea
             value={adjustmentRequest}
             onChange={e => setAdjustmentRequest(e.target.value)}

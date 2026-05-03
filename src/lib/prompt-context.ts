@@ -250,8 +250,47 @@ ${docs.map((d) => {
 
 function buildTopics(): string {
   const leafs = getLeafTopics(TOPICS);
-  return `LEAF-TOPIC-LISTE (id|area|label):
-${leafs.map((t) => `${t.id}|${t.area}|${t.label}`).join("\n")}`;
+
+  // Coverage-Gap berechnen: welche Leaves waren in den letzten 90 Tagen in KEINEM Task?
+  // Quelle: Tasks (geplant + erledigt) + Tracking-Einträge.
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 90);
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+
+  const tasks = getTasksSince(90);
+  const tracking = getTrackingEntries().filter((t) => t.date >= cutoffStr);
+  const coveredIds = new Set<string>();
+  tasks.forEach((t) => { if (t.linkedTopicId) coveredIds.add(t.linkedTopicId); });
+  tracking.forEach((t) => t.topicIds.forEach((tid) => coveredIds.add(tid)));
+
+  const gaps = leafs.filter((l) => !coveredIds.has(l.id));
+  const coveragePct = leafs.length === 0 ? 0 : Math.round(((leafs.length - gaps.length) / leafs.length) * 100);
+
+  // Lücken kompakt: nach Area gruppiert
+  const gapsByArea: Record<string, string[]> = { zr: [], oeffr: [], sr: [] };
+  gaps.forEach((l) => { gapsByArea[l.area]?.push(`${l.id} (${l.label})`); });
+
+  const gapsBlock = gaps.length === 0
+    ? "Keine Lücken — alle Pflicht-Topics wurden in den letzten 90 Tagen mind. 1× geplant oder bearbeitet."
+    : (["zr", "oeffr", "sr"] as const)
+        .map((a) => {
+          const list = gapsByArea[a];
+          if (list.length === 0) return null;
+          return `${a.toUpperCase()} (${list.length}):\n${list.join("\n")}`;
+        })
+        .filter(Boolean)
+        .join("\n\n");
+
+  return `LEAF-TOPIC-LISTE — VOLLSTÄNDIGE PFLICHTSTOFFLISTE (${leafs.length} Themen, id|area|label):
+Diese Liste ist die kanonische Quelle dessen, was bis zum Examen abgedeckt sein muss.
+Jede Plan-Task MUSS sich auf eine dieser topicIds beziehen. Themen außerhalb dieser Liste existieren für die Planung nicht.
+${leafs.map((t) => `${t.id}|${t.area}|${t.label}`).join("\n")}
+
+⚠️ COVERAGE-LÜCKEN (Stand letzte 90 Tage): ${coveragePct}% Coverage, ${gaps.length} Topics waren in keinem Task und keinem Tracking-Eintrag:
+${gapsBlock}
+
+WICHTIG: Diese Lücken MÜSSEN in den nächsten Wochen mindestens einmal eingeplant werden,
+es sei denn ein Topic ist nicht examensrelevant in Berlin (GJPA) — dann begründen warum.`;
 }
 
 function buildAgWeeks(): string {

@@ -1232,6 +1232,10 @@ export default function OnboardingPage() {
               Lade Planungs-Dokumente hoch — z.B. GJPA-Terminpläne, Lernpläne anderer Referendare, AG-Übersichten oder PDFs mit Terminen. Die KI extrahiert Termine und berücksichtigt die Informationen bei der Lernplan-Erstellung.
             </p>
 
+            <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[12px] text-slate-600 leading-relaxed">
+              <strong>Wichtig:</strong> Die KI bekommt automatisch die vollständige Pflichtstoffliste (~395 Themen) inkl. Coverage-Lücken. <strong>Inhaltlich ist also kein weiterer Upload nötig.</strong> Nutze diesen Schritt nur für Schwerpunkte, Klausurpläne, Dozenten-Hinweise, Termin-Übersichten o.Ä. — oder überspringe ihn ganz.
+            </div>
+
             {/* Drop Zone */}
             <div
               onDragOver={e => e.preventDefault()}
