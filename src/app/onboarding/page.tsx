@@ -58,6 +58,11 @@ export default function OnboardingPage() {
   // Refinement-Feedback (nach erster Generierung)
   const [refinementFeedback, setRefinementFeedback] = useState("");
 
+  // Kaiser-Seminar Eingabe-State
+  const [kaiserDate, setKaiserDate] = useState("");
+  const [kaiserTopic, setKaiserTopic] = useState("Zivilrecht");
+  const [kaiserDays, setKaiserDays] = useState(3);
+
   // Dokument-Datums-Extraktion (Step 2)
   const [dateExtractLoading, setDateExtractLoading] = useState(false);
   const [dateExtractPreview, setDateExtractPreview] = useState<{
@@ -939,11 +944,19 @@ export default function OnboardingPage() {
                 <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 items-end">
                   <div>
                     <label className="text-xs text-slate-500 mb-1 block">Startdatum</label>
-                    <Input type="date" id="kaiser-date-input" />
+                    <Input
+                      type="date"
+                      value={kaiserDate}
+                      onChange={e => setKaiserDate(e.target.value)}
+                    />
                   </div>
                   <div>
                     <label className="text-xs text-slate-500 mb-1 block">Rechtsgebiet</label>
-                    <select id="kaiser-topic-input" className="w-full rounded-md border px-3 py-2 text-sm">
+                    <select
+                      value={kaiserTopic}
+                      onChange={e => setKaiserTopic(e.target.value)}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                    >
                       <option value="Zivilrecht">Zivilrecht</option>
                       <option value="Öffentliches Recht">Öffentliches Recht</option>
                       <option value="Strafrecht">Strafrecht</option>
@@ -952,25 +965,28 @@ export default function OnboardingPage() {
                   </div>
                   <div>
                     <label className="text-xs text-slate-500 mb-1 block">Tage</label>
-                    <Input type="number" id="kaiser-days-input" defaultValue={3} min={1} max={14} className="w-16" />
+                    <Input
+                      type="number"
+                      value={kaiserDays}
+                      onChange={e => setKaiserDays(Number(e.target.value) || 3)}
+                      min={1}
+                      max={14}
+                      className="w-16"
+                    />
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
                     className="mb-0.5"
+                    disabled={!kaiserDate}
                     onClick={() => {
-                      const dateInput = document.getElementById("kaiser-date-input") as HTMLInputElement;
-                      const topicInput = document.getElementById("kaiser-topic-input") as HTMLSelectElement;
-                      const daysInput = document.getElementById("kaiser-days-input") as HTMLInputElement;
-                      if (dateInput?.value) {
-                        update({
-                          kaiserSeminare: [
-                            ...(data.kaiserSeminare || []),
-                            { date: dateInput.value, topic: topicInput.value, durationDays: Number(daysInput.value) || 3 },
-                          ],
-                        });
-                        dateInput.value = "";
-                      }
+                      update({
+                        kaiserSeminare: [
+                          ...(data.kaiserSeminare || []),
+                          { date: kaiserDate, topic: kaiserTopic, durationDays: kaiserDays },
+                        ],
+                      });
+                      setKaiserDate("");
                     }}
                   >
                     +
@@ -978,12 +994,16 @@ export default function OnboardingPage() {
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {(data.kaiserSeminare || []).map((k, i) => (
-                    <Badge key={i} variant="secondary" className="gap-1">
+                    <div key={i} className="inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-700 text-xs px-2.5 py-1">
                       {k.date} · {k.topic} ({k.durationDays}d)
-                      <button onClick={() => update({ kaiserSeminare: (data.kaiserSeminare || []).filter((_, j) => j !== i) })}>
+                      <button
+                        type="button"
+                        onClick={() => update({ kaiserSeminare: (data.kaiserSeminare || []).filter((_, j) => j !== i) })}
+                        className="ml-0.5 hover:text-red-500 transition-colors"
+                      >
                         <X className="h-3 w-3" />
                       </button>
-                    </Badge>
+                    </div>
                   ))}
                 </div>
                 <p className="text-[11px] text-slate-500">
@@ -1562,7 +1582,7 @@ export default function OnboardingPage() {
                   <div>
                     <h3 className="text-lg font-bold">Plan wird erstellt...</h3>
                     <p className="text-sm text-gray-500 mt-1">
-                      Claude Sonnet 4 analysiert deine Angaben und erstellt einen realistischen Plan.
+                      Claude Opus 4.6 analysiert deine Angaben und erstellt einen realistischen Plan.
                     </p>
                   </div>
                 </CardContent>

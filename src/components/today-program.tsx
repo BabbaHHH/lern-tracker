@@ -21,6 +21,7 @@ import {
   bumpAiMetric,
   markKlausurWritten,
   previewKlausurProgressBoosts,
+  isTodayInPlanRange,
   type DailyTask,
 } from "@/lib/store";
 import type { Topic, Klausur } from "@/lib/types";
@@ -133,10 +134,12 @@ export function TodayProgram() {
   }
 
   useEffect(() => {
-    // Materialize auto tasks (once per day)
+    // Materialize auto tasks (once per day) — ABER NICHT wenn ein KI-Plan existiert,
+    // der heute abdeckt (auch als Freier Tag). Dann soll der Plan sprechen, nicht pickAutoTopics.
     const existing = getTasksForDate(today);
-    const hasAuto = existing.some((t) => t.source === "auto");
-    if (!hasAuto) {
+    const hasPlanOrAuto = existing.some((t) => t.source === "auto" || t.source === "plan");
+    const todayInPlanRange = isTodayInPlanRange(today);
+    if (!hasPlanOrAuto && !todayInPlanRange) {
       const picks = pickAutoTopics();
       picks.forEach((t) =>
         addTask({

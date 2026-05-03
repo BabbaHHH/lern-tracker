@@ -2,7 +2,7 @@
 
 import {
   addTask, addCalendarEvent, getCalendarEvents, removeCalendarEvent,
-  removeTask, getTasks, STORAGE_KEYS,
+  removeTask, getTasks, STORAGE_KEYS, setPlanAppliedRange,
 } from "@/lib/store";
 import type { Area } from "@/lib/types";
 
@@ -106,6 +106,12 @@ export function applyStructuredPlan(plan: StructuredPlan): ApplyResult {
     createdTaskIds: [], createdEventIds: [],
   };
 
+  // Plan-Datumsbereich ermitteln + speichern (damit TodayProgram weiß: "heute ist Freier Tag laut Plan")
+  const allDates = plan.tasks.map((t) => t.date).concat(plan.klausuren.map((k) => k.date)).sort();
+  if (allDates.length > 0) {
+    setPlanAppliedRange({ start: allDates[0], end: allDates[allDates.length - 1], appliedAt: new Date().toISOString() });
+  }
+
   // Tasks: Diff via getTasks() vor/nach
   for (const t of plan.tasks) {
     const before = new Set(getTasks().map((x) => x.id));
@@ -113,7 +119,7 @@ export function applyStructuredPlan(plan: StructuredPlan): ApplyResult {
       date: t.date,
       title: t.title,
       linkedTopicId: t.topicId || undefined,
-      source: "auto",
+      source: "plan",
     });
     const after = getTasks();
     const newOne = after.find((x) => !before.has(x.id));

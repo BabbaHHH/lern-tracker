@@ -23,6 +23,7 @@ export const STORAGE_KEYS = {
   aiMetrics: "lerntracker-ai-metrics",
   prompts: "lerntracker-prompts",
   planHistory: "lerntracker-plan-history",
+  planAppliedRange: "lerntracker-plan-applied-range",
   lastBackup: "lerntracker-last-backup",
   /** Prefix für tagesaktuelle Klausur-Empfehlungs-Caches: `${klausurRecPrefix}YYYY-MM-DD` */
   klausurRecPrefix: "lerntracker-klausur-rec-",
@@ -877,6 +878,7 @@ export interface StoredDocument {
   tags: string[];
   includeInNextPlan: boolean;
   summary?: string;
+  textContent?: string; // extrahierter Plaintext (PDF/DOCX/XLSX), max 15000 Zeichen
 }
 
 const DOCUMENTS_KEY = STORAGE_KEYS.documents;
@@ -927,7 +929,8 @@ export interface DailyTask {
   /** Wenn die Task eine Klausur ist: ID aus der Klausuren-DB.
    *  Beim Abhaken öffnet sich der Eintragen-Dialog (Rating, Topics, Boost). */
   linkedKlausurId?: string;
-  source: "auto" | "manual";
+  /** auto = zufällig aus schwachen Themen; plan = aus KI-Lernplan; manual = manuell */
+  source: "auto" | "manual" | "plan";
   createdAt: string;
   trackingEntryId?: string;
 }
@@ -1067,6 +1070,28 @@ export function bumpAiMetric(field: keyof AiMetrics, by = 1): void {
 
 // === Backup / Restore ===
 // Alle bekannten lerntracker-* keys für Export/Import.
+
+// ─── Plan Applied Range ──────────────────────────────────────────────────────
+
+export interface PlanAppliedRange {
+  start: string; // "YYYY-MM-DD"
+  end: string;   // "YYYY-MM-DD"
+  appliedAt: string; // ISO
+}
+
+export function setPlanAppliedRange(range: PlanAppliedRange): void {
+  save(STORAGE_KEYS.planAppliedRange, range);
+}
+
+export function getPlanAppliedRange(): PlanAppliedRange | null {
+  return load<PlanAppliedRange | null>(STORAGE_KEYS.planAppliedRange, null);
+}
+
+export function isTodayInPlanRange(today: string): boolean {
+  const range = getPlanAppliedRange();
+  if (!range) return false;
+  return today >= range.start && today <= range.end;
+}
 
 const ALL_BACKUP_KEYS = [
   STORAGE_KEYS.progress,
