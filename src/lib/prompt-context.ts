@@ -241,7 +241,11 @@ function buildDocs(): string {
   const docs = getDocuments().filter((d) => d.includeInNextPlan);
   if (docs.length === 0) return "PLANUNGSDOKUMENTE: Keine Dokumente ausgewählt.";
   return `PLANUNGSDOKUMENTE (${docs.length} — Lernpläne, Terminübersichten, GJPA-Unterlagen etc.):
-${docs.map((d) => `- ${d.name} (${d.type})${d.summary ? `: ${d.summary}` : ""}`).join("\n")}`;
+${docs.map((d) => {
+  const summary = d.summary ? `: ${d.summary}` : "";
+  const text = d.textContent ? `\n  [Inhalt]: ${d.textContent.slice(0, 3000)}${d.textContent.length > 3000 ? "…" : ""}` : "";
+  return `- ${d.name} (${d.type})${summary}${text}`;
+}).join("\n")}`;
 }
 
 function buildTopics(): string {

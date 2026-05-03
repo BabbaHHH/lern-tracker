@@ -17,6 +17,7 @@ import {
   getRecommenderWeights,
   RecommenderWeights,
 } from "./store";
+import { getLeafTopics, TOPICS } from "./topics";
 import { format } from "date-fns";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -24,6 +25,8 @@ import { format } from "date-fns";
 interface ScoringContext {
   /** topicIds, die heute im Tagesplan stehen */
   todayTopicIds: Set<string>;
+  /** Dominantes Rechtsgebiet heute (>=60% der Topic-Tasks) — null wenn gemischt/leer */
+  todayDominantArea: Area | null;
   /** topicId → Fortschritt in % */
   progressMap: Record<string, number>;
   /** klausurId → { date, rating } letzter Tracking-Eintrag */
@@ -69,8 +72,25 @@ export function buildScoringContext(
     todayTasks.flatMap(t => (t.linkedTopicId ? [t.linkedTopicId] : [])),
   );
 
+  // Dominantes Rechtsgebiet heute: zähle Tasks mit Topic je Area, Schwellenwert 60%.
+  const leafs = getLeafTopics(TOPICS);
+  const areaById = new Map<string, Area>(leafs.map(l => [l.id, l.area]));
+  const areaCounts: Record<Area, number> = { zr: 0, oeffr: 0, sr: 0 };
+  let totalLinked = 0;
+  for (const t of todayTasks) {
+    if (!t.linkedTopicId) continue;
+    const a = areaById.get(t.linkedTopicId);
+    if (a) { areaCounts[a]++; totalLinked++; }
+  }
+  let todayDominantArea: Area | null = null;
+  if (totalLinked > 0) {
+    const top = (Object.entries(areaCounts) as [Area, number][])
+      .sort((a, b) => b[1] - a[1])[0];
+    if (top[1] / totalLinked >= 0.6) todayDominantArea = top[0];
+  }
+
   // Area-Lookup für die Klausuren-DB
-  const areaById = new Map<string, Area>(allKlausuren.map(k => [k.id, k.area]));
+  const klausurAreaById = new Map<string, Area>(allKlausuren.map(k => [k.id, k.area]));
 
   // Tracking-Einträge
   const writtenEntries = getKlausurenWritten();
@@ -90,11 +110,11 @@ export function buildScoringContext(
   const recentByArea: Record<Area, number> = { zr: 0, oeffr: 0, sr: 0 };
   for (const e of writtenEntries) {
     if (!e.klausurId || e.date < cutoff) continue;
-    const area = areaById.get(e.klausurId);
+    const area = klausurAreaById.get(e.klausurId);
     if (area) recentByArea[area]++;
   }
 
-  return { todayTopicIds, progressMap, writtenMap, recentByArea };
+  return { todayTopicIds, todayDominantArea, progressMap, writtenMap, recentByArea };
 }
 
 // ─── Scoring ─────────────────────────────────────────────────────────────────
@@ -113,6 +133,20 @@ export function scoreKlausur(
   const overlapCount = k.topicIds.filter(tid => ctx.todayTopicIds.has(tid)).length;
   breakdown.tagesplanOverlap = overlapCount * weights.tagesplanOverlap;
   score += breakdown.tagesplanOverlap;
+
+  // 1b. Tages-Area-Match: wenn heute klar ein Rechtsgebiet dominiert,
+  // dann +weight für Klausuren im selben Gebiet, –weight für andere.
+  // Verhindert dass eine SR-Klausur empfohlen wird, wenn der Tag nur ZR-Themen hat.
+  if (ctx.todayDominantArea) {
+    if (k.area === ctx.todayDominantArea) {
+      breakdown.tagesAreaMatch = weights.tagesAreaMatch;
+    } else {
+      breakdown.tagesAreaMatch = -weights.tagesAreaMatch;
+    }
+  } else {
+    breakdown.tagesAreaMatch = 0;
+  }
+  score += breakdown.tagesAreaMatch;
 
   // 2. Schwache Themen (<40%): +weight pro schwachem Thema
   const weakCount = k.topicIds.filter(tid => (ctx.progressMap[tid] ?? 0) < 40).length;

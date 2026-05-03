@@ -666,6 +666,7 @@ export function markKlausurWritten(
 
 export interface RecommenderWeights {
   tagesplanOverlap: number;
+  tagesAreaMatch: number;
   schwacheThemen: number;
   nochNieGeschrieben: number;
   spacedRepetition: number;
@@ -678,7 +679,8 @@ export interface RecommenderWeights {
 }
 
 export const DEFAULT_WEIGHTS: RecommenderWeights = {
-  tagesplanOverlap: 40,
+  tagesplanOverlap: 60,
+  tagesAreaMatch: 200,
   schwacheThemen: 20,
   nochNieGeschrieben: 30,
   spacedRepetition: 15,
@@ -692,6 +694,7 @@ export const DEFAULT_WEIGHTS: RecommenderWeights = {
 
 export const WEIGHT_LABELS: Record<keyof RecommenderWeights, string> = {
   tagesplanOverlap: "Tagesplan-Overlap (pro Thema)",
+  tagesAreaMatch: "Rechtsgebiet matcht heutige Tasks (Bonus/Malus)",
   schwacheThemen: "Schwache Themen abdecken (pro Thema)",
   nochNieGeschrieben: "Noch nie geschrieben",
   spacedRepetition: "Spaced Repetition (pro Thema >14d)",
@@ -765,7 +768,7 @@ export function getWeekKey(date: Date): string {
   return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
 }
 
-const WEEKDAY_TO_INDEX: Record<string, number> = {
+export const WEEKDAY_TO_INDEX: Record<string, number> = {
   Montag: 0, Dienstag: 1, Mittwoch: 2, Donnerstag: 3,
   Freitag: 4, Samstag: 5, Sonntag: 6,
 };
