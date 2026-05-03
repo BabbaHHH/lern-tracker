@@ -1096,6 +1096,36 @@ export function isTodayInPlanRange(today: string): boolean {
   return today >= range.start && today <= range.end;
 }
 
+/**
+ * Löscht alle plan-bezogenen Daten — für "kompletten Neustart" im Onboarding.
+ * Behält: Klausuren-DB, Progress, Tracking-Einträge, Lern-Notizen, Materialien (Dokumente).
+ * Löscht: Tasks (auto + plan, NICHT manuelle), Calendar-Events vom Typ klausur,
+ *         Plan-Applied-Range, Onboarding AI-Result, Plan-Historie.
+ */
+export function wipePlanData(opts: { keepManualTasks?: boolean } = {}): void {
+  if (typeof window === "undefined") return;
+  const keepManual = opts.keepManualTasks ?? true;
+  // Tasks: nur auto/plan Tasks entfernen, manuelle behalten (sofern keepManual=true)
+  const tasks = getTasks();
+  const filtered = keepManual
+    ? tasks.filter((t) => t.source === "manual")
+    : [];
+  save(STORAGE_KEYS.tasks, filtered);
+  // Calendar-Events: nur KI-generierte Klausurtermine entfernen
+  const events = getCalendarEvents();
+  save(STORAGE_KEYS.calendar, events.filter((e) => e.eventType !== "klausur"));
+  // Plan-Applied-Range
+  if (window.localStorage) {
+    localStorage.removeItem(STORAGE_KEYS.planAppliedRange);
+    localStorage.removeItem(STORAGE_KEYS.onboardingAiResult);
+    localStorage.removeItem(STORAGE_KEYS.planHistory);
+    // Klausur-Empfehlungs-Cache: alle Tageskeys löschen
+    Object.keys(localStorage).forEach((k) => {
+      if (k.startsWith(STORAGE_KEYS.klausurRecPrefix)) localStorage.removeItem(k);
+    });
+  }
+}
+
 const ALL_BACKUP_KEYS = [
   STORAGE_KEYS.progress,
   STORAGE_KEYS.entries,

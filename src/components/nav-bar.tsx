@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Calendar, BookOpen, Scale, Settings } from "lucide-react";
+import { LayoutDashboard, Calendar, BookOpen, Scale, Settings, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemePicker } from "@/components/theme-picker";
 
@@ -55,6 +55,11 @@ export function NavBar() {
         {/* Right side — Desktop only */}
         <div className="hidden md:flex items-center gap-2 ml-auto">
           <ThemePicker />
+          <Link href="/onboarding" title="Onboarding / Lernplan neu starten">
+            <div className="h-9 w-9 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center justify-center transition-colors">
+              <Sparkles className="h-4 w-4" />
+            </div>
+          </Link>
           <Link href="/admin">
             <div className="h-9 w-9 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center justify-center transition-colors">
               <Settings className="h-4 w-4" />

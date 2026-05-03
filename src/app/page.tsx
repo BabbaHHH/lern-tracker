@@ -44,7 +44,7 @@ export default function DashboardPage() {
           </div>
           <div className="flex gap-2">
             <ThemePicker />
-            <Link href="/onboarding">
+            <Link href="/onboarding" title="Onboarding / Lernplan neu starten">
               <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-none">
                 <Sparkles className="h-4 w-4" />
               </Button>

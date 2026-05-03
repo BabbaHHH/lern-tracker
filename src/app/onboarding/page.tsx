@@ -4,9 +4,15 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   getOnboarding, saveOnboarding, resetOnboarding,
-  setExamDate, setLernstart, STORAGE_KEYS,
+  setExamDate, setLernstart, STORAGE_KEYS, wipePlanData,
   type OnboardingData, type AgEntry, type LerngruppeEntry, type RepEntry, type SonstigesEntry,
 } from "@/lib/store";
+import {
+  Dialog as ResetDialog,
+  DialogContent as ResetDialogContent,
+  DialogHeader as ResetDialogHeader,
+  DialogTitle as ResetDialogTitle,
+} from "@/components/ui/dialog";
 import { getPromptById } from "@/lib/prompts";
 import { buildContextFor } from "@/lib/prompt-context";
 import { parseStructuredPlan, stripJsonBlock, applyStructuredPlan, type StructuredPlan } from "@/lib/plan-applier";
@@ -112,12 +118,21 @@ export default function OnboardingPage() {
     });
   }, []);
 
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [resetWipePlan, setResetWipePlan] = useState(true);
+
   const handleReset = useCallback(() => {
     resetOnboarding();
+    if (resetWipePlan) {
+      wipePlanData({ keepManualTasks: true });
+    }
     setData(getOnboarding());
     setStep(0);
     setAiResult(null);
-  }, []);
+    setResetDialogOpen(false);
+    // refresh: damit alle Komponenten ihre localStorage-Hydration neu machen
+    window.location.reload();
+  }, [resetWipePlan]);
 
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -388,7 +403,7 @@ export default function OnboardingPage() {
             </Button>
             <h1 className="text-lg font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent">Onboarding</h1>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleReset} className="text-gray-500">
+          <Button variant="ghost" size="sm" onClick={() => setResetDialogOpen(true)} className="text-gray-500">
             <RotateCcw className="h-4 w-4 mr-1" />
             Neustart
           </Button>
@@ -1706,6 +1721,51 @@ export default function OnboardingPage() {
           )}
         </div>
       </div>
+
+      {/* Reset-Dialog */}
+      <ResetDialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
+        <ResetDialogContent className="max-w-md">
+          <ResetDialogHeader>
+            <ResetDialogTitle className="flex items-center gap-2">
+              <RotateCcw className="h-4 w-4" />
+              Onboarding neu starten
+            </ResetDialogTitle>
+          </ResetDialogHeader>
+          <div className="space-y-4 px-1">
+            <p className="text-sm text-slate-600">
+              Du kannst den Onboarding-Prozess auch mit existierendem Lernplan komplett neu starten. Wähle was zurückgesetzt werden soll:
+            </p>
+            <div className="space-y-3 rounded-xl border border-slate-200 p-3 bg-slate-50">
+              <label className="flex items-start gap-2 text-sm cursor-not-allowed opacity-60">
+                <input type="checkbox" checked disabled className="mt-1" />
+                <div>
+                  <div className="font-medium text-slate-900">Onboarding-Daten</div>
+                  <div className="text-xs text-slate-500">Grunddaten, Termine, Selbsteinschätzung, Material — werden immer zurückgesetzt.</div>
+                </div>
+              </label>
+              <label className="flex items-start gap-2 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={resetWipePlan}
+                  onChange={e => setResetWipePlan(e.target.checked)}
+                  className="mt-1"
+                />
+                <div>
+                  <div className="font-medium text-slate-900">Existierender Lernplan + Plan-Tasks</div>
+                  <div className="text-xs text-slate-500">Geplante Tasks, KI-generierte Klausurtermine, letzter KI-Plan, Plan-Historie. <strong>Manuelle Tasks bleiben erhalten.</strong> Klausuren-DB, Fortschritt &amp; Tracking-Historie ebenfalls.</div>
+                </div>
+              </label>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" size="sm" onClick={() => setResetDialogOpen(false)}>Abbrechen</Button>
+              <Button size="sm" onClick={handleReset} className="bg-red-600 hover:bg-red-700 text-white">
+                <RotateCcw className="h-3.5 w-3.5 mr-1" />
+                Neustart bestätigen
+              </Button>
+            </div>
+          </div>
+        </ResetDialogContent>
+      </ResetDialog>
     </div>
   );
 }
