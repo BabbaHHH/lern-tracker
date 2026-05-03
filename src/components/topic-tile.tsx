@@ -122,6 +122,7 @@ export function TopicTile({ topic, progress, onProgressChange }: TopicTileProps)
                 <span>Noch offen</span>
                 <span>Sitzt!</span>
               </div>
+              <p className="text-[10px] text-slate-400 mt-2 text-center">Fortschritt wird automatisch gespeichert</p>
             </div>
 
             {/* Notiz */}

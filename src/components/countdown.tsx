@@ -15,6 +15,8 @@ export function Countdown() {
     const start = parseISO(getLernstart());
     const now = new Date();
     const d = differenceInDays(exam, now);
+    // localStorage-Hydration nach Mount, SSR-safe
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDays(d);
     setWeeks(differenceInWeeks(exam, now));
     setTotalWeeks(differenceInWeeks(exam, start));

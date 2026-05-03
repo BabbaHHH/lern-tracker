@@ -9,8 +9,12 @@ import {
   toggleDocumentInclude,
   fileToDataUrl,
   setAgDaysForWeek,
+  updateDocument,
   type StoredDocument,
 } from "@/lib/store";
+import { PromptGear } from "@/components/prompt-gear";
+import { getPromptById } from "@/lib/prompts";
+import { buildContextFor } from "@/lib/prompt-context";
 
 function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -40,7 +44,7 @@ export function DocumentManager() {
           continue;
         }
         const dataUrl = await fileToDataUrl(file);
-        addDocument({
+        const created = addDocument({
           name: file.name,
           type: file.type || "application/octet-stream",
           size: file.size,
@@ -48,11 +52,43 @@ export function DocumentManager() {
           tags: [],
           includeInNextPlan: true,
         });
+        // Fire-and-forget Auto-Summary (cheap tier) — blockiert den Upload nicht
+        void summarizeDoc(created);
       }
       setDocs(getDocuments());
     } finally {
       setUploading(false);
     }
+  }
+
+  async function summarizeDoc(doc: StoredDocument) {
+    // Nur für Text-artige Dateien sinnvoll
+    const isText = doc.type.startsWith("text/") || /\.(md|txt|json|csv)$/i.test(doc.name);
+    let textSnippet = "";
+    if (isText) {
+      try {
+        const base64 = doc.dataUrl.split(",")[1] || "";
+        textSnippet = atob(base64).slice(0, 6000);
+      } catch { /* ignore */ }
+    }
+    try {
+      const res = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tier: "cheap",
+          messages: [
+            { role: "system", content: "Du bekommst ein Lern-Material (Jura, 2. Staatsexamen). Antworte mit EINEM Satz (max 25 Wörter): Was deckt das Material ab?" },
+            { role: "user", content: `Dateiname: ${doc.name}\nTyp: ${doc.type}${textSnippet ? `\n\nAuszug:\n${textSnippet}` : "\n(Binärdatei — schätze rein anhand des Namens)"}` },
+          ],
+        }),
+      });
+      const data = await res.json();
+      if (data.reply) {
+        updateDocument(doc.id, { summary: (data.reply as string).trim().slice(0, 200) });
+        setDocs(getDocuments());
+      }
+    } catch { /* silent */ }
   }
 
   function handleDrop(e: React.DragEvent) {
@@ -81,24 +117,16 @@ export function DocumentManager() {
     setParsing(true);
     setParseMsg(null);
     try {
-      const docSummaries = included
-        .map((d) => `- ${d.name} (${d.type})${d.summary ? `: ${d.summary}` : ""}`)
-        .join("\n");
+      const sys = getPromptById("ag-parser");
+      const context = buildContextFor(sys?.contextFlags || ["docs", "timeStatus"]);
       const res = await fetch("/api/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          tier: "cheap",
+          tier: sys?.modelTier || "cheap",
           messages: [
-            {
-              role: "system",
-              content:
-                "Du extrahierst AG-Termine (Arbeitsgemeinschaft) aus hochgeladenen Lernmaterialien für Rechtsreferendare. Antworte AUSSCHLIESSLICH mit gültigem JSON im Format: {\"weeks\": [{\"weekKey\": \"2026-W15\", \"agDays\": [0,2]}]}. weekKey ist ISO-Kalenderwoche. agDays sind Indices 0=Mo, 1=Di, 2=Mi, 3=Do, 4=Fr, 5=Sa, 6=So. Wenn du keine AG-Termine findest, gib {\"weeks\": []} zurück.",
-            },
-            {
-              role: "user",
-              content: `Analysiere diese Materialien und extrahiere die AG-Tage pro Kalenderwoche:\n\n${docSummaries}`,
-            },
+            { role: "system", content: sys?.prompt || "" },
+            { role: "user", content: `${context}\n\nExtrahiere die AG-Tage pro Kalenderwoche.` },
           ],
         }),
       });
@@ -122,7 +150,7 @@ export function DocumentManager() {
           ? `${weeks.length} Woche(n) aktualisiert. Siehe Lernkalender.`
           : "Keine AG-Termine gefunden."
       );
-    } catch (e) {
+    } catch {
       setParseMsg("Fehler beim Parsen. API-Config prüfen.");
     }
     setParsing(false);
@@ -132,7 +160,7 @@ export function DocumentManager() {
     <section className="border border-slate-200 bg-white">
       <header className="border-b border-slate-200 px-6 py-4">
         <div className="font-sans text-[10px] uppercase tracking-[0.18em] font-bold text-slate-500">
-          Materialien · Lokal gespeichert
+          Planungsdokumente · Lokal gespeichert
         </div>
         <h2 className="font-serif text-xl text-slate-900 mt-1 leading-tight">Dokumente</h2>
       </header>
@@ -152,10 +180,10 @@ export function DocumentManager() {
       >
         <Upload className="h-5 w-5 text-slate-400 mx-auto mb-2" />
         <div className="font-serif text-[15px] text-slate-900">
-          {uploading ? "Lädt..." : "Dateien hier ablegen oder klicken"}
+          {uploading ? "Lädt..." : "Terminpläne, Lernpläne, GJPA-Dokumente hier ablegen"}
         </div>
         <div className="font-sans text-[10px] uppercase tracking-[0.14em] font-bold text-slate-500 mt-1">
-          PDF, DOCX, TXT, Bilder · max 4 MB pro Datei
+          PDF, DOCX, TXT · max 4 MB · KI extrahiert Termine & Infos automatisch
         </div>
         <input
           ref={inputRef}
@@ -215,6 +243,7 @@ export function DocumentManager() {
         {parseMsg && (
           <span className="font-sans text-[11px] text-slate-500">{parseMsg}</span>
         )}
+        <div className="ml-auto"><PromptGear promptId="ag-parser" compact /></div>
       </div>
     </section>
   );

@@ -12,7 +12,7 @@ export interface Topic {
 export interface Progress {
   topicId: string;
   percent: number;
-  source: "manual" | "ai" | "upload";
+  source: "manual" | "ai" | "upload" | "klausur";
   updatedAt: string;
 }
 
@@ -31,20 +31,6 @@ export interface CalendarEvent {
   label: string;
   recurring: boolean;
   recurringDay?: number; // 0=Sun, 1=Mon, ...
-}
-
-export interface ScheduleItem {
-  id: string;
-  date: string;
-  topicId: string;
-  status: "planned" | "done" | "skipped" | "moved";
-}
-
-export interface WeekPlan {
-  weekNumber: number;
-  startDate: string;
-  phase: "aufbau" | "probeexamen" | "output" | "puffer" | "tapering";
-  items: ScheduleItem[];
 }
 
 export const AREA_LABELS: Record<Area, string> = {
@@ -67,33 +53,31 @@ export const AREA_COLORS_LIGHT: Record<Area, string> = {
 
 // === Klausur-Datenbank ===
 
-export type KlausurDifficulty = "leicht" | "mittel" | "schwer";
+export type KlausurType =
+  // ZR + OR
+  | "Urteil" | "Beschluss" | "Anwaltsklausur"
+  // ZR only
+  | "Kautelarklausur"
+  // OR only
+  | "Behördenklausur" | "Aktenvortrag"
+  // SR
+  | "Anklageklausur" | "Revisionsklausur" | "Plädoyer"
+  | "Haftklausur" | "Einspruch Strafbefehl" | "Abschlussverfügung";
 
 export interface Klausur {
+  /** Stabile ID aus dem Extraktions-Prompt, z.B. "kg-oeffr-16" */
   id: string;
+  /** Quelle: Dateiname des Original-PDFs */
+  source: string;
+  /** Datum der Entscheidung / Bearbeitung im Format YYYY-MM-DD */
+  date: string;
+  /** Prägnanter Titel (max. 10 Wörter) */
   title: string;
   area: Area;
+  /** Klausurtyp (Urteil, Anwaltsklausur, Anklageklausur etc.) */
+  type?: KlausurType;
   /** IDs aus dem Topic-Tree die diese Klausur abdeckt */
   topicIds: string[];
-  difficulty: KlausurDifficulty;
-  /** Quelle: z.B. "Probeexamen 2024", "Kaiser-Klausurenkurs" */
-  source: string;
-  /** Freitext-Lösung / Lösungsskizze */
-  solution: string;
-  /** Sachverhalt / Aufgabenstellung */
-  sachverhalt: string;
-  /** Geschätzte Bearbeitungszeit in Minuten (default 300 = 5h) */
-  durationMinutes: number;
-  /** 1-2 Sätze: Materiell-rechtlicher Kern */
-  materialSchwerpunkt?: string;
-  /** 1-2 Sätze: Prozessuale Lage / Klausurtyp */
-  prozessualSchwerpunkt?: string;
-  /** Liste klassischer Probleme die in dieser Klausur vorkommen */
-  klassischeProbleme?: string[];
-  /** Zentrale Anspruchsgrundlagen / Normen (z.B. "§ 433 II BGB") */
-  anspruchsgrundlagen?: string[];
-  /** True wenn NotebookLM die Lösung eindeutig zuordnen konnte */
-  solutionMatched?: boolean;
   createdAt: string;
   updatedAt: string;
 }

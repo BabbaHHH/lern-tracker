@@ -11,6 +11,8 @@ export function ThemePicker() {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // localStorage-Hydration nach Mount, SSR-safe
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActive(getTheme());
   }, []);
 

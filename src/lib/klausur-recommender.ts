@@ -1,189 +1,273 @@
-import { Klausur, Area } from "./types";
-import { getKlausuren, getTrackingEntries, getProgress, getSchedule, getRecommenderWeights } from "./store";
-import { getLeafTopics, TOPICS } from "./topics";
-import { format, parseISO, differenceInDays } from "date-fns";
+/**
+ * Deterministischer Klausur-Recommender
+ *
+ * Zwei-Stufen-Architektur:
+ * 1. scoreKlausur()   – berechnet einen gewichteten Score pro Klausur
+ * 2. getTop3Klausuren() – sortiert und gibt Top-3 zurück
+ *
+ * Die KI-Qualitätsprüfung (Plausibilitätstest) läuft danach im Component,
+ * wo sie nur noch zwischen 3 Kandidaten wählen muss — nicht aus 280.
+ */
 
-export interface KlausurScore {
+import { Klausur, Area } from "./types";
+import {
+  getProgress,
+  getKlausurenWritten,
+  getTasksForDate,
+  getRecommenderWeights,
+  RecommenderWeights,
+} from "./store";
+import { format } from "date-fns";
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+interface ScoringContext {
+  /** topicIds, die heute im Tagesplan stehen */
+  todayTopicIds: Set<string>;
+  /** topicId → Fortschritt in % */
+  progressMap: Record<string, number>;
+  /** klausurId → { date, rating } letzter Tracking-Eintrag */
+  writtenMap: Map<string, { date: string; rating?: number }>;
+  /** Anzahl geschriebener Klausuren je Rechtsgebiet (letzte 14 Tage) */
+  recentByArea: Record<Area, number>;
+}
+
+export interface ScoredKlausur {
   klausur: Klausur;
   score: number;
-  reasons: string[];
+  /** Welcher Signal hat wie viel beigetragen */
+  breakdown: Partial<Record<keyof RecommenderWeights, number>>;
 }
 
-function scoreKlausuren(date: string): KlausurScore[] {
-  const klausuren = getKlausuren();
-  if (klausuren.length === 0) return [];
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
-  const w = getRecommenderWeights();
-  const progress = getProgress();
-  const tracking = getTrackingEntries();
-  const schedule = getSchedule();
-  const today = parseISO(date);
-
-  // Letztes Datum pro Anspruchsgrundlage aus geschriebenen Klausuren
-  const lastAgTrained = new Map<string, string>();
-  tracking
-    .filter(t => t.activityType === "klausur" && t.klausurId)
-    .forEach(t => {
-      const k = klausuren.find(kl => kl.id === t.klausurId);
-      if (!k?.anspruchsgrundlagen) return;
-      k.anspruchsgrundlagen.forEach(ag => {
-        const existing = lastAgTrained.get(ag);
-        if (!existing || t.date > existing) lastAgTrained.set(ag, t.date);
-      });
-    });
-
-  // Themen die heute auf dem Plan stehen
-  const todaysTopicIds = schedule
-    .filter(s => s.date === date && s.status !== "skipped")
-    .map(s => s.topicId);
-
-  // Klausur-History: welche Klausuren wurden wann geschrieben?
-  const klausurHistory = new Map<string, string[]>();
-  const areaKlausurCount: Record<Area, number> = { zr: 0, oeffr: 0, sr: 0 };
-
-  tracking
-    .filter(t => t.activityType === "klausur" && t.klausurId)
-    .forEach(t => {
-      const dates = klausurHistory.get(t.klausurId!) || [];
-      dates.push(t.date);
-      klausurHistory.set(t.klausurId!, dates);
-    });
-
-  tracking
-    .filter(t => t.activityType === "klausur")
-    .forEach(t => {
-      const k = klausuren.find(kl => kl.id === t.klausurId);
-      if (k) areaKlausurCount[k.area]++;
-    });
-
-  const totalKlausurenWritten = Object.values(areaKlausurCount).reduce((a, b) => a + b, 0);
-
-  // Letzte Lernaktivität pro Thema
-  const lastStudied = new Map<string, string>();
-  tracking.forEach(t => {
-    t.topicIds.forEach(tid => {
-      const existing = lastStudied.get(tid);
-      if (!existing || t.date > existing) {
-        lastStudied.set(tid, t.date);
-      }
-    });
-  });
-
-  // Neueste und älteste Klausur für Normalisierung
-  const createdDates = klausuren.map(k => new Date(k.createdAt).getTime());
-  const newestCreated = Math.max(...createdDates);
-  const oldestCreated = Math.min(...createdDates);
-  const createdRange = newestCreated - oldestCreated;
-
-  return klausuren.map(k => {
-    let score = 0;
-    const reasons: string[] = [];
-
-    // 1. Overlap mit Tagesplan
-    const overlap = k.topicIds.filter(t => todaysTopicIds.includes(t));
-    if (overlap.length > 0) {
-      score += overlap.length * w.tagesplanOverlap;
-      reasons.push(`${overlap.length} Themen im Tagesplan`);
-    }
-
-    // 2. Schwache Themen abdecken
-    const weakTopics = k.topicIds.filter(t => (progress[t]?.percent || 0) < 50);
-    if (weakTopics.length > 0) {
-      score += weakTopics.length * w.schwacheThemen;
-      reasons.push(`${weakTopics.length} schwache Themen`);
-    }
-
-    // 3. Noch nie geschrieben
-    const history = klausurHistory.get(k.id);
-    if (!history || history.length === 0) {
-      score += w.nochNieGeschrieben;
-      reasons.push("Noch nicht geschrieben");
-    } else {
-      const lastDate = history.sort().reverse()[0];
-      const daysSince = differenceInDays(today, parseISO(lastDate));
-      if (daysSince < 7) {
-        score += w.kuerzlichGeschrieben; // negative weight
-        reasons.push(`Vor ${daysSince} Tagen geschrieben`);
-      } else if (daysSince > 21) {
-        score += w.wiederholungsDistanz;
-        reasons.push("Gute Wiederholungs-Distanz");
-      }
-    }
-
-    // 4. Spaced Repetition
-    const staleTopics = k.topicIds.filter(tid => {
-      const last = lastStudied.get(tid);
-      if (!last) return true;
-      return differenceInDays(today, parseISO(last)) > 14;
-    });
-    if (staleTopics.length > 0) {
-      score += staleTopics.length * w.spacedRepetition;
-      reasons.push(`${staleTopics.length} Themen brauchen Wiederholung`);
-    }
-
-    // 5. Rechtsgebiets-Balance
-    if (totalKlausurenWritten > 0) {
-      const idealRatio: Record<Area, number> = { zr: 3 / 7, oeffr: 2 / 7, sr: 2 / 7 };
-      const actualRatio = areaKlausurCount[k.area] / totalKlausurenWritten;
-      if (actualRatio < idealRatio[k.area]) {
-        score += w.rechtsgebietsBalance;
-        reasons.push(`${k.area.toUpperCase()} unterrepräsentiert`);
-      }
-    }
-
-    // 6. Schwierigkeits-Match
-    const avgProgress = k.topicIds.length > 0
-      ? k.topicIds.reduce((sum, t) => sum + (progress[t]?.percent || 0), 0) / k.topicIds.length
-      : 0;
-    if (k.difficulty === "leicht" && avgProgress < 30) score += w.schwierigkeitsMatch;
-    if (k.difficulty === "mittel" && avgProgress >= 30 && avgProgress < 70) score += w.schwierigkeitsMatch;
-    if (k.difficulty === "schwer" && avgProgress >= 70) score += w.schwierigkeitsMatch;
-
-    // 7. Anspruchsgrundlagen-Frische: AGs die lange nicht in Klausuren trainiert wurden
-    if (k.anspruchsgrundlagen && k.anspruchsgrundlagen.length > 0) {
-      const staleAgs = k.anspruchsgrundlagen.filter(ag => {
-        const last = lastAgTrained.get(ag);
-        if (!last) return true;
-        return differenceInDays(today, parseISO(last)) > 21;
-      });
-      if (staleAgs.length > 0) {
-        score += staleAgs.length * w.anspruchsgrundlagenFrische;
-        reasons.push(`${staleAgs.length} AG lange nicht geübt`);
-      }
-    }
-
-    // 8. Neuheits-Bonus: neuere Klausuren bevorzugen
-    if (createdRange > 0 && w.neuheitsBonus !== 0) {
-      const createdTime = new Date(k.createdAt).getTime();
-      const freshness = (createdTime - oldestCreated) / createdRange; // 0..1
-      const bonus = Math.round(freshness * w.neuheitsBonus);
-      if (bonus > 0) {
-        score += bonus;
-        reasons.push("Neu hinzugefügt");
-      }
-    }
-
-    return { klausur: k, score, reasons };
-  });
+function daysDiff(a: Date, b: Date): number {
+  return Math.floor((a.getTime() - b.getTime()) / 86_400_000);
 }
+
+// ─── Context aufbauen ────────────────────────────────────────────────────────
 
 /**
- * Empfiehlt die beste Klausur für einen gegebenen Tag.
+ * Liest alle relevanten Daten aus dem Store und baut den Scoring-Context.
+ * @param allKlausuren Alle Klausuren aus der DB (für Area-Lookup bei recentByArea)
+ * @param today        "YYYY-MM-DD"
  */
-export function recommendKlausur(date?: string): KlausurScore | null {
-  const today = date || format(new Date(), "yyyy-MM-dd");
-  const scored = scoreKlausuren(today);
-  if (scored.length === 0) return null;
-  scored.sort((a, b) => b.score - a.score);
-  return scored[0];
+export function buildScoringContext(
+  allKlausuren: Klausur[],
+  today: string,
+): ScoringContext {
+  // Progress
+  const progressRaw = getProgress();
+  const progressMap: Record<string, number> = {};
+  for (const [id, p] of Object.entries(progressRaw)) {
+    progressMap[id] = p.percent;
+  }
+
+  // Heute's TopicIDs aus Tagesplan-Tasks
+  const todayTasks = getTasksForDate(today);
+  const todayTopicIds = new Set<string>(
+    todayTasks.flatMap(t => (t.linkedTopicId ? [t.linkedTopicId] : [])),
+  );
+
+  // Area-Lookup für die Klausuren-DB
+  const areaById = new Map<string, Area>(allKlausuren.map(k => [k.id, k.area]));
+
+  // Tracking-Einträge
+  const writtenEntries = getKlausurenWritten();
+
+  // writtenMap: pro klausurId → neuester Eintrag
+  const writtenMap = new Map<string, { date: string; rating?: number }>();
+  for (const e of writtenEntries) {
+    if (!e.klausurId) continue;
+    const prev = writtenMap.get(e.klausurId);
+    if (!prev || e.date > prev.date) {
+      writtenMap.set(e.klausurId, { date: e.date, rating: e.rating });
+    }
+  }
+
+  // recentByArea: letzte 14 Tage
+  const cutoff = format(new Date(Date.now() - 14 * 86_400_000), "yyyy-MM-dd");
+  const recentByArea: Record<Area, number> = { zr: 0, oeffr: 0, sr: 0 };
+  for (const e of writtenEntries) {
+    if (!e.klausurId || e.date < cutoff) continue;
+    const area = areaById.get(e.klausurId);
+    if (area) recentByArea[area]++;
+  }
+
+  return { todayTopicIds, progressMap, writtenMap, recentByArea };
 }
 
+// ─── Scoring ─────────────────────────────────────────────────────────────────
+
+export function scoreKlausur(
+  k: Klausur,
+  weights: RecommenderWeights,
+  ctx: ScoringContext,
+): { score: number; breakdown: Partial<Record<keyof RecommenderWeights, number>> } {
+  const breakdown: Partial<Record<keyof RecommenderWeights, number>> = {};
+  let score = 0;
+  const written = ctx.writtenMap.get(k.id);
+  const today = new Date();
+
+  // 1. Tagesplan-Overlap: +weight pro überlappendes Thema
+  const overlapCount = k.topicIds.filter(tid => ctx.todayTopicIds.has(tid)).length;
+  breakdown.tagesplanOverlap = overlapCount * weights.tagesplanOverlap;
+  score += breakdown.tagesplanOverlap;
+
+  // 2. Schwache Themen (<40%): +weight pro schwachem Thema
+  const weakCount = k.topicIds.filter(tid => (ctx.progressMap[tid] ?? 0) < 40).length;
+  breakdown.schwacheThemen = weakCount * weights.schwacheThemen;
+  score += breakdown.schwacheThemen;
+
+  // 3. Noch nie geschrieben: Pauschalbonus
+  breakdown.nochNieGeschrieben = !written ? weights.nochNieGeschrieben : 0;
+  score += breakdown.nochNieGeschrieben;
+
+  // 4. Spaced Repetition: geschrieben vor >14 Tagen → +weight × Anzahl Topics
+  if (written) {
+    const d = daysDiff(today, new Date(written.date));
+    breakdown.spacedRepetition = d > 14 ? k.topicIds.length * weights.spacedRepetition : 0;
+  } else {
+    breakdown.spacedRepetition = 0;
+  }
+  score += breakdown.spacedRepetition;
+
+  // 5. Rechtsgebiets-Balance: unterrepräsentiertes Rechtsgebiet bekommt Bonus
+  const totalRecent = recentTotal(ctx.recentByArea);
+  if (totalRecent > 0) {
+    const target: Record<Area, number> = { zr: 3 / 7, oeffr: 2 / 7, sr: 2 / 7 };
+    const actual = ctx.recentByArea[k.area] / totalRecent;
+    const deficit = Math.max(0, target[k.area] - actual);
+    // Skalierung: bei 100% Defizit → weights.rechtsgebietsBalance Punkte
+    breakdown.rechtsgebietsBalance = Math.round(deficit * weights.rechtsgebietsBalance * 7);
+  } else {
+    breakdown.rechtsgebietsBalance = 0;
+  }
+  score += breakdown.rechtsgebietsBalance;
+
+  // 6. Kürzlich geschrieben (<7 Tage): Malus
+  if (written) {
+    const d = daysDiff(today, new Date(written.date));
+    breakdown.kuerzlichGeschrieben = d < 7 ? weights.kuerzlichGeschrieben : 0;
+  } else {
+    breakdown.kuerzlichGeschrieben = 0;
+  }
+  score += breakdown.kuerzlichGeschrieben;
+
+  // 7. Schwierigkeits-Match: Topics im Sweet-Spot 20–70% → verhältnismäßiger Bonus
+  if (k.topicIds.length > 0) {
+    const midCount = k.topicIds.filter(tid => {
+      const p = ctx.progressMap[tid] ?? 0;
+      return p >= 20 && p <= 70;
+    }).length;
+    breakdown.schwierigkeitsMatch = Math.round(
+      (midCount / k.topicIds.length) * weights.schwierigkeitsMatch,
+    );
+  } else {
+    breakdown.schwierigkeitsMatch = 0;
+  }
+  score += breakdown.schwierigkeitsMatch;
+
+  // 8. Neuheits-Bonus: neuere Klausuren bevorzugen
+  if (k.date) {
+    const age = today.getFullYear() - parseInt(k.date.slice(0, 4), 10);
+    if (age <= 3) breakdown.neuheitsBonus = weights.neuheitsBonus;
+    else if (age <= 7) breakdown.neuheitsBonus = Math.round(weights.neuheitsBonus * 0.6);
+    else if (age <= 12) breakdown.neuheitsBonus = Math.round(weights.neuheitsBonus * 0.25);
+    else breakdown.neuheitsBonus = 0;
+  } else {
+    breakdown.neuheitsBonus = 0;
+  }
+  score += breakdown.neuheitsBonus!;
+
+  // 9. Wiederholungs-Distanz: geschrieben >21 Tage ago → Bonus
+  if (written) {
+    const d = daysDiff(today, new Date(written.date));
+    breakdown.wiederholungsDistanz = d > 21 ? weights.wiederholungsDistanz : 0;
+  } else {
+    breakdown.wiederholungsDistanz = 0;
+  }
+  score += breakdown.wiederholungsDistanz;
+
+  // 10. Anspruchsgrundlagen-Frische: Topics mit 30–80% brauchen Auffrischung
+  const freshCount = k.topicIds.filter(tid => {
+    const p = ctx.progressMap[tid] ?? 0;
+    return p >= 30 && p <= 80;
+  }).length;
+  breakdown.anspruchsgrundlagenFrische = freshCount * weights.anspruchsgrundlagenFrische;
+  score += breakdown.anspruchsgrundlagenFrische;
+
+  return { score: Math.round(score), breakdown };
+}
+
+function recentTotal(r: Record<Area, number>) {
+  return r.zr + r.oeffr + r.sr;
+}
+
+// ─── Top-3 ───────────────────────────────────────────────────────────────────
+
 /**
- * Gibt die Top-N Empfehlungen zurück.
+ * Gibt die Top-3 Klausuren mit Score + Breakdown zurück.
+ * Diese werden an die KI geschickt die dann die finale Wahl trifft.
  */
-export function getTopRecommendations(date?: string, n: number = 3): KlausurScore[] {
-  const today = date || format(new Date(), "yyyy-MM-dd");
-  const scored = scoreKlausuren(today);
-  scored.sort((a, b) => b.score - a.score);
-  return scored.slice(0, n);
+export function getTop3Klausuren(
+  allKlausuren: Klausur[],
+  today: string,
+): ScoredKlausur[] {
+  const weights = getRecommenderWeights();
+  const ctx = buildScoringContext(allKlausuren, today);
+
+  return allKlausuren
+    .map(k => {
+      const { score, breakdown } = scoreKlausur(k, weights, ctx);
+      return { klausur: k, score, breakdown };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+}
+
+// ─── KI-Kontext-String ───────────────────────────────────────────────────────
+
+/**
+ * Baut den User-Message-String für die KI-Qualitätsprüfung.
+ * Enthält die Top-3 Kandidaten mit ihren Scores und Metadaten.
+ */
+export function buildKiCandidatesMessage(
+  top3: ScoredKlausur[],
+  today: string,
+): string {
+  const lines: string[] = [
+    `Heute: ${today}`,
+    "",
+    "Die folgenden 3 Klausuren wurden deterministisch vorausgewählt (Score = Summe gewichteter Signale).",
+    "Bitte prüfe ob #1 die beste Wahl für heute ist oder ob #2/#3 vorzuziehen ist.",
+    "",
+  ];
+
+  top3.forEach((s, i) => {
+    const k = s.klausur;
+    const writtenNote = s.breakdown.kuerzlichGeschrieben && s.breakdown.kuerzlichGeschrieben < 0
+      ? " ⚠️ kürzlich geschrieben"
+      : s.breakdown.nochNieGeschrieben
+        ? " (noch nie geschrieben)"
+        : " (schon geschrieben)";
+
+    lines.push(`[${i + 1}] ${k.title}`);
+    lines.push(`   Gebiet: ${k.area.toUpperCase()} | Typ: ${k.type ?? "–"} | Datum: ${k.date ?? "–"}`);
+    lines.push(`   Quelle: ${k.source || "–"}`);
+    lines.push(`   Themen (${k.topicIds.length}): ${k.topicIds.slice(0, 5).join(", ")}${k.topicIds.length > 5 ? " …" : ""}`);
+    lines.push(`   Gesamt-Score: ${s.score}${writtenNote}`);
+
+    // Relevante Signale mit positivem Beitrag
+    const signals = Object.entries(s.breakdown)
+      .filter(([, v]) => v && v !== 0)
+      .map(([k, v]) => `${k}: ${v! > 0 ? "+" : ""}${v}`)
+      .join(" | ");
+    if (signals) lines.push(`   Signale: ${signals}`);
+    lines.push("");
+  });
+
+  lines.push('Antworte ausschließlich mit JSON: {"klausurId":"...","reasoning":["...","..."],"alternatives":[{"klausurId":"...","reason":"..."},{"klausurId":"...","reason":"..."}]}');
+
+  return lines.join("\n");
 }

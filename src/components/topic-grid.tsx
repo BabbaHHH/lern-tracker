@@ -36,49 +36,91 @@ const PILLARS: Pillar[] = [
     index: "01",
     label: "Materielles Zivilrecht",
     groupIds: [
-      "zr-bgb-at",
-      "zr-schuld-at",
-      "zr-schuld-bt",
-      "zr-sachen",
-      "zr-familie",
-      "zr-erb",
-      "zr-hr",
-      "zr-gesell",
-      "zr-arbeit",
+      "zr-mat-at",
+      "zr-mat-schuld-at",
+      "zr-mat-schuld-bt",
+      "zr-mat-sach",
+      "zr-mat-hgb",
+      "zr-mat-ges",
+      "zr-mat-fam",
+      "zr-mat-erb",
+      "zr-mat-sonst",
     ],
   },
   {
     index: "02",
     label: "Materielles Öffentliches Recht",
     groupIds: [
-      "oeffr-vwat",
-      "oeffr-polr",
-      "oeffr-bau",
-      "oeffr-komm",
-      "oeffr-sthr",
-      "oeffr-verfr",
-      "oeffr-eu",
+      "or-mat-verw",
+      "or-mat-staatshaft",
+      "or-mat-vollstr",
+      "or-mat-pol",
+      "or-mat-waffen",
+      "or-mat-versamml",
+      "or-mat-bau",
+      "or-mat-umwelt",
+      "or-mat-gewerbe",
+      "or-mat-komm",
+      "or-mat-beamten",
+      "or-mat-schul",
+      "or-mat-verkehr",
+      "or-mat-ausl",
+      "or-mat-subv",
+      "or-mat-ifg",
+      "or-mat-verf",
     ],
   },
   {
     index: "03",
     label: "Materielles Strafrecht",
-    groupIds: ["sr-at", "sr-bt"],
+    groupIds: ["sr-mat-at", "sr-mat-bt"],
   },
   {
     index: "04",
     label: "Zivilprozessrecht",
-    groupIds: ["zr-zpo"],
+    groupIds: [
+      "zr-proz-urteil",
+      "zr-proz-zust",
+      "zr-proz-parteien",
+      "zr-proz-klagearten",
+      "zr-proz-erledigung",
+      "zr-proz-aufr",
+      "zr-proz-vu",
+      "zr-proz-eil",
+      "zr-proz-zv",
+      "zr-proz-beweis",
+      "zr-proz-sonst",
+      "zr-proz-klausurtyp",
+    ],
   },
   {
     index: "05",
     label: "Verwaltungsprozessrecht",
-    groupIds: ["oeffr-vwgo"],
+    groupIds: [
+      "or-proz-urteil",
+      "or-proz-klage",
+      "or-proz-eil",
+      "or-proz-bescheid",
+      "or-proz-klausurtyp",
+    ],
   },
   {
     index: "06",
     label: "Strafprozessrecht",
-    groupIds: ["sr-stpo", "sr-aktenvortrag"],
+    groupIds: [
+      "sr-proz-vh",
+      "sr-proz-zust",
+      "sr-proz-wahl",
+      "sr-proz-bvv",
+      "sr-proz-erm",
+      "sr-proz-haft",
+      "sr-proz-einz",
+      "sr-proz-sta",
+      "sr-proz-rev-form",
+      "sr-proz-rev-abs",
+      "sr-proz-rev-rel",
+      "sr-proz-rev-sach",
+    ],
   },
 ];
 
@@ -100,6 +142,8 @@ export function TopicGrid() {
     for (const [id, val] of Object.entries(p)) {
       map[id] = val.percent;
     }
+    // localStorage-Hydration nach Mount, SSR-safe
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProgressMap(map);
   }, []);
 
@@ -371,6 +415,7 @@ export function TopicGrid() {
                 <span>Offen</span>
                 <span>Sitzt</span>
               </div>
+              <p className="font-sans text-[10px] text-slate-400 mt-2 text-center">Fortschritt wird automatisch gespeichert</p>
             </div>
 
             {/* Notiz */}

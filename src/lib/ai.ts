@@ -47,8 +47,10 @@ export async function chatCompletion(
     body: JSON.stringify({
       model,
       messages,
-      max_tokens: tier === "premium" ? 4096 : 2048,
-      temperature: tier === "premium" ? 0.5 : 0.7,
+      // Premium (Opus) bekommt großes Output-Budget für mehrseitige Pläne
+      // (kompletter Wochenplan bis zum Examen kann 10–20k Tokens brauchen).
+      max_tokens: tier === "premium" ? 16000 : tier === "strong" ? 4096 : 2048,
+      temperature: tier === "premium" ? 0.4 : 0.7,
     }),
   });
 

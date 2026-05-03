@@ -44,6 +44,8 @@ export default function KalenderPage() {
   const [examDateStr, setExamDateStr] = useState("");
 
   useEffect(() => {
+    // localStorage-Hydration nach Mount — siehe AGENTS.md / useEffect-Muster
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setEvents(getCalendarEvents());
     setExamDateStr(getExamDate());
   }, []);

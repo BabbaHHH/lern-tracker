@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Inter, Newsreader } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeBootstrap } from "@/components/theme-bootstrap";
+import { QuotaBanner } from "@/components/quota-banner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -43,17 +45,14 @@ export default function RootLayout({
   return (
     <html
       lang="de"
+      data-theme="indigo"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${newsreader.variable} h-full antialiased`}
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('lerntracker-theme');if(t){document.documentElement.dataset.theme=JSON.parse(t);}else{document.documentElement.dataset.theme='indigo';}}catch(e){document.documentElement.dataset.theme='indigo';}})();`,
-          }}
-        />
-      </head>
       <body className="min-h-full flex flex-col bg-white">
+        <ThemeBootstrap />
         <TooltipProvider>{children}</TooltipProvider>
+        <QuotaBanner />
       </body>
     </html>
   );

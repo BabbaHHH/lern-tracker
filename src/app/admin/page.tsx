@@ -5,6 +5,7 @@ import { getPrompts, savePrompts, DEFAULT_PROMPTS, type SystemPrompt } from "@/l
 import {
   getRecommenderWeights, saveRecommenderWeights, resetRecommenderWeights,
   DEFAULT_WEIGHTS, WEIGHT_LABELS, type RecommenderWeights,
+  exportAll, importAll,
 } from "@/lib/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Save, RotateCcw, ArrowLeft, Sparkles, Loader2, Send, Scale, Sliders } from "lucide-react";
+import { Save, RotateCcw, ArrowLeft, Sparkles, Loader2, Send, Sliders, Download, Upload } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -31,6 +32,8 @@ export default function AdminPage() {
   const [weightsSaved, setWeightsSaved] = useState(false);
 
   useEffect(() => {
+    // localStorage-Hydration nach Mount: React-19-Regel bewusst gebrochen, SSR-safe Leer-State wird durch echten ersetzt.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPrompts(getPrompts());
     setWeights(getRecommenderWeights());
   }, []);
@@ -50,6 +53,34 @@ export default function AdminPage() {
 
   const handlePromptChange = useCallback((id: string, field: keyof SystemPrompt, value: string) => {
     setPrompts(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
+  }, []);
+
+  const handleExport = useCallback(() => {
+    const bundle = exportAll();
+    const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `lerntracker-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, []);
+
+  const handleImport = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const bundle = JSON.parse(reader.result as string);
+        const r = importAll(bundle);
+        alert(`Backup wiederhergestellt: ${r.restored} Einträge. Seite wird neu geladen.`);
+        window.location.reload();
+      } catch (err) {
+        alert(`Backup konnte nicht eingespielt werden: ${(err as Error).message}`);
+      }
+    };
+    reader.readAsText(file);
   }, []);
 
   const handleTestApi = useCallback(async () => {
@@ -180,6 +211,32 @@ Bitte ändere ihn wie folgt: ${instruction}`,
 
         <Separator className="my-6" />
 
+        {/* Backup / Restore */}
+        <Card className="mb-6">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Download className="h-4 w-4 text-emerald-600" />
+              Backup &amp; Wiederherstellung
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-gray-600 mb-3">
+              Alle Daten (Fortschritt, Tasks, Notizen, Materialien, Prompts, Onboarding) als JSON-Datei sichern oder einspielen. Solange noch kein Cloud-Sync existiert: regelmäßig herunterladen!
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" variant="outline" onClick={handleExport}>
+                <Download className="h-3 w-3 mr-1" />
+                Backup herunterladen
+              </Button>
+              <label className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md border cursor-pointer hover:bg-slate-50">
+                <Upload className="h-3 w-3" />
+                Backup einspielen
+                <input type="file" accept="application/json" className="hidden" onChange={handleImport} />
+              </label>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Recommender Weights */}
         <Card className="mb-6">
           <CardHeader className="pb-2">
@@ -269,7 +326,7 @@ Bitte ändere ihn wie folgt: ${instruction}`,
                     <CardTitle className="text-sm flex items-center gap-2">
                       {prompt.label}
                       <Badge variant="outline" className="text-xs">
-                        {prompt.modelTier === "strong" ? "Starkes Modell" : "Günstiges Modell"}
+                        {prompt.modelTier === "premium" ? "Premium (Opus)" : prompt.modelTier === "strong" ? "Stark (Sonnet)" : "Günstig (Flash)"}
                       </Badge>
                     </CardTitle>
                     <div className="flex gap-1">
@@ -300,7 +357,7 @@ Bitte ändere ihn wie folgt: ${instruction}`,
                       <div>
                         <label className="text-xs font-medium text-gray-600 mb-1 block">Modell-Stufe</label>
                         <div className="flex gap-2">
-                          {(["strong", "cheap"] as const).map(tier => (
+                          {(["premium", "strong", "cheap"] as const).map(tier => (
                             <button
                               key={tier}
                               onClick={() => handlePromptChange(prompt.id, "modelTier", tier)}
@@ -309,7 +366,7 @@ Bitte ändere ihn wie folgt: ${instruction}`,
                                 prompt.modelTier === tier ? "bg-accent-100 border-accent-300" : "bg-gray-50"
                               )}
                             >
-                              {tier === "strong" ? "Stark (Sonnet)" : "Günstig (Gemini Flash)"}
+                              {tier === "premium" ? "Premium (Opus)" : tier === "strong" ? "Stark (Sonnet)" : "Günstig (Flash)"}
                             </button>
                           ))}
                         </div>

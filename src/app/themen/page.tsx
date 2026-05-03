@@ -4,9 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { NavBar } from "@/components/nav-bar";
 import { TOPICS, buildTopicTree } from "@/lib/topics";
 import { getProgress, setTopicProgress } from "@/lib/store";
-import { Area, AREA_LABELS, AREA_COLORS, Topic } from "@/lib/types";
+import { AREA_COLORS, Topic } from "@/lib/types";
 import { Slider } from "@/components/ui/slider";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Search, ChevronDown, ChevronRight } from "lucide-react";
@@ -125,6 +124,8 @@ export default function ThemenPage() {
     for (const [id, val] of Object.entries(p)) {
       map[id] = val.percent;
     }
+    // localStorage-Hydration nach Mount, SSR-safe
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProgressMap(map);
   }, []);
 

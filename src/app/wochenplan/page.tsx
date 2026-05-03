@@ -15,10 +15,8 @@ import { Area } from "@/lib/types";
 import { addWeeks, startOfWeek, format, addDays, parseISO } from "date-fns";
 import { de } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Scale } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { recommendKlausur } from "@/lib/klausur-recommender";
-import Link from "next/link";
 
 function getPhase(weeksUntilExam: number): { label: string; description: string } {
   if (weeksUntilExam > 18) return { label: "Aufbau", description: "Wissenslücken schließen, Systemübersichten" };
@@ -44,11 +42,15 @@ export default function LernkalenderPage() {
     const p = getProgress();
     const map: Record<string, number> = {};
     for (const [id, val] of Object.entries(p)) map[id] = val.percent;
+    // localStorage-Hydration nach Mount, SSR-safe
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProgressMap(map);
     setEvents(getCalendarEvents());
   }, []);
 
   useEffect(() => {
+    // localStorage-Hydration, reagiert auf weekKey/tick
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAgDays(getAgDaysForWeek(weekKey));
   }, [weekKey, tick]);
 
@@ -86,8 +88,7 @@ export default function LernkalenderPage() {
     const subArea = areas[(i + 1) % 3];
     const mainTopics = todoTopics.filter((t) => t.area === mainArea).slice(0, 2);
     const subTopics = todoTopics.filter((t) => t.area === subArea).slice(0, 1);
-    const klausurRec = !isFree ? recommendKlausur(dateStr) : null;
-    return { date, dateStr, dayEvents, isFree, hasAG, hasRep, mainArea, subArea, mainTopics, subTopics, klausurRec };
+    return { date, dateStr, dayEvents, isFree, hasAG, hasRep, mainArea, subArea, mainTopics, subTopics };
   });
 
   return (
@@ -224,19 +225,6 @@ export default function LernkalenderPage() {
                       );
                     })}
 
-                    {day.klausurRec && day.klausurRec.score > 0 && (
-                      <Link
-                        href="/klausuren"
-                        className="mt-3 block border border-slate-200 px-3 py-2 hover:bg-slate-50 transition-colors"
-                      >
-                        <div className="flex items-center gap-1.5 font-sans text-[9px] uppercase tracking-wider font-bold text-accent-700 mb-1">
-                          <Scale className="h-3 w-3" /> Klausur-Tipp
-                        </div>
-                        <div className="font-serif text-[12px] text-slate-900 leading-snug line-clamp-2">
-                          {day.klausurRec.klausur.title}
-                        </div>
-                      </Link>
-                    )}
                   </div>
                 )}
               </div>

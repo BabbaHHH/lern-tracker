@@ -14,11 +14,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { KlausurDesTages } from "@/components/klausur-des-tages";
-import { TrackingFab } from "@/components/tracking-fab";
+import { BackupReminder } from "@/components/backup-reminder";
 import { MessageCircle, Sparkles, Settings, Brain } from "lucide-react";
 import { ThemePicker } from "@/components/theme-picker";
 import { TodayProgram } from "@/components/today-program";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
 export default function DashboardPage() {
@@ -26,6 +25,8 @@ export default function DashboardPage() {
   const [onboardingDone, setOnboardingDone] = useState(true);
 
   useEffect(() => {
+    // localStorage-Hydration nach Mount, SSR-safe
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOnboardingDone(getOnboarding().completed);
   }, []);
 
@@ -73,6 +74,11 @@ export default function DashboardPage() {
           </Link>
         )}
 
+        {/* Backup Reminder */}
+        <div className="mb-4">
+          <BackupReminder />
+        </div>
+
         {/* Countdown */}
         <div className="mb-5">
           <Countdown />
@@ -105,9 +111,6 @@ export default function DashboardPage() {
         {/* Topic Grid */}
         <TopicGrid />
       </main>
-
-      {/* Tracking FAB */}
-      <TrackingFab />
 
       {/* Check-in FAB */}
       <button

@@ -1,23 +1,26 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { NavBar } from "@/components/nav-bar";
 import { TOPICS, getLeafTopics } from "@/lib/topics";
-import { getProgress, getCalendarEvents, getOnboarding, getLernstart, getExamDate, getTrackingEntries, getKlausuren, getDocuments, getLearningEntries, getTasksSince } from "@/lib/store";
+import { getProgress, getExamDate, bumpAiMetric, getOnboarding, getLernstart, type OnboardingData } from "@/lib/store";
 import { DocumentManager } from "@/components/document-manager";
-import { AREA_LABELS, ACTIVITY_LABELS, type Area, type ActivityType } from "@/lib/types";
+import { PromptGear } from "@/components/prompt-gear";
+import { getPromptById } from "@/lib/prompts";
+import { buildContextFor } from "@/lib/prompt-context";
+import { parseStructuredPlan, stripJsonBlock, applyStructuredPlan, undoApply, savePlanToHistory, type StructuredPlan } from "@/lib/plan-applier";
+import { AREA_LABELS, type Area } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-  Brain, Loader2, ArrowLeft, AlertTriangle, TrendingUp,
-  TrendingDown, Clock, Target, Sparkles, RotateCcw
+  Brain, Loader2, ArrowLeft, AlertTriangle,
+  Clock, Target, Sparkles, RotateCcw, Check, CalendarPlus,
+  Eye, EyeOff, Pencil, Save, Database, ChevronDown, ChevronRight
 } from "lucide-react";
-import { differenceInWeeks, parseISO, format } from "date-fns";
-import { de } from "date-fns/locale";
+import { differenceInWeeks, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -59,268 +62,144 @@ function buildProgressSnapshot(): ProgressSnapshot[] {
   });
 }
 
-function buildTrackingContext(): string {
-  const tracking = getTrackingEntries();
-  const klausuren = getKlausuren();
-
-  if (tracking.length === 0) return "LERN-TRACKING:\nNoch keine Lernaktivitäten eingetragen.";
-
-  // Zusammenfassung nach Aktivitätstyp
-  const byType: Record<string, { count: number; totalMinutes: number; avgRating: number; ratings: number[] }> = {};
-  tracking.forEach(t => {
-    if (!byType[t.activityType]) {
-      byType[t.activityType] = { count: 0, totalMinutes: 0, avgRating: 0, ratings: [] };
-    }
-    byType[t.activityType].count++;
-    byType[t.activityType].totalMinutes += t.durationMinutes;
-    if (t.rating) byType[t.activityType].ratings.push(t.rating);
-  });
-
-  const typeSummary = Object.entries(byType).map(([type, data]) => {
-    const avg = data.ratings.length > 0
-      ? (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(1)
-      : "-";
-    return `- ${ACTIVITY_LABELS[type as ActivityType] || type}: ${data.count}x, ${Math.round(data.totalMinutes / 60)}h gesamt, Ø-Rating: ${avg}/5`;
-  }).join("\n");
-
-  // Klausuren-History
-  const klausurEntries = tracking.filter(t => t.activityType === "klausur" && t.klausurId);
-  const klausurSummary = klausurEntries.length > 0
-    ? klausurEntries.map(t => {
-        const k = klausuren.find(kl => kl.id === t.klausurId);
-        return `- ${t.date}: "${k?.title || "Unbekannt"}" (${k?.area || "?"}) — Rating: ${t.rating || "-"}/5${t.note ? ` — "${t.note}"` : ""}`;
-      }).join("\n")
-    : "Noch keine Klausuren geschrieben.";
-
-  // Letzte 7 Tage Aktivität
-  const now = new Date();
-  const last7 = tracking.filter(t => {
-    const d = parseISO(t.date);
-    return differenceInWeeks(now, d) < 1;
-  });
-  const last7Summary = last7.length > 0
-    ? `${last7.length} Sessions, ${Math.round(last7.reduce((s, t) => s + t.durationMinutes, 0) / 60)}h`
-    : "Keine Aktivität";
-
-  // Themen-Frequenz (wie oft wurde jedes Thema bearbeitet)
-  const topicFreq = new Map<string, number>();
-  tracking.forEach(t => t.topicIds.forEach(tid => {
-    topicFreq.set(tid, (topicFreq.get(tid) || 0) + 1);
-  }));
-  const leafTopics = getLeafTopics(TOPICS);
-  const neverStudied = leafTopics.filter(t => !topicFreq.has(t.id)).map(t => t.label);
-
-  return `LERN-TRACKING (${tracking.length} Einträge gesamt):
-${typeSummary}
-
-GESCHRIEBENE KLAUSUREN:
-${klausurSummary}
-
-LETZTE 7 TAGE: ${last7Summary}
-
-NIE BEARBEITETE THEMEN (${neverStudied.length}):
-${neverStudied.length > 0 ? neverStudied.slice(0, 20).join(", ") + (neverStudied.length > 20 ? ` ... und ${neverStudied.length - 20} weitere` : "") : "Alle Themen mindestens 1x bearbeitet!"}`;
-}
-
-function buildFullContext(): string {
-  const progress = getProgress();
-  const leafTopics = getLeafTopics(TOPICS);
-  const events = getCalendarEvents();
-  const onboarding = getOnboarding();
-  const lernstart = getLernstart();
-  const examDate = getExamDate();
-  const now = new Date();
-  const weeksLeft = differenceInWeeks(parseISO(examDate), now);
-  const weeksElapsed = differenceInWeeks(now, parseISO(lernstart));
-
-  // Vollständiger Fortschritt pro Thema
-  const progressDetail = leafTopics.map(t => {
-    const p = progress[t.id];
-    return `${t.label} (${t.area}): ${p?.percent || 0}%${p?.updatedAt ? ` [zuletzt: ${format(new Date(p.updatedAt), "dd.MM.")}]` : ""}`;
-  }).join("\n");
-
-  // Kalender-Termine der nächsten 4 Wochen
-  const upcomingEvents = events
-    .filter(e => {
-      const d = parseISO(e.date);
-      return d >= now && differenceInWeeks(d, now) <= 4;
-    })
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .map(e => `${e.date}: ${e.label} (${e.eventType})`)
-    .join("\n");
-
-  // Statistiken
-  const areas = (["zr", "oeffr", "sr"] as Area[]).map(area => {
-    const areaLeafs = leafTopics.filter(t => t.area === area);
-    const avg = areaLeafs.length > 0
-      ? Math.round(areaLeafs.reduce((sum, t) => sum + (progress[t.id]?.percent || 0), 0) / areaLeafs.length)
-      : 0;
-    const done = areaLeafs.filter(t => (progress[t.id]?.percent || 0) >= 80).length;
-    return `${AREA_LABELS[area]}: ${avg}% Schnitt, ${done}/${areaLeafs.length} Themen ≥80%`;
-  }).join("\n");
-
-  return `ZEITSTATUS:
-- Heute: ${format(now, "dd.MM.yyyy (EEEE)", { locale: de })}
-- Lernstart: ${lernstart}
-- Examen: ${examDate}
-- Wochen vergangen: ${weeksElapsed}
-- Wochen verbleibend: ${weeksLeft}
-
-GESAMTÜBERSICHT:
-${areas}
-
-ALLE THEMEN MIT FORTSCHRITT:
-${progressDetail}
-
-TERMINE NÄCHSTE 4 WOCHEN:
-${upcomingEvents || "Keine Termine eingetragen"}
-
-ONBOARDING-DATEN:
-- AG: ${onboarding.agDay} ${onboarding.agTopic ? `(${onboarding.agTopic})` : ""}
-- Rep: ${onboarding.repDay}
-- Freier Tag: ${onboarding.freeDayPerWeek}
-- Probeexamen 1: ${onboarding.probeexamen1Start}
-- Probeexamen 2: ${onboarding.probeexamen2Start}
-
-${buildTrackingContext()}
-
-${buildTaskContext()}
-
-${buildLearningNotesContext()}
-
-${buildSelfAssessmentContext()}
-
-${buildDocumentContext()}`;
-}
-
-function buildTaskContext(): string {
-  const tasks = getTasksSince(14);
-  if (tasks.length === 0) return "TAGES-AUFGABEN (letzte 14 Tage): Keine.";
-  const leafs = getLeafTopics(TOPICS);
-  const topicLabel = (id?: string) => leafs.find((t) => t.id === id)?.label || "— nicht zugeordnet";
-  const done = tasks.filter((t) => t.done);
-  const open = tasks.filter((t) => !t.done);
-  const doneLines = done
-    .map((t) => `- [✓] ${t.date}: "${t.title}" → ${topicLabel(t.linkedTopicId)}${t.source === "manual" ? " (eigene)" : ""}`)
-    .join("\n");
-  const openLines = open
-    .map((t) => `- [ ] ${t.date}: "${t.title}" → ${topicLabel(t.linkedTopicId)}`)
-    .join("\n");
-  return `TAGES-AUFGABEN (letzte 14 Tage, ${done.length} erledigt / ${open.length} offen):
-Erledigt:
-${doneLines || "—"}
-Offen:
-${openLines || "—"}`;
-}
-
-function buildLearningNotesContext(): string {
-  const entries = getLearningEntries().slice(0, 40);
-  if (entries.length === 0) return "LERN-NOTIZEN: Keine.";
-  const leafs = getLeafTopics(TOPICS);
-  const topicLabel = (id: string) => leafs.find((t) => t.id === id)?.label || id;
-  return `LERN-NOTIZEN (letzte ${entries.length}):
-${entries.map((e) => `- ${e.createdAt.slice(0, 10)} · ${topicLabel(e.topicId)}: "${e.note.slice(0, 200)}"`).join("\n")}`;
-}
-
-function buildSelfAssessmentContext(): string {
-  const sa = getOnboarding().selfAssessment;
-  const keys = Object.keys(sa);
-  if (keys.length === 0) return "SELBSTEINSCHÄTZUNG: Keine Daten.";
-  return `SELBSTEINSCHÄTZUNG (aus Onboarding):
-${keys.map((k) => `- ${k}: ${sa[k]}%`).join("\n")}`;
-}
-
-function buildDocumentContext(): string {
-  const docs = getDocuments().filter((d) => d.includeInNextPlan);
-  if (docs.length === 0) return "MATERIALIEN: Keine Dokumente für Planung ausgewählt.";
-  return `MATERIALIEN (${docs.length} Dokumente für Plan einbezogen):\n${docs
-    .map((d) => `- ${d.name} (${d.type})${d.summary ? `: ${d.summary}` : ""}`)
-    .join("\n")}`;
-}
 
 export default function PlanPage() {
   const [snapshots, setSnapshots] = useState<ProgressSnapshot[]>([]);
   const [adjustmentRequest, setAdjustmentRequest] = useState("");
   const [result, setResult] = useState<string | null>(null);
+  const [structuredPlan, setStructuredPlan] = useState<StructuredPlan | null>(null);
+  const [applied, setApplied] = useState<{ tasks: number; klausuren: number; skipped: number; createdTaskIds: string[]; createdEventIds: string[] } | null>(null);
   const [loading, setLoading] = useState(false);
   const [weeksLeft, setWeeksLeft] = useState(0);
+  const [onboarding, setOnboarding] = useState<OnboardingData | null>(null);
+  const [lernstart, setLernstartState] = useState<string>("");
+  const [examDate, setExamDateState] = useState<string>("");
+  const [dataPreviewOpen, setDataPreviewOpen] = useState(false);
+
+  // Prompt-Vorschau / -Bearbeitung vor Generierung
+  const [promptPreviewOpen, setPromptPreviewOpen] = useState(false);
+  const [previewSystem, setPreviewSystem] = useState<string>("");
+  const [previewUser, setPreviewUser] = useState<string>("");
+  const [editingSystem, setEditingSystem] = useState(false);
+  const [editingUser, setEditingUser] = useState(false);
+  const [systemDirty, setSystemDirty] = useState(false);
+  const [userDirty, setUserDirty] = useState(false);
 
   useEffect(() => {
+    // localStorage-Hydration nach Mount, SSR-safe
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSnapshots(buildProgressSnapshot());
     setWeeksLeft(differenceInWeeks(parseISO(getExamDate()), new Date()));
+    setOnboarding(getOnboarding());
+    setLernstartState(getLernstart());
+    setExamDateState(getExamDate());
   }, []);
 
-  const totalAvg = snapshots.length > 0
-    ? Math.round(snapshots.reduce((s, a) => s + a.avgProgress, 0) / snapshots.length)
-    : 0;
+  const handleApply = useCallback(() => {
+    if (!structuredPlan) return;
+    const r = applyStructuredPlan(structuredPlan);
+    bumpAiMetric("plansApplied");
+    setApplied({
+      tasks: r.tasksCreated,
+      klausuren: r.klausurenCreated,
+      skipped: r.klausurenSkipped,
+      createdTaskIds: r.createdTaskIds,
+      createdEventIds: r.createdEventIds,
+    });
+  }, [structuredPlan]);
+
+  const handleUndo = useCallback(() => {
+    if (!applied) return;
+    undoApply({ createdTaskIds: applied.createdTaskIds, createdEventIds: applied.createdEventIds });
+    bumpAiMetric("plansUndone");
+    setApplied(null);
+  }, [applied]);
+
+  // Baut System + User-Message frisch aus aktuellen Daten + Anpassungswunsch
+  const buildFullPrompt = useCallback(() => {
+    const sys = getPromptById("plan-adjust");
+    const context = buildContextFor(sys?.contextFlags || []);
+    const userMsg = `${context}\n\n${
+      adjustmentRequest
+        ? `MEINE FRAGE / ANPASSUNGSWUNSCH:\n${adjustmentRequest}`
+        : "Bitte analysiere meinen aktuellen Stand und passe den Lernplan an."
+    }`;
+    return {
+      system: sys?.prompt || "",
+      user: userMsg,
+      tier: sys?.modelTier || "premium" as const,
+    };
+  }, [adjustmentRequest]);
+
+  const openPromptPreview = useCallback(() => {
+    const fp = buildFullPrompt();
+    setPreviewSystem(fp.system);
+    setPreviewUser(fp.user);
+    setSystemDirty(false);
+    setUserDirty(false);
+    setPromptPreviewOpen(true);
+  }, [buildFullPrompt]);
+
+  const refreshPromptPreview = useCallback(() => {
+    const fp = buildFullPrompt();
+    setPreviewSystem(fp.system);
+    setPreviewUser(fp.user);
+    setSystemDirty(false);
+    setUserDirty(false);
+    setEditingSystem(false);
+    setEditingUser(false);
+  }, [buildFullPrompt]);
 
   const handleAdjust = useCallback(async () => {
     setLoading(true);
     setResult(null);
+    setStructuredPlan(null);
+    setApplied(null);
 
-    const context = buildFullContext();
+    // Edits aus Vorschau respektieren — sonst frisch bauen
+    let systemContent: string;
+    let userContent: string;
+    let tier: "premium" | "strong" | "cheap";
+    if (promptPreviewOpen && (systemDirty || userDirty)) {
+      systemContent = previewSystem;
+      userContent = previewUser;
+      tier = getPromptById("plan-adjust")?.modelTier || "premium";
+    } else {
+      const fp = buildFullPrompt();
+      systemContent = fp.system;
+      userContent = fp.user;
+      tier = fp.tier;
+    }
 
     try {
       const res = await fetch("/api/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          tier,
           messages: [
-            {
-              role: "system",
-              content: `Du bist der beste Examens-Strategieberater für das 2. juristische Staatsexamen in Berlin.
-
-Du bekommst den VOLLSTÄNDIGEN aktuellen Lernstand eines Kandidaten — jedes Thema mit Prozent und letztem Lerndatum. Du siehst die verbleibende Zeit, die Kalender-Termine und die bisherige Planung.
-
-Deine Aufgabe: Analysiere den Lernstand KRITISCH und erstelle eine KONKRETE Anpassung des Lernplans.
-
-ANALYSE-FRAMEWORK:
-1. ZEITBUDGET: Wie viele effektive Lerntage bleiben? (abzgl. AG, Rep, Probeexamen, freie Tage)
-2. GAPS: Welche examensrelevanten Themen haben < 50% und brauchen dringend Aufmerksamkeit?
-3. BALANCE: Stimmt die 3:2:2-Balance (ZR:ÖffR:SR) mit dem Klausurengewicht überein?
-4. SPACED REPETITION: Welche Themen wurden vor >14 Tagen gelernt und brauchen Wiederholung?
-5. PHASE: In welcher Phase sollte der Kandidat jetzt sein (Aufbau/Output/Puffer/Tapering)?
-6. KLAUSUREN: Wird mind. 1 Klausur/Woche geschrieben? Wenn nicht: einplanen!
-7. TRACKING-ANALYSE: Nutze die Lern-Tracking-Daten um zu verstehen: Wie viel wird TATSÄCHLICH gelernt vs. geplant? Welche Themen werden NIE bearbeitet? Wie sind die Selbstbewertungen — gibt es ein Muster (z.B. Strafrecht immer schlecht)?
-8. KLAUSUR-EMPFEHLUNG: Basierend auf den geschriebenen Klausuren und deren Ratings: Welche Rechtsgebiete brauchen mehr Klausurpraxis?
-
-FESTE REGELN:
-- 90-Minuten-Sprints, 4 pro Tag
-- Mind. 1 freier Tag/Woche
-- Mind. 1 Klausur/Woche unter Realbedingungen (5h)
-- Interleaving: Nicht 2x gleiches Rechtsgebiet hintereinander
-- In den letzten 2 Wochen vor Examen: NUR Wiederholung
-- Examensrelevanz > Vollständigkeit: Lieber 80% der Kernthemen als 40% von allem
-
-OUTPUT-FORMAT:
-1. **Diagnose** (3-4 Sätze: Wo steht der Kandidat wirklich?)
-2. **Kritische Lücken** (Top-5 Themen die sofort bearbeitet werden müssen, mit Begründung)
-3. **Angepasster Wochenplan** (nächste 4 Wochen, Tag für Tag mit konkreten Themen)
-4. **Klausurplan** (welche Klausur wann, welches Rechtsgebiet)
-5. **Strategische Empfehlung** (1-2 Sätze was JETZT am wichtigsten ist)
-
-Sei EHRLICH. Wenn der Plan nicht aufgeht, sag es. Motivierend aber realistisch.
-Antworte auf Deutsch.`,
-            },
-            {
-              role: "user",
-              content: `${context}
-
-${adjustmentRequest ? `\nMEINE FRAGE / ANPASSUNGSWUNSCH:\n${adjustmentRequest}` : "\nBitte analysiere meinen aktuellen Stand und passe den Lernplan an."}`,
-            },
+            { role: "system", content: systemContent },
+            { role: "user", content: userContent },
           ],
-          tier: "premium",
         }),
       });
-
       const data = await res.json();
-      setResult(data.error ? `Fehler: ${data.error}` : data.reply);
+      if (data.error) {
+        setResult(`Fehler: ${data.error}`);
+      } else {
+        const reply = data.reply as string;
+        const parsed = parseStructuredPlan(reply);
+        const display = parsed ? stripJsonBlock(reply) : reply;
+        setStructuredPlan(parsed);
+        setResult(display);
+        savePlanToHistory(display, parsed);
+      }
     } catch {
-      setResult("Verbindungsfehler. Bitte prüfe die API-Konfiguration.");
+      setResult("Die KI ist gerade nicht erreichbar. Versuch es in einer Minute nochmal.");
     }
 
     setLoading(false);
-  }, [adjustmentRequest]);
+  }, [promptPreviewOpen, systemDirty, userDirty, previewSystem, previewUser, buildFullPrompt]);
 
   return (
     <>
@@ -410,12 +289,134 @@ ${adjustmentRequest ? `\nMEINE FRAGE / ANPASSUNGSWUNSCH:\n${adjustmentRequest}` 
 
         <Separator className="my-5" />
 
+        {/* Datenbasis (Onboarding-Zusammenfassung) */}
+        {onboarding && (
+          <Card className="mb-5">
+            <CardHeader className="pb-2">
+              <button
+                type="button"
+                onClick={() => setDataPreviewOpen(v => !v)}
+                className="w-full flex items-center justify-between text-left"
+              >
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Database className="h-4 w-4 text-slate-600" />
+                  Datenbasis
+                  <span className="text-xs font-normal text-slate-400">
+                    — was die KI als Kontext nutzt
+                  </span>
+                </CardTitle>
+                {dataPreviewOpen ? <ChevronDown className="h-4 w-4 text-slate-400" /> : <ChevronRight className="h-4 w-4 text-slate-400" />}
+              </button>
+            </CardHeader>
+            {dataPreviewOpen && (
+              <CardContent className="pt-0">
+                <div className="text-left bg-slate-50 rounded-lg p-3 text-xs space-y-1.5">
+                  <p><strong>Lernstart:</strong> {lernstart} · <strong>Examen:</strong> {examDate}</p>
+                  <p><strong>Freier Tag:</strong> {onboarding.freeDayPerWeek}</p>
+
+                  {onboarding.ags.length > 0 ? (
+                    <div>
+                      <strong>AGs ({onboarding.ags.length}):</strong>
+                      <ul className="ml-4 mt-0.5 space-y-0.5">
+                        {onboarding.ags.map(ag => (
+                          <li key={ag.id} className="text-[11px]">
+                            {ag.label} — {ag.day} ({ag.frequency}) · {ag.durationHours}h + {ag.prepHours}h Vor/{ag.postHours}h Nach
+                            {ag.startDate && ` · ab ${ag.startDate}`}
+                            {ag.endDate && ` · bis ${ag.endDate}`}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : <p><strong>AGs:</strong> keine</p>}
+
+                  {onboarding.reps.length > 0 ? (
+                    <div>
+                      <strong>Repetitorien ({onboarding.reps.length}):</strong>
+                      <ul className="ml-4 mt-0.5 space-y-0.5">
+                        {onboarding.reps.map(r => (
+                          <li key={r.id} className="text-[11px]">
+                            {r.label} — {r.day} · {r.durationHours}h
+                            {r.prepHours ? ` + ${r.prepHours}h Vor` : ""}
+                            {r.postHours ? `/${r.postHours}h Nach` : ""}
+                            {r.startDate && ` · ab ${r.startDate}`}
+                            {r.endDate && ` · bis ${r.endDate}`}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : <p><strong>Rep:</strong> keines</p>}
+
+                  {onboarding.lerngruppen.length > 0 && (
+                    <div>
+                      <strong>Lerngruppen ({onboarding.lerngruppen.length}):</strong>
+                      <ul className="ml-4 mt-0.5 space-y-0.5">
+                        {onboarding.lerngruppen.map(lg => (
+                          <li key={lg.id} className="text-[11px]">
+                            {lg.label} — {lg.day} ({lg.frequency}) · {lg.durationHours}h + {lg.prepHours}h Vor/{lg.postHours}h Nach
+                            {lg.startDate && ` · ab ${lg.startDate}`}
+                            {lg.endDate && ` · bis ${lg.endDate}`}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {onboarding.sonstiges.length > 0 && (
+                    <div>
+                      <strong>Sonstige Termine ({onboarding.sonstiges.length}):</strong>
+                      <ul className="ml-4 mt-0.5 space-y-0.5">
+                        {onboarding.sonstiges.map(s => (
+                          <li key={s.id} className="text-[11px]">
+                            {s.label || "Sonstiges"} — {s.day} ({s.frequency}) · {s.durationHours}h
+                            {s.startDate && ` · ab ${s.startDate}`}
+                            {s.endDate && ` · bis ${s.endDate}`}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  <p>
+                    <strong>Probeexamen:</strong>{" "}
+                    {onboarding.probeexamen1Start || "—"} / {onboarding.probeexamen2Start || "—"}
+                  </p>
+
+                  {(onboarding.kaiserSeminare?.length ?? 0) > 0 && (
+                    <p><strong>Kaiserseminare:</strong> {onboarding.kaiserSeminare!.length} eingetragen</p>
+                  )}
+
+                  {(onboarding.vacationDates?.length ?? 0) > 0 && (
+                    <p><strong>Urlaub:</strong> {onboarding.vacationDates!.join(", ")}</p>
+                  )}
+
+                  <p><strong>Onboarding-Dokumente:</strong> {onboarding.documents.length} hochgeladen</p>
+                  <p><strong>Selbsteinschätzung:</strong> {Object.keys(onboarding.selfAssessment).length} Themen bewertet</p>
+                </div>
+
+                <div className="flex justify-end mt-2">
+                  <Link href="/onboarding">
+                    <Button variant="ghost" size="sm" className="h-7 text-[11px]">
+                      <Pencil className="h-3 w-3 mr-1" />
+                      Im Onboarding bearbeiten
+                    </Button>
+                  </Link>
+                </div>
+
+                <p className="text-[10px] text-slate-400 mt-1.5 leading-snug">
+                  Zusätzlich fließen automatisch ein: aktueller Topic-Fortschritt, Lern-Tracking, Tages-Aufgaben (14 Tage), Lern-Notizen, Kalender-Termine und alle Klausuren. Den vollständigen Prompt siehst du unten beim „Vollständigen Prompt ansehen".
+                </p>
+              </CardContent>
+            )}
+          </Card>
+        )}
+
         {/* Adjustment Input */}
         <div className="space-y-3 mb-5">
           <div className="flex items-center gap-2">
             <Brain className="h-5 w-5 text-purple-600" />
             <h2 className="text-base font-bold">Plan anpassen</h2>
             <Badge className="bg-purple-100 text-purple-700 text-[10px]">Opus 4.6</Badge>
+            <div className="ml-auto"><PromptGear promptId="plan-adjust" /></div>
           </div>
 
           <Textarea
@@ -425,6 +426,108 @@ ${adjustmentRequest ? `\nMEINE FRAGE / ANPASSUNGSWUNSCH:\n${adjustmentRequest}` 
             rows={3}
             className="resize-none rounded-xl text-sm"
           />
+
+          {/* Prompt-Vorschau (kollabierbar) */}
+          <div className="rounded-xl border bg-slate-50">
+            <button
+              type="button"
+              onClick={() => promptPreviewOpen ? setPromptPreviewOpen(false) : openPromptPreview()}
+              className="w-full flex items-center justify-between gap-2 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 rounded-xl"
+            >
+              <span className="flex items-center gap-2">
+                {promptPreviewOpen ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                {promptPreviewOpen ? "Prompt verbergen" : "Vollständigen Prompt ansehen / bearbeiten"}
+              </span>
+              {(systemDirty || userDirty) && (
+                <Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-800 border-amber-300">
+                  bearbeitet
+                </Badge>
+              )}
+            </button>
+
+            {promptPreviewOpen && (
+              <div className="border-t px-3 py-3 space-y-3">
+                <p className="text-[11px] text-slate-500 leading-snug">
+                  Das wird an die KI geschickt. System-Prompt = Instruktionen, User-Nachricht = ausgewertete Onboarding-Daten + dein aktueller Kontext (Fortschritt, Tracking, Klausuren etc.) + dein Anpassungswunsch.
+                </p>
+
+                <div className="flex justify-end">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={refreshPromptPreview}
+                    className="h-7 text-[11px]"
+                    title="Aus aktuellen Daten neu generieren (verwirft Edits)"
+                  >
+                    <RotateCcw className="h-3 w-3 mr-1" />
+                    Aus Daten neu bauen
+                  </Button>
+                </div>
+
+                {/* System-Prompt */}
+                <div className="rounded-md border bg-white">
+                  <div className="flex items-center justify-between px-2.5 py-1.5 border-b bg-slate-100/60">
+                    <span className="text-[11px] font-semibold text-slate-700 uppercase tracking-wide">
+                      System-Prompt {systemDirty && <span className="text-amber-700 normal-case">(bearbeitet)</span>}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setEditingSystem(v => !v)}
+                      className="text-slate-500 hover:text-slate-900 p-1 rounded"
+                      title={editingSystem ? "Bearbeiten beenden" : "Bearbeiten"}
+                    >
+                      {editingSystem ? <Save className="h-3.5 w-3.5" /> : <Pencil className="h-3.5 w-3.5" />}
+                    </button>
+                  </div>
+                  {editingSystem ? (
+                    <Textarea
+                      value={previewSystem}
+                      onChange={e => { setPreviewSystem(e.target.value); setSystemDirty(true); }}
+                      rows={14}
+                      className="text-[11px] font-mono leading-relaxed border-0 rounded-none focus-visible:ring-0"
+                    />
+                  ) : (
+                    <pre className="text-[11px] font-mono leading-relaxed text-slate-800 whitespace-pre-wrap p-2.5 max-h-64 overflow-auto">
+                      {previewSystem}
+                    </pre>
+                  )}
+                </div>
+
+                {/* User-Message (Kontext) */}
+                <div className="rounded-md border bg-white">
+                  <div className="flex items-center justify-between px-2.5 py-1.5 border-b bg-slate-100/60">
+                    <span className="text-[11px] font-semibold text-slate-700 uppercase tracking-wide">
+                      User-Nachricht (Kontext) {userDirty && <span className="text-amber-700 normal-case">(bearbeitet)</span>}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setEditingUser(v => !v)}
+                      className="text-slate-500 hover:text-slate-900 p-1 rounded"
+                      title={editingUser ? "Bearbeiten beenden" : "Bearbeiten"}
+                    >
+                      {editingUser ? <Save className="h-3.5 w-3.5" /> : <Pencil className="h-3.5 w-3.5" />}
+                    </button>
+                  </div>
+                  {editingUser ? (
+                    <Textarea
+                      value={previewUser}
+                      onChange={e => { setPreviewUser(e.target.value); setUserDirty(true); }}
+                      rows={20}
+                      className="text-[11px] font-mono leading-relaxed border-0 rounded-none focus-visible:ring-0"
+                    />
+                  ) : (
+                    <pre className="text-[11px] font-mono leading-relaxed text-slate-800 whitespace-pre-wrap p-2.5 max-h-96 overflow-auto">
+                      {previewUser}
+                    </pre>
+                  )}
+                </div>
+
+                <p className="text-[10px] text-slate-400 leading-snug">
+                  Edits gelten nur für diese Generierung — Default-Prompt unverändert (dauerhaft via /admin).
+                </p>
+              </div>
+            )}
+          </div>
 
           <Button
             onClick={handleAdjust}
@@ -461,7 +564,38 @@ ${adjustmentRequest ? `\nMEINE FRAGE / ANPASSUNGSWUNSCH:\n${adjustmentRequest}` 
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+              {structuredPlan && (
+                <div className="border border-accent-300 bg-accent-50 rounded-lg p-3 space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-sm">
+                      <p className="font-semibold text-slate-800">
+                        Strukturierter Plan erkannt: {structuredPlan.tasks.length} Tasks · {structuredPlan.klausuren.length} Klausuren
+                      </p>
+                      <p className="text-xs text-slate-600 mt-0.5">
+                        In Tagesprogramm + Lernkalender übernehmen?
+                      </p>
+                    </div>
+                    {!applied ? (
+                      <Button size="sm" onClick={handleApply} className="shrink-0">
+                        <CalendarPlus className="h-4 w-4 mr-1" />
+                        Übernehmen
+                      </Button>
+                    ) : (
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Badge className="bg-emerald-100 text-emerald-700 border-emerald-300">
+                          <Check className="h-3 w-3 mr-1" />
+                          {applied.tasks} Tasks · {applied.klausuren} Klausuren
+                          {applied.skipped > 0 && ` (${applied.skipped} Duplikate)`}
+                        </Badge>
+                        <Button size="sm" variant="ghost" onClick={handleUndo}>
+                          Rückgängig
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
               <div className="prose prose-sm max-w-none whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
                 {result}
               </div>

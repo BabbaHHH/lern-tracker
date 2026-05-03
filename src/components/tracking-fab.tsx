@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { addTrackingEntry } from "@/lib/store";
 import { TOPICS, getLeafTopics } from "@/lib/topics";
-import { ActivityType, ACTIVITY_LABELS, Area, AREA_LABELS } from "@/lib/types";
+import { ActivityType, ACTIVITY_LABELS, AREA_LABELS } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

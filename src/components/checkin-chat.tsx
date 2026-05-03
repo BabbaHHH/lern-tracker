@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getPromptById } from "@/lib/prompts";
 import { TOPICS, getLeafTopics } from "@/lib/topics";
 import { getProgress, setTopicProgress } from "@/lib/store";
 import { Send, Bot, User, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PromptGear } from "@/components/prompt-gear";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -17,7 +17,7 @@ interface ChatMessage {
   progressSuggestions?: { topicId: string; percent: number }[];
 }
 
-export function CheckinChat({ onClose }: { onClose: () => void }) {
+export function CheckinChat({}: { onClose?: () => void } = {}) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
@@ -102,20 +102,23 @@ ${topicList}`;
         };
         setMessages(prev => [...prev, assistantMsg]);
       }
-    } catch (error) {
+    } catch {
       setMessages(prev => [
         ...prev,
-        { role: "assistant", content: "Verbindungsfehler. Ist der API-Key konfiguriert?" },
+        { role: "assistant", content: "Ich bin gerade nicht erreichbar. Versuch es in einer Minute nochmal." },
       ]);
     }
 
     setLoading(false);
   }, [input, loading, messages]);
 
+  const validTopicIds = useMemo(() => new Set(TOPICS.map(t => t.id)), []);
+
   const applySuggestion = useCallback((topicId: string, percent: number) => {
+    if (!validTopicIds.has(topicId)) return;
     setTopicProgress(topicId, percent, "ai");
     setAppliedSuggestions(prev => new Set([...prev, topicId]));
-  }, []);
+  }, [validTopicIds]);
 
   const getTopicLabel = (topicId: string) => {
     return TOPICS.find(t => t.id === topicId)?.label || topicId;
@@ -123,6 +126,7 @@ ${topicList}`;
 
   return (
     <div className="flex flex-col h-full max-h-[70vh]">
+      <div className="flex justify-end px-3 pt-2"><PromptGear promptId="checkin" compact /></div>
       {/* Chat Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.map((msg, i) => (
