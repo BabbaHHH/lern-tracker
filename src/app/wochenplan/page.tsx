@@ -10,8 +10,10 @@ import {
   getAgDaysForWeek,
   setAgDaysForWeek,
   getWeekKey,
+  getTasksForDate,
+  type DailyTask,
 } from "@/lib/store";
-import { Area } from "@/lib/types";
+import { materializeRecurringTermine } from "@/lib/plan-applier";
 import { addWeeks, startOfWeek, format, addDays, parseISO } from "date-fns";
 import { de } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -38,6 +40,8 @@ export default function LernkalenderPage() {
   const weekStart = startOfWeek(addWeeks(today, weekOffset), { weekStartsOn: 1 });
   const weekKey = getWeekKey(weekStart);
 
+  const [tasksByDate, setTasksByDate] = useState<Record<string, DailyTask[]>>({});
+
   useEffect(() => {
     const p = getProgress();
     const map: Record<string, number> = {};
@@ -46,6 +50,10 @@ export default function LernkalenderPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setProgressMap(map);
     setEvents(getCalendarEvents());
+    // Wiederkehrende Termine für die nächsten 60 Tage materialisieren (idempotent).
+    const future = new Date();
+    future.setDate(future.getDate() + 60);
+    materializeRecurringTermine(format(new Date(), "yyyy-MM-dd"), format(future, "yyyy-MM-dd"));
   }, []);
 
   useEffect(() => {
@@ -64,32 +72,41 @@ export default function LernkalenderPage() {
   const weeksUntilExam = Math.ceil((examDate.getTime() - weekStart.getTime()) / (7 * 24 * 60 * 60 * 1000));
   const phase = getPhase(weeksUntilExam);
 
-  const sprints = [
-    { time: "08:45", label: "Sprint 1" },
-    { time: "10:35", label: "Sprint 2" },
-    { time: "13:30", label: "Sprint 3" },
-    { time: "15:20", label: "Sprint 4" },
-  ];
-
   const leafTopics = getLeafTopics(TOPICS);
-  const todoTopics = leafTopics
-    .filter((t) => (progressMap[t.id] || 0) < 80)
-    .sort((a, b) => (progressMap[a.id] || 0) - (progressMap[b.id] || 0));
+  const leafById = new Map(leafTopics.map((t) => [t.id, t]));
 
-  const areas: Area[] = ["zr", "oeffr", "sr"];
   const weekDays = Array.from({ length: 6 }, (_, i) => {
     const date = addDays(weekStart, i);
     const dateStr = format(date, "yyyy-MM-dd");
     const dayEvents = events.filter((e) => e.date === dateStr);
     const isFree = dayEvents.some((e) => ["urlaub", "frei"].includes(e.eventType));
     const hasAG = agDays.includes(i);
-    const hasRep = dayEvents.some((e) => e.eventType === "rep");
-    const mainArea = areas[i % 3];
-    const subArea = areas[(i + 1) % 3];
-    const mainTopics = todoTopics.filter((t) => t.area === mainArea).slice(0, 2);
-    const subTopics = todoTopics.filter((t) => t.area === subArea).slice(0, 1);
-    return { date, dateStr, dayEvents, isFree, hasAG, hasRep, mainArea, subArea, mainTopics, subTopics };
+    // Echte Tasks pro Tag — bevorzugt aus tasksByDate-Cache, sonst frisch ziehen.
+    const dayTasks = tasksByDate[dateStr] ?? getTasksForDate(dateStr);
+    const hasRep = dayEvents.some((e) => e.eventType === "rep") ||
+      dayTasks.some((t) => /\bRep\b/i.test(t.title) || /\bKISS\b/i.test(t.title));
+    // Sortierung: Termine (AG/Rep/LG/Anki/Vorb./Nachb.) zuerst, dann Lern-Tasks
+    const isTermin = (t: DailyTask) =>
+      /^(Vorb\.|Nachb\.|AG |Lerngruppe|KISS|Rep|Anki)/i.test(t.title) ||
+      /\(\d+(\.\d+)?h\)$/.test(t.title);
+    const sorted = [...dayTasks].sort((a, b) => {
+      const ta = isTermin(a) ? 0 : 1;
+      const tb = isTermin(b) ? 0 : 1;
+      return ta - tb || a.title.localeCompare(b.title);
+    });
+    return { date, dateStr, dayEvents, isFree, hasAG, hasRep, dayTasks: sorted };
   });
+
+  // Cache aufbauen, wenn weekStart sich ändert
+  useEffect(() => {
+    const next: Record<string, DailyTask[]> = {};
+    for (let i = 0; i < 6; i++) {
+      const dateStr = format(addDays(weekStart, i), "yyyy-MM-dd");
+      next[dateStr] = getTasksForDate(dateStr);
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTasksByDate(next);
+  }, [weekKey]);
 
   return (
     <>
@@ -205,27 +222,41 @@ export default function LernkalenderPage() {
 
                 {day.isFree ? (
                   <p className="font-sans text-xs text-slate-400">Kein Jura heute — Erholung</p>
+                ) : day.dayTasks.length === 0 ? (
+                  <p className="font-sans text-[11px] text-slate-300 italic">Keine Tasks geplant.</p>
                 ) : (
-                  <div className="space-y-2">
-                    {sprints.map((sprint, si) => {
-                      const content =
-                        si === 0 ? day.mainTopics[0]?.label :
-                        si === 1 ? day.mainTopics[1]?.label :
-                        si === 2 ? day.subTopics[0]?.label :
-                        "Wiederholung";
+                  <ul className="space-y-1.5">
+                    {day.dayTasks.map((t) => {
+                      const leaf = t.linkedTopicId ? leafById.get(t.linkedTopicId) : null;
+                      const termin = /^(Vorb\.|Nachb\.|AG |Lerngruppe|KISS|Rep|Anki)/i.test(t.title);
                       return (
-                        <div key={si} className="flex items-baseline gap-3 text-xs border-t border-slate-100 pt-2 first:border-t-0 first:pt-0">
-                          <span className="font-sans text-[10px] text-slate-400 tabular-nums w-10 shrink-0">
-                            {sprint.time}
+                        <li
+                          key={t.id}
+                          className={cn(
+                            "flex items-start gap-2 text-xs border-t border-slate-100 pt-1.5 first:border-t-0 first:pt-0",
+                            t.done && "opacity-50",
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              "font-sans text-[10px] tabular-nums shrink-0 mt-0.5 px-1 py-0.5 uppercase tracking-wider font-bold",
+                              termin ? "bg-slate-900 text-white" : "text-slate-400 border border-slate-200",
+                            )}
+                          >
+                            {termin ? "T" : leaf?.area?.toUpperCase() ?? "·"}
                           </span>
-                          <span className="font-serif text-[13px] text-slate-900 leading-snug flex-1 min-w-0">
-                            {content || <span className="text-slate-300">{sprint.label}</span>}
+                          <span
+                            className={cn(
+                              "font-serif text-[12px] leading-snug flex-1 min-w-0",
+                              t.done ? "line-through text-slate-400" : "text-slate-900",
+                            )}
+                          >
+                            {t.title}
                           </span>
-                        </div>
+                        </li>
                       );
                     })}
-
-                  </div>
+                  </ul>
                 )}
               </div>
             );
