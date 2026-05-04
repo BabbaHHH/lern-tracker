@@ -25,6 +25,7 @@ import {
   type DailyTask,
 } from "@/lib/store";
 import { materializeRecurringTermine } from "@/lib/plan-applier";
+import { pickAutoTopicsToday } from "@/lib/auto-picker";
 import type { Topic, Klausur } from "@/lib/types";
 import { ActivityType, ACTIVITY_LABELS } from "@/lib/types";
 import { Dialog as KlausurDialog, DialogContent as KlausurDialogContent, DialogHeader as KlausurDialogHeader, DialogTitle as KlausurDialogTitle } from "@/components/ui/dialog";
@@ -73,18 +74,7 @@ function matchKlausurForTitle(input: string): Klausur | null {
   return null;
 }
 
-function pickAutoTopics(): Topic[] {
-  const leafs = getLeafTopics(TOPICS);
-  const progress = getProgress();
-  const ranked = [...leafs].sort((a, b) => {
-    const pa = progress[a.id]?.percent ?? 0;
-    const pb = progress[b.id]?.percent ?? 0;
-    return pa - pb;
-  });
-  const dayIdx = Math.floor(Date.now() / 86400000);
-  const offset = dayIdx % Math.max(1, Math.floor(ranked.length / 3));
-  return ranked.slice(offset * 3, offset * 3 + 3);
-}
+// pickAutoTopics jetzt zentral in @/lib/auto-picker (Date-stabil + Wochenplaner-fähig)
 
 interface AiProposal {
   taskId?: string;
@@ -142,13 +132,18 @@ export function TodayProgram() {
     future.setDate(future.getDate() + 60);
     materializeRecurringTermine(today, future.toISOString().slice(0, 10));
 
-    // Materialize auto tasks (once per day) — ABER NICHT wenn ein KI-Plan existiert,
-    // der heute abdeckt (auch als Freier Tag). Dann soll der Plan sprechen, nicht pickAutoTopics.
+    // Inhaltliche (Content-)Tasks: haben linkedTopicId. Termine haben keine.
+    // Termine zählen NICHT als Content — Fallback-Themen sollen trotzdem laufen,
+    // damit man neben AG/KISS/Anki auch konkrete Lerninhalte sieht.
     const existing = getTasksForDate(today);
-    const hasPlanOrAuto = existing.some((t) => t.source === "auto" || t.source === "plan");
+    const hasContentTask = existing.some(
+      (t) => (t.source === "auto" || t.source === "plan") && t.linkedTopicId,
+    );
     const todayInPlanRange = isTodayInPlanRange(today);
-    if (!hasPlanOrAuto && !todayInPlanRange) {
-      const picks = pickAutoTopics();
+    // Fallback nur wenn weder KI-Plan-Content noch ein Plan-Bereich aktiv ist.
+    // todayInPlanRange = true → Plan respektieren, auch wenn heute "frei" ist.
+    if (!hasContentTask && !todayInPlanRange) {
+      const picks = pickAutoTopicsToday();
       picks.forEach((t) =>
         addTask({
           date: today,

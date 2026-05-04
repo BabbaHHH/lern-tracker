@@ -11,9 +11,13 @@ import {
   setAgDaysForWeek,
   getWeekKey,
   getTasksForDate,
+  addTask,
+  isTodayInPlanRange,
+  getPlanAppliedRange,
   type DailyTask,
 } from "@/lib/store";
 import { materializeRecurringTermine } from "@/lib/plan-applier";
+import { pickAutoTopicsForDate } from "@/lib/auto-picker";
 import { addWeeks, startOfWeek, format, addDays, parseISO } from "date-fns";
 import { de } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -98,15 +102,34 @@ export default function LernkalenderPage() {
   });
 
   // Cache aufbauen, wenn weekStart sich ändert
+  // Plus: für jeden Tag ohne Content-Task (und ohne KI-Plan-Range) Auto-Topics materialisieren.
   useEffect(() => {
+    const planRange = getPlanAppliedRange();
     const next: Record<string, DailyTask[]> = {};
     for (let i = 0; i < 6; i++) {
-      const dateStr = format(addDays(weekStart, i), "yyyy-MM-dd");
-      next[dateStr] = getTasksForDate(dateStr);
+      const date = addDays(weekStart, i);
+      const dateStr = format(date, "yyyy-MM-dd");
+      let dayTasks = getTasksForDate(dateStr);
+
+      // Auto-Content nur generieren wenn:
+      // - der Tag noch keinen Content-Task hat (Task mit linkedTopicId)
+      // - kein KI-Plan diesen Tag bereits abdeckt (planRange-Check)
+      const hasContent = dayTasks.some((t) => t.linkedTopicId);
+      const inPlan = planRange && dateStr >= planRange.start && dateStr <= planRange.end;
+      const dayEvents = events.filter((e) => e.date === dateStr);
+      const isFree = dayEvents.some((e) => ["urlaub", "frei"].includes(e.eventType));
+      if (!hasContent && !inPlan && !isFree) {
+        const picks = pickAutoTopicsForDate(dateStr);
+        picks.forEach((t) =>
+          addTask({ date: dateStr, title: t.label, linkedTopicId: t.id, source: "auto" }),
+        );
+        dayTasks = getTasksForDate(dateStr);
+      }
+      next[dateStr] = dayTasks;
     }
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setTasksByDate(next);
-  }, [weekKey]);
+  }, [weekKey, events]);
 
   return (
     <>
