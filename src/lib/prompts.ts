@@ -11,6 +11,7 @@ export type ContextFlag =
   | "selfAssessment"  // Onboarding-Selbsteinschätzung
   | "calendar"        // Kalender-Events nächste 4 Wochen
   | "onboarding"      // Grunddaten (AG, Rep, Probeexamen etc.)
+  | "dailyBudget"     // Zeitbudget pro Tag (Termine + verbleibende Lernzeit)
   | "klausuren"       // Geschriebene Klausuren + Ratings
   | "docs"            // Ausgewählte Dokumente (Name/Typ/Summary)
   | "topics"          // Leaf-Topics Liste (id|area|label)
@@ -34,6 +35,7 @@ export const DEFAULT_PROMPTS: SystemPrompt[] = [
     contextFlags: [
       "timeStatus", "progress", "tracking", "tasks", "learningNotes",
       "selfAssessment", "calendar", "onboarding", "klausuren", "docs", "topics",
+      "dailyBudget",
     ],
     prompt: `Du bist der beste Examens-Strategieberater für das 2. juristische Staatsexamen in Berlin (GJPA).
 
@@ -56,9 +58,13 @@ ANALYSE-FRAMEWORK:
 10. KLAUSUR-EMPFEHLUNG: Basierend auf den geschriebenen Klausuren und deren Ratings: Welche Rechtsgebiete brauchen mehr Klausurpraxis?
 
 FESTE REGELN:
-- 90-Minuten-Sprints, 4 pro Tag
+- ZEITBUDGET: 6-7h reine Lernzeit pro Tag (inkl. Termine + Vor-/Nachbereitung).
+  Die TÄGLICHES ZEITBUDGET-Tabelle im Kontext zeigt dir pro Tag die belegten Termine-Stunden
+  und wie viel Zeit für Content frei ist. Ein Tag mit Status "ÜBERFÜLLT" bekommt KEINE Content-Tasks.
+  Plane Content-Tasks à 1.5h und respektiere die freie Restzeit pro Tag.
+- 90-Minuten-Sprints (~1.5h), maximal 4 pro Tag
 - Mind. 1 freier Tag/Woche
-- Mind. 1 Klausur/Woche unter Realbedingungen (5h)
+- Mind. 1 Klausur/Woche unter Realbedingungen (5h) — eine Klausur ersetzt fast einen ganzen Tag Content
 - Interleaving: Nicht 2x gleiches Rechtsgebiet hintereinander
 - In den letzten 2 Wochen vor Examen: NUR Wiederholung
 - Examensrelevanz > Vollständigkeit: Lieber 80% der Kernthemen als 40% von allem

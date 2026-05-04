@@ -98,7 +98,15 @@ export default function LernkalenderPage() {
       const tb = isTermin(b) ? 0 : 1;
       return ta - tb || a.title.localeCompare(b.title);
     });
-    return { date, dateStr, dayEvents, isFree, hasAG, hasRep, dayTasks: sorted };
+    // Tages-Stunden-Summe aus den Title-Patterns "(Xh)" für Termin-Tasks +
+    // 1.5h Default für Content-Tasks (entspricht 90-Min-Sprint).
+    let totalHours = 0;
+    for (const t of sorted) {
+      const m = t.title.match(/\((\d+(?:\.\d+)?)h\)/);
+      if (m) totalHours += Number(m[1]);
+      else if (t.linkedTopicId) totalHours += 1.5;
+    }
+    return { date, dateStr, dayEvents, isFree, hasAG, hasRep, dayTasks: sorted, totalHours };
   });
 
   // Cache aufbauen, wenn weekStart sich ändert
@@ -225,6 +233,19 @@ export default function LernkalenderPage() {
                     )}
                   </div>
                   <div className="flex flex-col gap-1 items-end">
+                    {!day.isFree && day.totalHours > 0 && (
+                      <span
+                        className={cn(
+                          "font-sans text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5",
+                          day.totalHours > 7 ? "bg-red-100 text-red-700 border border-red-200"
+                          : day.totalHours >= 5 ? "bg-amber-50 text-amber-700 border border-amber-200"
+                          : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        )}
+                        title="Summe geplante Stunden (Termine + 1.5h pro Content-Task)"
+                      >
+                        {day.totalHours.toFixed(1)}h
+                      </span>
+                    )}
                     {day.isFree && (
                       <span className="font-sans text-[9px] uppercase tracking-wider font-bold text-slate-500 border border-slate-200 px-1.5 py-0.5">
                         Frei

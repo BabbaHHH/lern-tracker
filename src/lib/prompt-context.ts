@@ -293,6 +293,49 @@ WICHTIG: Diese Lücken MÜSSEN in den nächsten Wochen mindestens einmal eingepl
 es sei denn ein Topic ist nicht examensrelevant in Berlin (GJPA) — dann begründen warum.`;
 }
 
+/** Tageszeit-Budget der nächsten 4 Wochen — Termine zählen, Rest = freie Lernzeit. */
+function buildDailyBudget(): string {
+  const TARGET_HOURS = 7;
+  const tasks = getTasksSince(0).filter((t) => !t.done);
+  const today = new Date();
+  const days: { date: string; weekday: string; termine: { title: string; hours: number }[]; totalH: number }[] = [];
+  for (let i = 0; i < 28; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const dateStr = d.toISOString().slice(0, 10);
+    const dayTasks = tasks.filter((t) => t.date === dateStr);
+    const termine: { title: string; hours: number }[] = [];
+    for (const t of dayTasks) {
+      const m = t.title.match(/\((\d+(?:\.\d+)?)h\)/);
+      if (m) termine.push({ title: t.title, hours: Number(m[1]) });
+    }
+    const totalH = termine.reduce((s, t) => s + t.hours, 0);
+    days.push({
+      date: dateStr,
+      weekday: format(d, "EEE", { locale: de }),
+      termine,
+      totalH,
+    });
+  }
+
+  const lines = days.map((d) => {
+    const remaining = TARGET_HOURS - d.totalH;
+    const status =
+      d.totalH >= TARGET_HOURS
+        ? "ÜBERFÜLLT — keinen Content mehr einplanen"
+        : remaining < 2
+          ? `nur ${remaining.toFixed(1)}h frei — höchstens 1 kurzer Content-Task`
+          : `${remaining.toFixed(1)}h frei für Content (${Math.floor(remaining / 1.5)}-${Math.ceil(remaining / 1.5)} Tasks à ~1.5h)`;
+    const terminList = d.termine.length === 0 ? "—" : d.termine.map((t) => `${t.title}`).join(", ");
+    return `${d.date} (${d.weekday}): Termine ${d.totalH.toFixed(1)}h [${terminList}] · ${status}`;
+  });
+
+  return `TÄGLICHES ZEITBUDGET (Zielwert ${TARGET_HOURS}h reine Lernzeit/Tag, inkl. Termine):
+${lines.join("\n")}
+
+WICHTIG: Du planst Content-Tasks NUR in die freie Restzeit. Tage mit ÜBERFÜLLT-Status: KEINE Content-Tasks. Sonst sprengst du das realistische Tagesbudget.`;
+}
+
 function buildAgWeeks(): string {
   const overrides = getAgWeekOverrides();
   const thisWeek = getWeekKey(new Date());
@@ -316,6 +359,7 @@ const BUILDERS: Record<ContextFlag, () => string> = {
   docs: buildDocs,
   topics: buildTopics,
   agWeeks: buildAgWeeks,
+  dailyBudget: buildDailyBudget,
 };
 
 export function buildContextFor(flags: ContextFlag[]): string {

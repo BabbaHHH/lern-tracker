@@ -346,6 +346,28 @@ export function TodayProgram() {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          {(() => {
+            let totalH = 0;
+            for (const t of tasks) {
+              const m = t.title.match(/\((\d+(?:\.\d+)?)h\)/);
+              if (m) totalH += Number(m[1]);
+              else if (t.linkedTopicId) totalH += 1.5;
+            }
+            if (totalH === 0) return null;
+            const cls = totalH > 7
+              ? "bg-red-100 text-red-700 border border-red-200"
+              : totalH >= 5
+                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                : "bg-emerald-50 text-emerald-700 border border-emerald-200";
+            return (
+              <span
+                className={cn("font-sans text-[10px] uppercase tracking-[0.16em] font-bold px-2 py-1", cls)}
+                title={`Geplante Stunden heute (Termine + 1.5h pro Content-Task). Zielwert: 6-7h.`}
+              >
+                {totalH.toFixed(1)}h
+              </span>
+            );
+          })()}
           {isAgToday ? (
             <span className="font-sans text-[10px] uppercase tracking-[0.16em] font-bold text-white bg-slate-900 px-2 py-1">
               AG-Tag
