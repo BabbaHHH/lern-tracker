@@ -24,6 +24,7 @@ import {
   isTodayInPlanRange,
   type DailyTask,
 } from "@/lib/store";
+import { materializeRecurringTermine } from "@/lib/plan-applier";
 import type { Topic, Klausur } from "@/lib/types";
 import { ActivityType, ACTIVITY_LABELS } from "@/lib/types";
 import { Dialog as KlausurDialog, DialogContent as KlausurDialogContent, DialogHeader as KlausurDialogHeader, DialogTitle as KlausurDialogTitle } from "@/components/ui/dialog";
@@ -134,6 +135,13 @@ export function TodayProgram() {
   }
 
   useEffect(() => {
+    // Wiederkehrende Termine (AG, Rep, Lerngruppe, Sonstiges) aus dem Onboarding
+    // automatisch für die nächsten 60 Tage materialisieren — unabhängig vom KI-Plan.
+    // Idempotent dank Dedup auf (date, title), läuft also problemlos bei jedem Mount.
+    const future = new Date();
+    future.setDate(future.getDate() + 60);
+    materializeRecurringTermine(today, future.toISOString().slice(0, 10));
+
     // Materialize auto tasks (once per day) — ABER NICHT wenn ein KI-Plan existiert,
     // der heute abdeckt (auch als Freier Tag). Dann soll der Plan sprechen, nicht pickAutoTopics.
     const existing = getTasksForDate(today);

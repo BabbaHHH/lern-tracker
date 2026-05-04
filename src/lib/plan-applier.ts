@@ -36,10 +36,19 @@ function isoDate(d: Date): string {
 }
 
 function freqMatches(frequency: string | undefined, weekIdx: number): boolean {
-  if (!frequency || frequency === "wöchentlich") return true;
-  if (frequency === "alle 2 Wochen" || frequency === "zweiwöchentlich") return weekIdx % 2 === 0;
+  if (!frequency) return true;
+  // Wöchentlich, 2x/Woche, täglich → jeden Match-Tag
+  if (frequency === "wöchentlich" || frequency === "2x/Woche" || isDailyFreq(frequency)) return true;
+  // 14-tägig / alle 2 Wochen → jede zweite Woche
+  if (frequency === "14-tägig" || frequency === "alle 2 Wochen" || frequency === "zweiwöchentlich") return weekIdx % 2 === 0;
+  // monatlich → alle 4 Wochen
   if (frequency === "monatlich") return weekIdx % 4 === 0;
+  // unregelmäßig / selten → wöchentlich als Default-Annahme (kann später manuell deaktiviert werden)
   return true;
+}
+
+function isDailyFreq(frequency: string | undefined): boolean {
+  return frequency === "täglich" || frequency === "daily" || frequency === "jeden Tag";
 }
 
 /**
@@ -65,8 +74,12 @@ export function materializeRecurringTermine(start: string, end: string): { creat
     const dayIdx = (d.getUTCDay() + 6) % 7; // 0=Mo
     if (dayIdx === 0) weekCounter++;
     for (const t of termine) {
-      const wantedIdx = WEEKDAY_TO_INDEX[t.day];
-      if (wantedIdx === undefined || wantedIdx !== dayIdx) continue;
+      // Tägliche Termine (z.B. Anki) haben keinen festen Wochentag — jeden Tag matchen.
+      const daily = isDailyFreq(t.frequency);
+      if (!daily) {
+        const wantedIdx = WEEKDAY_TO_INDEX[t.day];
+        if (wantedIdx === undefined || wantedIdx !== dayIdx) continue;
+      }
       if (t.startDate && isoDate(d) < t.startDate) continue;
       if (t.endDate && isoDate(d) > t.endDate) continue;
       if (!freqMatches(t.frequency, weekCounter)) continue;
@@ -210,9 +223,15 @@ export function applyStructuredPlan(plan: StructuredPlan): ApplyResult {
     const start = allDates[0];
     const end = allDates[allDates.length - 1];
     setPlanAppliedRange({ start, end, appliedAt: new Date().toISOString() });
-    // Wiederkehrende Termine (AG/Rep/LG/Sonstiges) + ihre Vor-/Nachbereitung deterministisch einfügen.
-    // Idempotent: dupliziert nicht, falls ein erneuter Plan-Apply läuft.
+    // Wiederkehrende Termine (AG/Rep/LG/Sonstiges) + Vor-/Nachbereitung deterministisch einfügen.
     materializeRecurringTermine(start, end);
+  } else {
+    // Auch ohne KI-Plan-Tasks: wiederkehrende Termine für die nächsten 90 Tage materialisieren.
+    const today = new Date().toISOString().slice(0, 10);
+    const future = new Date();
+    future.setDate(future.getDate() + 90);
+    const futureStr = future.toISOString().slice(0, 10);
+    materializeRecurringTermine(today, futureStr);
   }
 
   // Tasks: Diff via getTasks() vor/nach

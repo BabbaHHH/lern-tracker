@@ -1123,6 +1123,7 @@ export default function OnboardingPage() {
                         <div>
                           <label className="text-xs font-medium mb-1 block text-slate-600">Frequenz</label>
                           <select value={s.frequency} onChange={e => updateS({ frequency: e.target.value })} className="w-full rounded-md border px-2 py-1.5 text-sm">
+                            <option value="täglich">täglich (z.B. Anki)</option>
                             <option value="wöchentlich">wöchentlich</option>
                             <option value="14-tägig">14-tägig</option>
                             <option value="unregelmäßig">unregelmäßig</option>
