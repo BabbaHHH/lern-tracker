@@ -95,9 +95,9 @@ REGELN für den JSON-Block:
 - area für Klausuren: "zr" | "oeffr" | "sr"
 - Plane realistisch: 3-4 Tasks pro Lerntag, 1 Klausur pro Woche
 - KEIN Eintrag an freien Tagen, AG-Tagen (außer wenn explizit AG-Vorbereitung) oder im Urlaub
-- Vor-/Nachbereitung für AG und Lerngruppe möglichst NAH am Termin planen: Vorbereitung am Vortag (oder Termintag selbst, falls zeitlich vor dem Termin), Nachbereitung am Termintag selbst (abends) oder am Folgetag. NICHT Tage vorher oder später verteilen.
-- Nach dem AG-Enddatum / Lerngruppen-Enddatum KEINE AG- bzw. Lerngruppen-Termine (und auch keine Vor-/Nachbereitung dafür) mehr einplanen.
+- WICHTIG: Schreibe KEINE Tasks für AG, Repetitorium (KISS etc.), Lerngruppe, Anki oder deren Vor-/Nachbereitung. Diese Termine werden vom System DETERMINISTISCH aus den Onboarding-Daten erzeugt — du würdest nur Doubletten produzieren. Plane stattdessen rund um diese Termine herum (z.B. weniger Eigenstudium am AG-Tag, weil die AG selbst Zeit kostet).
 - Mindestens die nächsten 4 Wochen abdecken, gerne mehr
+- Inhaltliche Kohärenz: nicht 3-4 ZR-Themen am selben Tag — nutze Interleaving (ZR/SR/ÖffR mischen) oder thematische Blöcke (z.B. "Schuldrecht-Tag" mit eng verwandten Topics).
 - Wenn du keinen Plan ausgeben willst, gib \`{"tasks": [], "klausuren": []}\` zurück — den Block aber IMMER anhängen.`,
   },
   {

@@ -5,6 +5,14 @@ import {
   removeTask, getTasks, STORAGE_KEYS, setPlanAppliedRange,
   getOnboarding, WEEKDAY_TO_INDEX,
 } from "@/lib/store";
+
+// Pattern: Tasks die wie Termine aussehen ("Anki (0.5h)", "AG ... (4h)", "Vorb. X (2h)").
+// Wenn KI das ausgibt, ignorieren wir es — Termine werden deterministisch erzeugt.
+function isTerminTitle(title: string): boolean {
+  if (/\(\d+(\.\d+)?h\)\s*$/.test(title)) return true;
+  if (/^(Vorb\.|Nachb\.|AG |Lerngruppe|KISS|Kiss|Rep\b|Anki)/i.test(title)) return true;
+  return false;
+}
 import type { Area } from "@/lib/types";
 
 // ─── Recurring Termine Materialisierung ──────────────────────────────────────
@@ -217,25 +225,37 @@ export function applyStructuredPlan(plan: StructuredPlan): ApplyResult {
     createdTaskIds: [], createdEventIds: [],
   };
 
+  // KI-Tasks die nach Termin aussehen rausfiltern — die werden deterministisch erzeugt.
+  const contentTasks = plan.tasks.filter((t) => !isTerminTitle(t.title));
+
   // Plan-Datumsbereich ermitteln + speichern (damit TodayProgram weiß: "heute ist Freier Tag laut Plan")
-  const allDates = plan.tasks.map((t) => t.date).concat(plan.klausuren.map((k) => k.date)).sort();
+  const allDates = contentTasks.map((t) => t.date).concat(plan.klausuren.map((k) => k.date)).sort();
+  let rangeStart: string;
+  let rangeEnd: string;
   if (allDates.length > 0) {
-    const start = allDates[0];
-    const end = allDates[allDates.length - 1];
-    setPlanAppliedRange({ start, end, appliedAt: new Date().toISOString() });
-    // Wiederkehrende Termine (AG/Rep/LG/Sonstiges) + Vor-/Nachbereitung deterministisch einfügen.
-    materializeRecurringTermine(start, end);
+    rangeStart = allDates[0];
+    rangeEnd = allDates[allDates.length - 1];
   } else {
-    // Auch ohne KI-Plan-Tasks: wiederkehrende Termine für die nächsten 90 Tage materialisieren.
-    const today = new Date().toISOString().slice(0, 10);
+    rangeStart = new Date().toISOString().slice(0, 10);
     const future = new Date();
     future.setDate(future.getDate() + 90);
-    const futureStr = future.toISOString().slice(0, 10);
-    materializeRecurringTermine(today, futureStr);
+    rangeEnd = future.toISOString().slice(0, 10);
+  }
+  setPlanAppliedRange({ start: rangeStart, end: rangeEnd, appliedAt: new Date().toISOString() });
+
+  // Aufräumen: alte plan/auto Tasks im Range löschen (manuelle bleiben).
+  // Sonst sammeln sich Doubletten (z.B. Auto-Topics aus altem Stand + neue KI-Tasks).
+  const existingTasks = getTasks();
+  for (const t of existingTasks) {
+    if (t.date < rangeStart || t.date > rangeEnd) continue;
+    if (t.source === "plan" || t.source === "auto") removeTask(t.id);
   }
 
-  // Tasks: Diff via getTasks() vor/nach
-  for (const t of plan.tasks) {
+  // Wiederkehrende Termine (AG/Rep/LG/Sonstiges) + Vor-/Nachbereitung deterministisch einfügen.
+  materializeRecurringTermine(rangeStart, rangeEnd);
+
+  // KI-Content-Tasks einfügen (Termine wurden bereits oben rausgefiltert)
+  for (const t of contentTasks) {
     const before = new Set(getTasks().map((x) => x.id));
     addTask({
       date: t.date,

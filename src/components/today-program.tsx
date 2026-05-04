@@ -132,26 +132,25 @@ export function TodayProgram() {
     future.setDate(future.getDate() + 60);
     materializeRecurringTermine(today, future.toISOString().slice(0, 10));
 
-    // Inhaltliche (Content-)Tasks: haben linkedTopicId. Termine haben keine.
-    // Termine zählen NICHT als Content — Fallback-Themen sollen trotzdem laufen,
-    // damit man neben AG/KISS/Anki auch konkrete Lerninhalte sieht.
-    const existing = getTasksForDate(today);
-    const hasContentTask = existing.some(
-      (t) => (t.source === "auto" || t.source === "plan") && t.linkedTopicId,
-    );
+    // Auto-Content-Fallback NUR wenn KEIN KI-Plan diesen Tag abdeckt.
+    // Wenn ein Plan-Range existiert und heute drin liegt, ist der Plan autoritativ.
     const todayInPlanRange = isTodayInPlanRange(today);
-    // Fallback nur wenn weder KI-Plan-Content noch ein Plan-Bereich aktiv ist.
-    // todayInPlanRange = true → Plan respektieren, auch wenn heute "frei" ist.
-    if (!hasContentTask && !todayInPlanRange) {
-      const picks = pickAutoTopicsToday();
-      picks.forEach((t) =>
-        addTask({
-          date: today,
-          title: t.label,
-          linkedTopicId: t.id,
-          source: "auto",
-        })
+    if (!todayInPlanRange) {
+      const existing = getTasksForDate(today);
+      const hasContentTask = existing.some(
+        (t) => (t.source === "auto" || t.source === "plan") && t.linkedTopicId,
       );
+      if (!hasContentTask) {
+        const picks = pickAutoTopicsToday();
+        picks.forEach((t) =>
+          addTask({
+            date: today,
+            title: t.label,
+            linkedTopicId: t.id,
+            source: "auto",
+          })
+        );
+      }
     }
     refresh();
 
