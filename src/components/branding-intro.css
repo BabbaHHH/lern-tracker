@@ -1,0 +1,121 @@
+.branding-intro {
+  --branding-intro-width: min(76vw, 40rem);
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+html[data-branding-intro="seen"] .branding-intro {
+  display: none;
+}
+
+.branding-intro__frame {
+  position: relative;
+  width: var(--branding-intro-width);
+  pointer-events: none;
+}
+
+.branding-intro__card {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 2.5rem 1.25rem;
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: 12px;
+  background: rgb(12 27 53 / 64%);
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 12px 35px -22px rgb(20 42 84 / 44%);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.branding-intro__card--animated {
+  animation:
+    branding-intro-flight 2000ms cubic-bezier(0.333333, 0.05, 0.666667, 0.25) both,
+    branding-intro-fade 2000ms linear both;
+  will-change: transform, opacity;
+}
+
+.branding-intro__title {
+  margin: 0;
+  font-family: var(--font-heading, "Newsreader Variable", Georgia, serif);
+  font-size: clamp(1.8125rem, 5.6vw, 2.875rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+.branding-intro__studio {
+  margin: 1.125rem 0 0;
+  color: #fff;
+  font-size: 0.75rem;
+  letter-spacing: 0.23em;
+}
+
+.branding-intro__close {
+  position: absolute;
+  z-index: 1;
+  top: -0.5rem;
+  right: -0.5rem;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgb(255 255 255 / 18%);
+  font: inherit;
+  font-size: 9px;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.branding-intro__close:hover {
+  color: rgb(255 255 255 / 60%);
+}
+
+.branding-intro__close:focus-visible {
+  color: #fff;
+}
+
+@keyframes branding-intro-flight {
+  from { transform: scale(0.286); }
+  to { transform: scale(13.33); }
+}
+
+@keyframes branding-intro-fade {
+  0% { opacity: 1; }
+  86% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .branding-intro__card--animated {
+    animation: none;
+    transform: scale(1);
+    opacity: 1;
+    will-change: auto;
+  }
+}
+
+@media (max-width: 440px) {
+  .branding-intro {
+    --branding-intro-width: 80vw;
+  }
+
+  .branding-intro__card {
+    padding-inline: 1.125rem;
+  }
+
+  .branding-intro__title {
+    font-size: 1.8125rem;
+  }
+
+}

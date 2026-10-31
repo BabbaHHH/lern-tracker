@@ -1,10 +1,15 @@
 "use client";
 
+import { currentDate } from "@/lib/dates";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { PromptGear } from "@/components/prompt-gear";
-import { getKlausuren, markKlausurWritten, STORAGE_KEYS, addTask, getTasksForDate } from "@/lib/store";
-import { getTop3Klausuren, buildKiCandidatesMessage } from "@/lib/klausur-recommender";
+import { PdfIpadQr } from "@/components/pdf-ipad-qr";
+import { getKlausuren, markKlausurWritten, STORAGE_KEYS, addTask, getTasksForDate, getKlausurenWritten, getOnboarding, getCalendarEvents } from "@/lib/store";
+import { computeDayBudget, dailyHours, eventsOnDate, isFixedTask, isSketchTask, isStudyFreeDay, planningEvents } from "@/lib/day-budget";
+import { prepareLearningDays } from "@/lib/plan-applier";
+import { getTop3Klausuren, buildKiCandidatesMessage, getTodayKlausurArea } from "@/lib/klausur-recommender";
 import { getPromptById } from "@/lib/prompts";
+import { getStudyPhase, studySuggestionKey } from "@/lib/study-phases";
 import { useAi } from "@/lib/use-ai";
 import { Klausur, AREA_LABELS, Area } from "@/lib/types";
 import { TOPICS, getLeafTopics } from "@/lib/topics";
@@ -58,9 +63,44 @@ export function KlausurDesTages() {
   const [altsOpen, setAltsOpen] = useState(false);
   const [rating, setRating] = useState(3);
   const [note, setNote] = useState("");
+  const [klausurMode, setKlausurMode] = useState<"written" | "read">("written");
   const [saved, setSaved] = useState(false);
+  const [taskError, setTaskError] = useState<string | null>(null);
   const [addedToTasks, setAddedToTasks] = useState<string | null>(null); // klausurId der grade hinzugefügt wurde
   const leafIdSet = useMemo(() => new Set(getLeafTopics(TOPICS).map(t => t.id)), []);
+
+  // klausurId → letzter Bearbeitungs-Eintrag (geschrieben/skizziert + Datum).
+  // Nur client-seitig nach gesetzter Recommendation gelesen (SSR-safe, da
+  // recommendation erst im Effect entsteht).
+  const bearbeitetMap = useMemo(() => {
+    const map = new Map<string, { date: string; mode: "written" | "read" }>();
+    if (!recommendation) return map;
+    for (const e of getKlausurenWritten()) {
+      if (!e.klausurId) continue;
+      const prev = map.get(e.klausurId);
+      if (!prev || e.date > prev.date) {
+        map.set(e.klausurId, { date: e.date, mode: e.klausurMode ?? "written" });
+      }
+    }
+    return map;
+  }, [recommendation]);
+
+  /** Kompaktes Badge "✍ 22.05.26" / "👁 22.05.26" wenn die Klausur schon bearbeitet wurde. */
+  const bearbeitetBadge = (klausurId: string) => {
+    const info = bearbeitetMap.get(klausurId);
+    if (!info) return null;
+    const d = `${info.date.slice(8, 10)}.${info.date.slice(5, 7)}.${info.date.slice(2, 4)}`;
+    return (
+      <span className={cn(
+        "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold shrink-0 whitespace-nowrap",
+        info.mode === "read"
+          ? "bg-sky-400/20 text-sky-300 ring-1 ring-sky-400/30"
+          : "bg-emerald-400/20 text-emerald-300 ring-1 ring-emerald-400/30"
+      )}>
+        {info.mode === "read" ? `👁 skizziert ${d}` : `✍ geschrieben ${d}`}
+      </span>
+    );
+  };
 
   const { callJson, loading, error, reset } = useAi("klausur-select");
 
@@ -69,8 +109,21 @@ export function KlausurDesTages() {
     setHasKlausuren(all.length > 0);
     if (all.length === 0) return;
 
-    const today = format(new Date(), "yyyy-MM-dd");
-    const cacheKey = CACHE_KEY_PREFIX + today;
+    const today = format(currentDate(), "yyyy-MM-dd");
+    // Cache-Key enthält die Tagesplan-Signatur (linkedTopicIds heute, sortiert).
+    // Wenn der Tagesplan sich ändert (neue Auto-Tasks, KI-Plan re-applied,
+    // Termine materialisiert) → Cache miss → neue Klausur. So bleibt die
+    // Empfehlung nie "stale" gegenüber den aktuellen Tagesthemen.
+    const todaysTasks = getTasksForDate(today);
+    const tasksSignature = todaysTasks
+      .map(t => t.linkedTopicId || "_")
+      .sort()
+      .join(",");
+    const settings = getOnboarding();
+    const phase = getStudyPhase(today, settings);
+    const eventArea = getTodayKlausurArea(today);
+    const pinPrimary = !!eventArea || !!(phase && (phase.focus !== "mixed" || phase.perspective !== "mixed"));
+    const cacheKey = `${CACHE_KEY_PREFIX}${today}|${tasksSignature}|${studySuggestionKey(today, settings)}|${eventArea ?? ""}`;
 
     const buildAlts = (
       raw: { klausurId: string; reason: string }[] | undefined,
@@ -84,6 +137,10 @@ export function KlausurDesTages() {
         .slice(0, 2);
 
     // Cache-Check (skip on force-refresh)
+    // Zusätzliche Prüfung: wenn Haupt-Klausur ODER eine der Skizzen-Empfehlungen
+    // inzwischen bearbeitet wurde (geschrieben/skizziert) → Cache verwerfen, damit
+    // beim nächsten Laden frische Empfehlungen kommen. Vorher wurde nur die
+    // Haupt-Klausur geprüft — bearbeitete Skizzen-Picks blieben hängen.
     if (!force) {
       try {
         const cached = localStorage.getItem(cacheKey);
@@ -91,12 +148,23 @@ export function KlausurDesTages() {
           const parsed = JSON.parse(cached) as CachedRec;
           const k = all.find(x => x.id === parsed.klausurId);
           if (k) {
-            setRecommendation({
-              klausur: k,
-              reasons: parsed.reasons,
-              alternatives: buildAlts(parsed.alternatives),
-            });
-            return;
+            const writtenIds = new Set(
+              getKlausurenWritten()
+                .map(e => e.klausurId)
+                .filter(Boolean) as string[],
+            );
+            const cachedIds = [parsed.klausurId, ...(parsed.alternatives ?? []).map(a => a.klausurId)];
+            if (cachedIds.some(id => writtenIds.has(id))) {
+              // Mindestens eine empfohlene Klausur wurde inzwischen bearbeitet → Cache verwerfen
+              localStorage.removeItem(cacheKey);
+            } else {
+              setRecommendation({
+                klausur: k,
+                reasons: parsed.reasons,
+                alternatives: buildAlts(parsed.alternatives),
+              });
+              return;
+            }
           }
         }
       } catch { /* ignore */ }
@@ -121,8 +189,10 @@ export function KlausurDesTages() {
     }
 
     // ── Stufe 2: KI-Plausibilitätstest unter den Top-3 ──────────────────────
+    // An einem Klausur-Schreibtag ist #1 bereits auf das Rechtsgebiet des Events
+    // gepinnt (getTop3Klausuren) — die KI darf die Hauptwahl dann NICHT umwerfen.
     const systemPrompt = getPromptById("klausur-select")?.prompt ?? "";
-    const userMessage = buildKiCandidatesMessage(top3, today);
+    const userMessage = buildKiCandidatesMessage(top3, today, eventArea);
 
     const parsed = await callJson<{
       klausurId: string;
@@ -135,26 +205,29 @@ export function KlausurDesTages() {
       ],
     });
 
-    // Fallback auf #1 wenn KI nichts liefert
-    const chosen = parsed
-      ? (all.find(x => x.id === parsed.klausurId) ?? top3[0].klausur)
-      : top3[0].klausur;
+    // Hauptwahl: an Event-Tagen fix #1 (gepinnt); sonst KI-Wahl mit Fallback auf #1.
+    const chosen = pinPrimary
+      ? top3[0].klausur
+      : parsed
+        ? (top3.find(x => x.klausur.id === parsed.klausurId)?.klausur ?? top3[0].klausur)
+        : top3[0].klausur;
 
-    // Alternativen: aus KI-Antwort oder die anderen Top-3
-    let alternatives: AiAlternative[];
-    if (parsed?.alternatives?.length) {
-      alternatives = buildAlts(parsed.alternatives);
-    } else {
-      // Fallback: die anderen beiden aus Top-3
+    // Alternativen (= Skizzier-Empfehlungen): aus KI-Antwort, sonst die anderen Top-3.
+    // Fallback greift auch wenn die KI Alternativen mit ungültigen/halluzinierten
+    // IDs liefert (buildAlts filtert die raus → wäre sonst leer).
+    let alternatives: AiAlternative[] = parsed?.alternatives?.length
+      ? buildAlts(parsed.alternatives).filter(a => a.klausur.id !== chosen.id)
+      : [];
+    if (alternatives.length === 0) {
       alternatives = top3
         .filter(s => s.klausur.id !== chosen.id)
         .slice(0, 2)
-        .map(s => ({ klausur: s.klausur, reason: `Score: ${s.score}` }));
+        .map(s => ({ klausur: s.klausur, reason: "Gute Skizzier-Klausur für heute" }));
     }
 
     const reasons = parsed?.reasoning?.length
       ? parsed.reasoning
-      : [`Score: ${top3[0].score}`];
+      : ["Beste Passung nach Tagesplan, Lernstand und Wiederholungs-Rhythmus"];
 
     const rec: AiRecommendation = { klausur: chosen, reasons, alternatives };
     setRecommendation(rec);
@@ -170,34 +243,55 @@ export function KlausurDesTages() {
   }, [callJson, reset]);
 
   /** Übernimmt eine Klausur als Task in die heutige Tagesliste.
+   *  kind "schreiben" = volle Klausur (5h), "skizze" = Lösungsskizze + Lösung lesen (2h).
    *  Idempotent: gleiche linkedKlausurId wird nicht doppelt eingefügt. */
-  const addKlausurToToday = useCallback((kl: Klausur) => {
-    const today = format(new Date(), "yyyy-MM-dd");
+  const addKlausurToToday = useCallback((kl: Klausur, kind: "schreiben" | "skizze" = "schreiben") => {
+    const today = format(currentDate(), "yyyy-MM-dd");
     const existing = getTasksForDate(today);
-    if (existing.some(t => t.linkedKlausurId === kl.id)) {
+    setTaskError(null);
+    if (existing.some(t => t.linkedKlausurId === kl.id && isSketchTask(t) === (kind === "skizze"))) {
       // schon drin → nur visuelles Feedback
       setAddedToTasks(kl.id);
       setTimeout(() => setAddedToTasks(null), 1500);
       return;
     }
+    const settings = getOnboarding();
+    const events = planningEvents(getCalendarEvents(), settings);
+    const fixed = existing.filter(task => task.done || task.source === "manual" || isFixedTask(task));
+    const proposed = { title: kind === "skizze" ? `Skizze: ${kl.title}` : kl.title, linkedKlausurId: kl.id, durationMinutes: kind === "skizze" ? 120 : 300 };
+    const budget = computeDayBudget([...fixed, proposed], eventsOnDate(events, today), { maxHours: dailyHours(settings), suppressReserve: true });
+    if (isStudyFreeDay(today, settings, events) || budget.overloadH > 0) {
+      setTaskError("Diese Klausur passt heute nicht zusätzlich in deinen Plan. Bitte zuerst feste Aufgaben oder den freien Tag in deinem Profil anpassen. Bereits geleistete Arbeit kannst du weiterhin eintragen.");
+      return;
+    }
     addTask({
       date: today,
-      title: kl.title,
+      title: kind === "skizze" ? `Skizze: ${kl.title}` : kl.title,
       linkedKlausurId: kl.id,
+      klausurMode: kind === "skizze" ? "read" : "written",
+      durationMinutes: kind === "skizze" ? 120 : 300,
       source: "manual",
     });
+    prepareLearningDays([]);
+    // Tagesprogramm ist eine eigene Komponente — per Event benachrichtigen,
+    // damit der neue Task sofort oben erscheint (sonst erst nach Reload).
+    window.dispatchEvent(new CustomEvent("lerntracker:tasks-changed"));
     setAddedToTasks(kl.id);
-    setAltsOpen(false);
     setTimeout(() => setAddedToTasks(null), 1800);
   }, []);
 
-  useEffect(() => { fetchRecommendation(false); }, [fetchRecommendation]);
+  useEffect(() => {
+    let cancelled = false;
+    void Promise.resolve().then(() => { if (!cancelled) void fetchRecommendation(false); });
+    return () => { cancelled = true; };
+  }, [fetchRecommendation]);
 
   const handleDone = () => {
     if (!recommendation) return;
     markKlausurWritten(recommendation.klausur, {
       rating,
       note,
+      klausurMode,
       validLeafIds: leafIdSet,
     });
     setSaved(true);
@@ -206,6 +300,7 @@ export function KlausurDesTages() {
       setSaved(false);
       setNote("");
       setRating(3);
+      setKlausurMode("written");
     }, 1500);
   };
 
@@ -261,7 +356,8 @@ export function KlausurDesTages() {
         <div className="pointer-events-none absolute -top-8 -right-8 w-40 h-40 bg-accent-400/20 rounded-full blur-3xl" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-        {/* Haupt-Empfehlung */}
+        {taskError && <p role="alert" className="mx-5 my-3 text-sm text-amber-700 bg-amber-50 p-3">{taskError}</p>}
+      {/* Haupt-Empfehlung */}
         <div
           onClick={() => setDetailOpen(true)}
           className="group relative p-5 cursor-pointer hover:bg-white/[0.02] transition-colors"
@@ -279,6 +375,7 @@ export function KlausurDesTages() {
                 <Zap className="h-3 w-3 text-amber-400" />
               </div>
             </div>
+            {bearbeitetBadge(k.id)}
             <Badge className="bg-white/10 text-white/80 text-[10px] border-0 backdrop-blur-sm">
               {AREA_LABELS[k.area]}
             </Badge>
@@ -295,10 +392,10 @@ export function KlausurDesTages() {
             ))}
           </div>
 
-          {/* Action-Row: Hinzufügen + PDF + Alternativen */}
+          {/* Action-Row: Schreiben + PDF + Skizzen */}
           <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
             <button
-              onClick={() => addKlausurToToday(k)}
+              onClick={() => addKlausurToToday(k, "schreiben")}
               className={cn(
                 "flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-medium transition-all",
                 justAddedMain
@@ -307,19 +404,18 @@ export function KlausurDesTages() {
               )}
             >
               {justAddedMain ? (
-                <><Check className="h-3 w-3" /> in Tagesliste</>
+                <><Check className="h-3 w-3" /> Im Tagesplan</>
               ) : (
-                <><Plus className="h-3 w-3" /> in Tagesliste</>
+                <><Plus className="h-3 w-3" /> In den Tagesplan (5h)</>
               )}
             </button>
             {k.source && (
               <button
                 onClick={() => {
-                  const filename = k.source!.replace(".pdf", "_komplett.pdf");
                   fetch("/api/pdf-open", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ filename }),
+                    body: JSON.stringify({ filename: k.source }),
                   }).catch(console.error);
                 }}
                 className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-medium bg-white/5 hover:bg-white/10 text-white/70 ring-1 ring-white/10 transition-all"
@@ -327,21 +423,25 @@ export function KlausurDesTages() {
                 <Eye className="h-3 w-3" /> PDF
               </button>
             )}
+            {k.source && <PdfIpadQr source={k.source} dark />}
             {recommendation.alternatives.length > 0 && (
               <button
                 onClick={() => setAltsOpen(v => !v)}
                 className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-medium bg-white/5 hover:bg-white/10 text-white/70 ring-1 ring-white/10 transition-all"
               >
-                {recommendation.alternatives.length} Alt.
+                {recommendation.alternatives.length} Skizzen
                 <ChevronDown className={cn("h-3 w-3 transition-transform", altsOpen && "rotate-180")} />
               </button>
             )}
           </div>
         </div>
 
-        {/* Alternativen-Dropdown */}
+        {/* Skizzen-Empfehlungen */}
         {altsOpen && recommendation.alternatives.length > 0 && (
           <div className="border-t border-white/5 bg-slate-950/60 px-3 py-2 space-y-1">
+            <div className="px-2 pt-1 text-[9px] font-semibold text-white/40 uppercase tracking-[0.16em]">
+              Alternativen — skizzieren (2h, Lösungsskizze + Lösung lesen) oder schreiben (5h)
+            </div>
             {recommendation.alternatives.map((alt) => {
               const justAdded = addedToTasks === alt.klausur.id;
               return (
@@ -356,20 +456,53 @@ export function KlausurDesTages() {
                     <Scale className="h-2.5 w-2.5 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[12px] font-medium text-white/90 truncate">{alt.klausur.title}</div>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="text-[12px] font-medium text-white/90 truncate">{alt.klausur.title}</span>
+                      {bearbeitetBadge(alt.klausur.id)}
+                    </div>
                     <div className="text-[10px] text-white/50 truncate">{alt.reason}</div>
                   </div>
+                  {alt.klausur.source && (
+                    <button
+                      onClick={() => {
+                        fetch("/api/pdf-open", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ filename: alt.klausur.source }),
+                        }).catch(console.error);
+                      }}
+                      className="shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-md bg-white/5 hover:bg-white/10 text-white/60 ring-1 ring-white/10 transition-all"
+                      aria-label="PDF öffnen"
+                    >
+                      <Eye className="h-3 w-3" />
+                    </button>
+                  )}
+                  {alt.klausur.source && <PdfIpadQr source={alt.klausur.source} dark />}
                   <button
-                    onClick={() => addKlausurToToday(alt.klausur)}
+                    onClick={() => addKlausurToToday(alt.klausur, "skizze")}
+                    title="Zum Skizzieren in den Tagesplan (2h)"
                     className={cn(
-                      "shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-md transition-all",
+                      "shrink-0 inline-flex items-center justify-center gap-1 h-7 px-2 rounded-md text-[10px] font-medium transition-all",
                       justAdded
                         ? "bg-accent-500/20 text-accent-300 ring-1 ring-accent-400/30"
                         : "bg-white/10 hover:bg-white/15 text-white/80 ring-1 ring-white/10"
                     )}
-                    aria-label="In Tagesliste"
+                    aria-label="Zum Skizzieren in den Tagesplan"
                   >
-                    {justAdded ? <Check className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+                    {justAdded ? <Check className="h-3 w-3" /> : <><Plus className="h-3 w-3" /> Skizze</>}
+                  </button>
+                  <button
+                    onClick={() => addKlausurToToday(alt.klausur, "schreiben")}
+                    title="Zum Schreiben in den Tagesplan (5h Realbedingungen)"
+                    className={cn(
+                      "shrink-0 inline-flex items-center justify-center gap-1 h-7 px-2 rounded-md text-[10px] font-medium transition-all",
+                      justAdded
+                        ? "bg-accent-500/20 text-accent-300 ring-1 ring-accent-400/30"
+                        : "bg-white/10 hover:bg-white/15 text-white/80 ring-1 ring-white/10"
+                    )}
+                    aria-label="Zum Schreiben in den Tagesplan"
+                  >
+                    {justAdded ? <Check className="h-3 w-3" /> : <><Plus className="h-3 w-3" /> 5h</>}
                   </button>
                 </div>
               );
@@ -455,11 +588,10 @@ export function KlausurDesTages() {
                 <Button
                   variant="outline"
                   onClick={async () => {
-                    const filename = k.source!.replace(".pdf", "_komplett.pdf");
                     await fetch("/api/pdf-open", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ filename }),
+                      body: JSON.stringify({ filename: k.source }),
                     }).catch(console.error);
                   }}
                   className="rounded-xl"
@@ -489,6 +621,28 @@ export function KlausurDesTages() {
             </div>
           ) : (
             <div className="space-y-4 pt-2">
+              {/* Modus-Toggle */}
+              <div className="flex rounded-xl border border-slate-200 overflow-hidden text-xs font-medium">
+                {([
+                  { v: "written", label: "✍ Geschrieben", sub: "100% Boost" },
+                  { v: "read",    label: "👁 Gelesen / Skizziert", sub: "50% Boost" },
+                ] as const).map(({ v, label, sub }) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setKlausurMode(v)}
+                    className={cn(
+                      "flex-1 py-2.5 px-3 text-left transition-all",
+                      klausurMode === v
+                        ? v === "written" ? "bg-emerald-600 text-white" : "bg-sky-500 text-white"
+                        : "bg-white text-slate-500 hover:bg-slate-50"
+                    )}
+                  >
+                    <div className="font-semibold text-[11px]">{label}</div>
+                    <div className={cn("text-[9px] mt-0.5", klausurMode === v ? "text-white/70" : "text-slate-400")}>{sub}</div>
+                  </button>
+                ))}
+              </div>
               <div>
                 <label className="text-xs font-medium text-slate-600 mb-2 block">
                   Wie lief es? ({rating}/5)

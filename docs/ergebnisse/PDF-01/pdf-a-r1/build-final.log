@@ -1,0 +1,84 @@
+
+> lern-tracker@0.1.0 build
+> next build --webpack
+
+▲ Next.js 16.4.0 (webpack)
+✓ Running next.config.ts took 61ms
+
+  Creating an optimized production build ...
+  Using tsconfig file: scripts/pdf-viewer/pdf-a-r1-tsconfig.json
+  Using tsconfig file: scripts/pdf-viewer/pdf-a-r1-tsconfig.json
+  Using tsconfig file: scripts/pdf-viewer/pdf-a-r1-tsconfig.json
+✓ Compiled successfully in 14.5s
+  Running TypeScript ...
+  Finished TypeScript in 6.6s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/28) ...
+  Generating static pages using 7 workers (7/28) 
+  Generating static pages using 7 workers (14/28) 
+  Generating static pages using 7 workers (21/28) 
+✓ Generating static pages using 7 workers (28/28) in 424ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /admin
+├ ƒ /api/account/[[...action]]
+├ ƒ /api/account/admin-overview
+├ ƒ /api/account/admin/ai-credential
+├ ƒ /api/account/ai-credential
+├ ƒ /api/ai
+├ ƒ /api/auth/[...all]
+├ ƒ /api/catalog/import
+├ ƒ /api/catalog/klausuren
+├ ƒ /api/catalog/pdf
+├ ƒ /api/catalog/pdf-engine/[...asset]
+├ ƒ /api/catalog/search
+├ ƒ /api/docs/parse
+├ ƒ /api/docs/tag
+├ ƒ /api/feedback
+├ ƒ /api/lan-url
+├ ƒ /api/learning/checkin
+├ ƒ /api/learning/checkin/commands/[requestId]
+├ ƒ /api/learning/commands/[requestId]
+├ ƒ /api/learning/personal
+├ ƒ /api/learning/personal/commands/[requestId]
+├ ƒ /api/learning/plans
+├ ƒ /api/learning/plans/commands/[requestId]
+├ ƒ /api/learning/plans/preview
+├ ƒ /api/learning/preparation
+├ ƒ /api/learning/preparation/commands/[requestId]
+├ ƒ /api/learning/preparation/preview
+├ ƒ /api/learning/progress
+├ ƒ /api/learning/schedule
+├ ƒ /api/learning/schedule/commands/[requestId]
+├ ƒ /api/openrouter-credits
+├ ƒ /api/openrouter-models
+├ ƒ /api/pdf-file
+├ ƒ /api/pdf-open
+├ ○ /feedback
+├ ○ /kalender
+├ ○ /klausuren
+├ ○ /konto
+├ ○ /konto/anmelden
+├ ƒ /konto/einrichten
+├ ○ /konto/ki
+├ ƒ /konto/klausuren
+├ ƒ /konto/klausuren/pdf
+├ ○ /konto/klausuren/suche
+├ ƒ /konto/verwaltung
+├ ƒ /konto/zuruecksetzen
+├ ○ /onboarding
+├ ○ /plan
+├ ○ /schreiben
+├ ƒ /schreiben/[id]
+├ ○ /schreiben/notizblock
+├ ○ /themen
+└ ○ /wochenplan
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

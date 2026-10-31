@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-17T18:05:14.043714+00:00",
+  "tests": {
+    "command": "node --import tsx --test --test-reporter=spec tests/auth-production-config.test.ts",
+    "passed": 21,
+    "failed": 0,
+    "scope": "synthetic configuration and instrumented resource factories; no authentication integration repeated"
+  },
+  "lint": {
+    "exitCode": 0,
+    "scope": [
+      "src/lib/server/auth/runtime.ts",
+      "src/lib/server/auth/production-config.ts",
+      "tests/auth-production-config.test.ts"
+    ]
+  },
+  "types": {
+    "exitCode": 0,
+    "scope": "temporary narrow tsconfig, same three entries and necessary read-only imports",
+    "incremental": false
+  },
+  "functionalTestsRepeatedAtContinuation": false,
+  "productionBuild": false,
+  "realDatabaseContact": false,
+  "realHostOrProviderContact": false,
+  "existingSecretFilesRead": false,
+  "productionRuntimeRelease": "blocked with 503 even after valid configuration",
+  "otherCapturedProductFilesUnchanged": true,
+  "cleanup": "own temporary type configuration and copied temporary logs removed; no server or cluster started"
+}

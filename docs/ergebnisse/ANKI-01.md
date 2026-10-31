@@ -1,0 +1,11 @@
+# ANKI-01 — Ergebnis
+
+## R38-ANKI-EXPORT-VERTRAG · 25.10.2026
+
+Den begrenzten Vorschlag für einen optionalen manuellen Einweg-Export in [R38-ANKI-EXPORT-VERTRAG.md](../entwuerfe/ANKI-01/R38-ANKI-EXPORT-VERTRAG.md) erstellt. Der geprüfte App-Datenstand enthält Themen, persönliche Lernnotizen, Fortschritt und themenbezogene Wiederholungsstände, aber keine strukturierten Anki-Karten mit Vorder- und Rückseite. Deshalb ist aktuell kein Kartenexport aus der App möglich. Private Konto- oder Anki-Profildaten wurden nicht gelesen; über deren konkreten Inhalt wird keine Aussage getroffen.
+
+Der Export bleibt konditional auf eine später konkret benannte, bereits vorhandene strukturierte Kartenquelle. Eine manuelle Kartenpflege ist eine mögliche fehlende Datenquelle, aber weder bestehende Funktion noch automatisch beauftragter Editor; der Exportvertrag fügt keine Kartenerstellung hinzu. Vorgeschlagen sind ein stabiler Stex-Kartenschlüssel, ein UTF-8-Tabtextformat, eigentümergebundene Auswahl, festes Feldmapping, sichere Textbehandlung, Duplikatregeln und gezielte synthetische Importfälle. Die Textbehandlung normalisiert und validiert Eingaben, escaped rohe Nutzzeichen und setzt danach kontrollierte `<br>`-Umbrüche ein, sodass wörtlich eingegebenes `<br>` escaped bleibt. Eine echte Formatprüfung ist ausdrücklich erst Teil der späteren Implementierung; in dieser Vorbereitung wurde kein Anki-Importer ausgeführt.
+
+Verwendeter Stand: `docs/AUSBAUPLAN_2026-10-25.md`, Briefing `docs/aufgaben/ANKI-01.md`, der bisherige Anki-Abschnitt in `docs/WEITERENTWICKLUNG.md`, aktuelle relevante Teile von `docs/ergebnisse/DATA-01.md` sowie die vorhandenen Themen-, Lern-, Konto-, Sicherungs- und Routenverträge. Die im Projekt gemeldete R37-Sperre bleibt vor Produkt-/Schema-/UI-Umsetzung bestehen.
+
+Geänderte Dateien: nur dieser Ergebnisnachtrag und `docs/entwuerfe/ANKI-01/R38-ANKI-EXPORT-VERTRAG.md`. Produktcode, Schema, Sicherungscode, Layout, Kontodaten, `CHATS.json` und Zentraldokumente blieben unverändert. Keine Tests, Builds, Installationen, Serveraktionen, externen Dienste, Nachrichten an andere Chats oder Unteragenten verwendet. Die geforderte Lese- und Vertragsarbeit ist abgeschlossen; kein Produktwriterauftrag folgt daraus automatisch.

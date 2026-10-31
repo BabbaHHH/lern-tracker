@@ -1,0 +1,25 @@
+[Unit]
+Description=Stex pilot serial search worker - PREPARATION BLOCKED
+After=network.target
+
+[Service]
+Type=simple
+User=stex-app
+Group=stex-app
+WorkingDirectory=/srv/stex/current
+EnvironmentFile=/etc/stex/common.env
+EnvironmentFile=/etc/stex/core-secrets.env
+# HOST-PREPARATION-BLOCK: configuredPersistence is implemented; target operation is not approved.
+ExecStartPre=/usr/bin/false
+ExecStart=/usr/bin/node --import tsx scripts/search/worker.mts watch
+Restart=no
+TimeoutStopSec=45
+KillSignal=SIGTERM
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/srv/stex/data/files
+StandardOutput=null
+StandardError=null

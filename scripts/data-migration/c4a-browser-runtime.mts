@@ -1,0 +1,31 @@
+import {randomBytes} from 'node:crypto';
+import {mkdtemp,writeFile,rm} from 'node:fs/promises';
+import {join,resolve} from 'node:path';
+import {createServer} from 'node:net';
+import {spawn} from 'node:child_process';
+import {createInterface} from 'node:readline';
+import EmbeddedPostgres from 'embedded-postgres';
+import {Database} from '../../src/lib/server/persistence/database';
+import {PrivateFiles} from '../../src/lib/server/persistence/files';
+import {AccountService} from '../../src/lib/server/auth/service';
+import {SyntheticAccount} from '../pdf-a/fixtures';
+import {importSearchFixture} from '../search/catalog-fixture';
+import {seedPreparationFixture} from './c3b2a-fixture.mts';
+import {WritingService} from '../../src/lib/server/learning/writing-service';
+import {lockState} from '../../src/lib/server/persistence/repository';
+import {recordKey} from '../../src/lib/data-migration/migration';
+async function freePort(){const s=createServer();await new Promise<void>(r=>s.listen(0,'127.0.0.1',r));const a=s.address();if(!a||typeof a==='string')throw Error('port');await new Promise<void>(r=>s.close(()=>r()));return a.port;}
+const snapshot=resolve(process.argv[2]);if(!snapshot.startsWith('/private/tmp/stex-data-c4a-app-'))throw Error('Own QA copy required.');
+const root=await mkdtemp('/private/tmp/stex-c4a-browser-'),port=await freePort(),webPort=await freePort();
+const password=randomBytes(24).toString('hex'),secret=randomBytes(48).toString('hex'),mailKey=randomBytes(48).toString('hex');
+for(const [name,value] of [['postgres-password',password],['auth-secret',secret],['auth-mail-key',mailKey]])await writeFile(join(root,name),value,{mode:0o600});
+const cluster=new EmbeddedPostgres({databaseDir:join(root,'postgres'),port,user:'stex_local',password,persistent:true,authMethod:'scram-sha-256',createPostgresUser:false,initdbFlags:['--encoding=UTF8','--locale=C'],postgresFlags:['-h','127.0.0.1','-k',root],onLog:()=>{},onError:()=>{}});
+await cluster.initialise();await cluster.start();await cluster.createDatabase('stex_local');
+const database=new Database({host:'127.0.0.1',port,user:'stex_local',password,database:'stex_local'});await database.migrate();const files=new PrivateFiles(join(root,'files'));await files.initialize();const baseURL=`http://localhost:${webPort}`,auth=new AccountService({database,files,baseURL,secret,mailKey});
+const a=new SyntheticAccount(auth,'c4a-browser-a'),b=new SyntheticAccount(auth,'c4a-browser-b');await a.initialize();await b.initialize();await importSearchFixture(auth,a.headers());await seedPreparationFixture(auth,a,'search-synthetic-case');
+const writing=new WritingService(auth),v=await writing.read(a.headers());await writing.submit(a.headers(),{contractVersion:1,action:'writing',requestId:'c4a_browser_fixture',expectedAccountId:a.name,expectedAccessGeneration:v.account.accessGeneration,expectedSessionContext:v.account.sessionContext,kind:'draft',id:'c4a-existing-draft',expectedRevision:null,operation:'save',fields:{title:'Vorhandener synthetischer Entwurf',area:'zr',type:'Urteil',klausurId:'search-synthetic-case',sachverhalt:'Künstlicher Sachverhalt, kein Originaldokument.',contentHtml:'<h2>Bestand</h2><p>Bestehender eigener Text.</p>',contentText:'Bestand\n\nBestehender eigener Text.'}});
+await database.transaction(async c=>{await lockState(c);await c.query("UPDATE stex.personal_records SET payload=payload||$2::jsonb,normalized=normalized||'{\"preserveC4a\":true}' WHERE record_key=$1",[recordKey('draft',a.name,'c4a-existing-draft'),JSON.stringify({unknownPrivate:{keep:'C4a ORIGINAL'},feedback:[{id:'old-feedback',scope:'gesamt',feedbackText:'Vorhandenes synthetisches Feedback. <script>bleibt Text</script>',model:'synthetic',markers:[],createdAt:'2026-10-16T07:00:00Z',unknown:true}]})]);});
+const metadata={root,port,webPort,baseURL,snapshot,accounts:[a.name,b.name]};await writeFile(resolve('docs/entwuerfe/DATA-01/pruefungen/data-c4a-browser-runtime.json'),JSON.stringify(metadata,null,2)+'\n');console.log(JSON.stringify(metadata));
+const next=spawn(process.execPath,['--import','tsx','--import',resolve('scripts/data-migration/c4a-network-guard.mts'),join(snapshot,'node_modules/next/dist/bin/next'),'dev','--webpack','--hostname','127.0.0.1','--port',String(webPort)],{cwd:snapshot,env:{...process.env,NEXT_TELEMETRY_DISABLED:'1',STEX_AUTH_MODE:'local',STEX_LEARNING_MODE:'account',STEX_ISOLATED_DEV:'1',BETTER_AUTH_URL:baseURL,STEX_LOCAL_DATA_DIR:root,STEX_LOCAL_POSTGRES_PORT:String(port)},stdio:['ignore','inherit','inherit']});
+let stopping=false;async function stop(){if(stopping)return;stopping=true;if(next.exitCode===null){next.kill('SIGTERM');await new Promise<void>(r=>next.once('exit',()=>r()));}await database.close();await cluster.stop();await rm(root,{recursive:true,force:true});process.exit(0);}
+createInterface({input:process.stdin}).on('line',line=>{if(line==='stop')void stop();});process.on('SIGTERM',()=>void stop());process.on('SIGINT',()=>void stop());

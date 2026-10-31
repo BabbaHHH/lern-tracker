@@ -2,7 +2,7 @@
 // Jedes ContextFlag mappt auf einen Textblock — ein Prompt deklariert seine Flags
 // und bekommt einen assemblierten String zurück.
 
-import { differenceInWeeks, parseISO, format } from "date-fns";
+import { differenceInWeeks, differenceInCalendarDays, parseISO, format } from "date-fns";
 import { de } from "date-fns/locale";
 import { TOPICS, getLeafTopics } from "@/lib/topics";
 import { AREA_LABELS, ACTIVITY_LABELS, type Area, type ActivityType } from "@/lib/types";
@@ -10,15 +10,22 @@ import {
   getProgress, getCalendarEvents, getOnboarding, getLernstart, getExamDate,
   getTrackingEntries, getKlausuren, getDocuments, getLearningEntries,
   getTasksSince, getAgWeekOverrides, getWeekKey, getAgDaysForWeek,
+  getFehlerProfil,
 } from "@/lib/store";
+import { materializeRecurringTermine } from "@/lib/plan-applier";
+import { computeDayBudget, dailyHours, eventsOnDate, isFixedTask, isStudyFreeDay, planningEvents } from "./day-budget";
+import { localDate, isDateOnly, currentDate } from "./dates";
+import { describeStudyPhase, getStudyBlock, studyPhasesContext } from "./study-phases";
+import { planningDocumentsContext } from "./planning-documents";
+import { buildTopicReviews } from "./spaced-repetition";
 import type { ContextFlag } from "@/lib/prompts";
 
 function buildTimeStatus(): string {
-  const now = new Date();
+  const now = currentDate();
   const lernstart = getLernstart();
   const examDate = getExamDate();
-  const weeksLeft = differenceInWeeks(parseISO(examDate), now);
-  const weeksElapsed = differenceInWeeks(now, parseISO(lernstart));
+  const weeksLeft = examDate ? differenceInWeeks(parseISO(examDate), now) : "noch nicht festgelegt";
+  const weeksElapsed = isDateOnly(lernstart) ? differenceInWeeks(now, parseISO(lernstart)) : "noch nicht festgelegt";
   return `ZEITSTATUS:
 - Heute: ${format(now, "dd.MM.yyyy (EEEE)", { locale: de })}
 - Lernstart: ${lernstart}
@@ -74,8 +81,11 @@ function buildTracking(): string {
       )}h gesamt, Ø-Rating: ${avg}/5`;
     })
     .join("\n");
-  const now = new Date();
-  const last7 = tracking.filter((t) => differenceInWeeks(now, parseISO(t.date)) < 1);
+  const now = currentDate();
+  const last7 = tracking.filter((t) => {
+    const age = differenceInCalendarDays(now, parseISO(t.date));
+    return age >= 0 && age < 7;
+  });
   const last7Summary = last7.length > 0
     ? `${last7.length} Sessions, ${Math.round(last7.reduce((s, t) => s + t.durationMinutes, 0) / 60)}h`
     : "Keine Aktivität";
@@ -88,7 +98,10 @@ function buildTracking(): string {
     ? klausurEntries
         .map((t) => {
           const k = klausuren.find((kl) => kl.id === t.klausurId);
-          return `- ${t.date}: "${k?.title || "?"}" (${k?.area || "?"}) — Rating: ${t.rating || "-"}/5`;
+          // "read" = nur gelesen/skizziert (50% Lerneffekt einer echten Klausur)
+          const mode = t.klausurMode === "read" ? "nur gelesen/skizziert" : "geschrieben";
+          const note = t.note ? ` — Notiz: "${t.note.slice(0, 120)}"` : "";
+          return `- ${t.date}: "${k?.title || "?"}" (${k?.area || "?"}) — ${mode}, Rating: ${t.rating || "-"}/5${note}`;
         })
         .join("\n")
     : "Noch keine Klausuren geschrieben.";
@@ -124,6 +137,30 @@ Offen:
 ${openLines || "—"}`;
 }
 
+/**
+ * Wie buildTasks, aber NUR erledigte Tasks der letzten 14 Tage,
+ * die noch keine KI-Bewertung erhalten haben (reviewedAt ist nicht gesetzt).
+ * Wird vom progress-review Prompt benutzt, damit dieselben Tasks nicht
+ * mehrfach hochbewertet werden.
+ */
+function buildTasksUnreviewed(): string {
+  const tasks = getTasksSince(14).filter((t) => t.done && !t.reviewedAt);
+  if (tasks.length === 0) {
+    return "ERLEDIGTE TASKS ZUR BEWERTUNG (unreviewed, letzte 14 Tage): Keine — alle bereits bewertet oder nichts abgehakt.";
+  }
+  const leafs = getLeafTopics(TOPICS);
+  const topicLabel = (id?: string) => leafs.find((t) => t.id === id)?.label || "— nicht zugeordnet";
+  const lines = tasks
+    .map(
+      (t) =>
+        `- ${t.date}: "${t.title}" → ${topicLabel(t.linkedTopicId)}${t.source === "manual" ? " (eigene)" : ""} [id=${t.id}, linkedTopicId=${t.linkedTopicId || "—"}]`,
+    )
+    .join("\n");
+  return `ERLEDIGTE TASKS ZUR BEWERTUNG (unreviewed, letzte 14 Tage, ${tasks.length}):
+NUR DIESE TASKS bewerten — bereits geprüfte Tasks tauchen hier nicht auf.
+${lines}`;
+}
+
 function buildLearningNotes(): string {
   const entries = getLearningEntries().slice(0, 40);
   if (entries.length === 0) return "LERN-NOTIZEN: Keine.";
@@ -143,13 +180,14 @@ ${keys.map((k) => `- ${k}: ${sa[k]}%`).join("\n")}`;
 
 function buildCalendar(): string {
   const events = getCalendarEvents();
-  const now = new Date();
+  const now = currentDate();
   // Nur feste Termine — keine plan-generierten Klausuren (die sind Output, nicht Input)
   const upcoming = events
     .filter((e) => {
-      if (e.eventType === "klausur") return false;
+      if (e.eventType === "klausur" && e.source === "plan") return false;
       const d = parseISO(e.date);
-      return d >= now && differenceInWeeks(d, now) <= 4;
+      const daysAhead = differenceInCalendarDays(d, now);
+      return daysAhead >= 0 && daysAhead < 28;
     })
     .sort((a, b) => a.date.localeCompare(b.date))
     .map((e) => `${e.date}: ${e.label} (${e.eventType})`)
@@ -209,32 +247,65 @@ ${sonstigesLines}
 ${kaiserLines}
 - Urlaub: ${urlaubLines}
 - Onboarding-Dokumente:
-${onboardingDocLines}`;
+${onboardingDocLines}
+
+${studyPhasesContext(o)}
+
+${planningDocumentsContext(o.documents)}
+
+WIEDERHOLUNGSPLAN (aus tatsächlichen Lernaktivitäten und ausdrücklichen Abrufbewertungen):
+${buildTopicReviews(getTrackingEntries()).slice(0, 100).map(review => `- ${review.topicId}: fällig ${review.due}, letzter Abruf/Lernkontakt ${review.lastDate}, Abstand ${review.intervalDays} Tage`).join("\n") || "Noch keine bearbeiteten Themen. Nach dem ersten Lernkontakt wird eine Wiederholung am Folgetag fällig."}
+Fällige Wiederholungen in vorhandene Zeitslots einplanen; bei Zeitmangel verschieben und nennen. Ein einziges Review je Thema für die aktuelle Fälligkeit, keine vorweggenommenen Folgeintervalle ohne Abrufbewertung.`;
 }
 
 function buildKlausuren(): string {
   const klausuren = getKlausuren();
   if (klausuren.length === 0) return "KLAUSUREN: Keine eingetragen.";
   const tracking = getTrackingEntries().filter((t) => t.activityType === "klausur" && t.klausurId);
-  const writtenMap = new Map<string, { date: string; rating?: number }>();
+  const writtenMap = new Map<string, { date: string; rating?: number; mode: "written" | "read" }>();
   tracking.forEach((t) => {
     const existing = writtenMap.get(t.klausurId!);
     if (!existing || t.date > existing.date) {
-      writtenMap.set(t.klausurId!, { date: t.date, rating: t.rating });
+      writtenMap.set(t.klausurId!, { date: t.date, rating: t.rating, mode: t.klausurMode ?? "written" });
     }
   });
-  const written = klausuren.filter((k) => writtenMap.has(k.id)).length;
-  return `KLAUSUREN (${klausuren.length} gesamt, ${written} geschrieben):
-${klausuren
-  .slice(0, 30)
-  .map((k) => {
-    const w = writtenMap.get(k.id);
-    const status = w
-      ? ` ✓ geschrieben ${w.date}${w.rating ? ` (${w.rating}/5)` : ""}`
-      : " ○ noch nicht geschrieben";
-    return `- ${k.id}: "${k.title}" [${k.area}${k.type ? "/" + k.type : ""}] (${k.date}) — ${k.source} —${status}`;
-  })
-  .join("\n")}`;
+
+  // Bearbeitete Klausuren VOLLSTÄNDIG listen (das ist die Historie, die zählt) —
+  // offene nur als Statistik pro Rechtsgebiet/Typ (sonst 280 Zeilen Rauschen).
+  const done = klausuren.filter((k) => writtenMap.has(k.id));
+  const open = klausuren.filter((k) => !writtenMap.has(k.id));
+  const writtenCount = done.filter((k) => writtenMap.get(k.id)!.mode === "written").length;
+  const readCount = done.length - writtenCount;
+
+  const doneLines = done.length > 0
+    ? done
+        .sort((a, b) => writtenMap.get(b.id)!.date.localeCompare(writtenMap.get(a.id)!.date))
+        .map((k) => {
+          const w = writtenMap.get(k.id)!;
+          const status = w.mode === "read"
+            ? `nur gelesen/skizziert ${w.date}`
+            : `✓ geschrieben ${w.date}`;
+          return `- ${k.id}: "${k.title}" [${k.area}${k.type ? "/" + k.type : ""}] — ${status}${w.rating ? ` (${w.rating}/5)` : ""}`;
+        })
+        .join("\n")
+    : "—";
+
+  const openByGroup = new Map<string, number>();
+  open.forEach((k) => {
+    const key = `${AREA_LABELS[k.area]}${k.type ? " / " + k.type : ""}`;
+    openByGroup.set(key, (openByGroup.get(key) ?? 0) + 1);
+  });
+  const openStats = [...openByGroup.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([label, n]) => `  ${label}: ${n}`)
+    .join("\n");
+
+  return `KLAUSUREN (${klausuren.length} in der Datenbank, ${writtenCount} geschrieben, ${readCount} gelesen/skizziert):
+BEARBEITET (geschrieben = volle Klausurpraxis; gelesen/skizziert = nur ~50% Lerneffekt, ersetzt KEINE echte Klausurpraxis):
+${doneLines}
+
+NOCH OFFEN (${open.length} Klausuren, verfügbar nach Rechtsgebiet/Typ):
+${openStats || "—"}`;
 }
 
 function buildDocs(): string {
@@ -253,12 +324,12 @@ function buildTopics(): string {
 
   // Coverage-Gap berechnen: welche Leaves waren in den letzten 90 Tagen in KEINEM Task?
   // Quelle: Tasks (geplant + erledigt) + Tracking-Einträge.
-  const cutoff = new Date();
+  const cutoff = currentDate();
   cutoff.setDate(cutoff.getDate() - 90);
-  const cutoffStr = cutoff.toISOString().slice(0, 10);
+  const cutoffStr = localDate(cutoff);
 
-  const tasks = getTasksSince(90);
-  const tracking = getTrackingEntries().filter((t) => t.date >= cutoffStr);
+  const tasks = getTasksSince(90).filter(task => task.date <= localDate());
+  const tracking = getTrackingEntries().filter((t) => t.date >= cutoffStr && t.date <= localDate());
   const coveredIds = new Set<string>();
   tasks.forEach((t) => { if (t.linkedTopicId) coveredIds.add(t.linkedTopicId); });
   tracking.forEach((t) => t.topicIds.forEach((tid) => coveredIds.add(tid)));
@@ -289,56 +360,45 @@ ${leafs.map((t) => `${t.id}|${t.area}|${t.label}`).join("\n")}
 ⚠️ COVERAGE-LÜCKEN (Stand letzte 90 Tage): ${coveragePct}% Coverage, ${gaps.length} Topics waren in keinem Task und keinem Tracking-Eintrag:
 ${gapsBlock}
 
-WICHTIG: Diese Lücken MÜSSEN in den nächsten Wochen mindestens einmal eingeplant werden,
-es sei denn ein Topic ist nicht examensrelevant in Berlin (GJPA) — dann begründen warum.`;
+Priorisiere diese Lücken über die verbleibende Ausbildungszeit. Plane in den nächsten vier Wochen nur die innerhalb des Zeitbudgets sinnvollen Themen; nenne weitere Lücken im Ausblick. Künftige Aufgaben belegen noch keine erfolgte Bearbeitung.`;
 }
 
-/** Tageszeit-Budget der nächsten 4 Wochen — Termine zählen, Rest = freie Lernzeit. */
+/** Tageszeit-Budget der nächsten 4 Wochen — Termine + bereits geplanter Content zählen, Rest = freie Lernzeit. */
 function buildDailyBudget(): string {
-  const TARGET_HOURS = 7;
-  const tasks = getTasksSince(0).filter((t) => !t.done);
-  const today = new Date();
-  const days: { date: string; weekday: string; termine: { title: string; hours: number }[]; totalH: number }[] = [];
+  const settings = getOnboarding();
+  const maxHours = dailyHours(settings);
+  const today = currentDate();
+  const future = new Date(today);
+  future.setDate(today.getDate() + 28);
+  materializeRecurringTermine(localDate(today), localDate(future));
+  // An adjustment replaces unfinished AI content, but keeps appointments,
+  // manual tasks and completed work. Do not charge both plans to the same day.
+  const tasks = getTasksSince(0).filter(task => !task.deferred && (task.done || task.source === "manual" || isFixedTask(task)));
+  const retainedEventIds = new Set(tasks.flatMap(task => task.calendarEventId ? [task.calendarEventId] : []));
+  const events = planningEvents(getCalendarEvents().filter(event => event.source !== "plan" || retainedEventIds.has(event.id)), settings);
+  const lines: string[] = [];
   for (let i = 0; i < 28; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
-    const dateStr = d.toISOString().slice(0, 10);
-    const dayTasks = tasks.filter((t) => t.date === dateStr);
-    const termine: { title: string; hours: number }[] = [];
-    for (const t of dayTasks) {
-      const m = t.title.match(/\((\d+(?:\.\d+)?)h\)/);
-      if (m) termine.push({ title: t.title, hours: Number(m[1]) });
-    }
-    const totalH = termine.reduce((s, t) => s + t.hours, 0);
-    days.push({
-      date: dateStr,
-      weekday: format(d, "EEE", { locale: de }),
-      termine,
-      totalH,
-    });
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    const dateStr = localDate(date);
+    const dayEvents = eventsOnDate(events, dateStr);
+    const dayTasks = tasks.filter(task => task.date === dateStr);
+    const free = isStudyFreeDay(dateStr, settings, events);
+    const budget = computeDayBudget(dayTasks, dayEvents, { maxHours, suppressReserve: free });
+    const sprint = getStudyBlock(dateStr, settings);
+    const status = free ? "FREIER TAG — keine zusätzlichen Aufgaben" : budget.overloadH > 0
+      ? "ÜBERFÜLLT — Terminkonflikt, keine zusätzlichen Aufgaben"
+      : `${(budget.remainingMinutes / 60).toFixed(1)}h verfügbar`;
+    lines.push(`${dateStr} (${format(date, "EEE", { locale: de })}): ${budget.totalH.toFixed(1)}h belegt · ${status}. ${dayTasks.map(task => task.title).concat(dayEvents.map(event => event.label)).join("; ") || "Keine festen Aufgaben"}${sprint ? ` · ${describeStudyPhase(sprint.phase)} · Lernblock ${sprint.number} (${sprint.start} bis ${sprint.end})` : ""}`);
   }
-
-  const lines = days.map((d) => {
-    const remaining = TARGET_HOURS - d.totalH;
-    const status =
-      d.totalH >= TARGET_HOURS
-        ? "ÜBERFÜLLT — keinen Content mehr einplanen"
-        : remaining < 2
-          ? `nur ${remaining.toFixed(1)}h frei — höchstens 1 kurzer Content-Task`
-          : `${remaining.toFixed(1)}h frei für Content (${Math.floor(remaining / 1.5)}-${Math.ceil(remaining / 1.5)} Tasks à ~1.5h)`;
-    const terminList = d.termine.length === 0 ? "—" : d.termine.map((t) => `${t.title}`).join(", ");
-    return `${d.date} (${d.weekday}): Termine ${d.totalH.toFixed(1)}h [${terminList}] · ${status}`;
-  });
-
-  return `TÄGLICHES ZEITBUDGET (Zielwert ${TARGET_HOURS}h reine Lernzeit/Tag, inkl. Termine):
+  return `TÄGLICHES ZEITBUDGET — harte Obergrenze ${maxHours}h einschließlich Termine, Vor- und Nachbereitung:
 ${lines.join("\n")}
-
-WICHTIG: Du planst Content-Tasks NUR in die freie Restzeit. Tage mit ÜBERFÜLLT-Status: KEINE Content-Tasks. Sonst sprengst du das realistische Tagesbudget.`;
+Der neue Plan ersetzt unerledigten bisherigen KI-Content innerhalb seines Zeitraums. Die Tabelle zeigt deshalb die verbleibenden festen Verpflichtungen. Klausur-Slots und konkrete Klausur-Aufgaben werden nur einmal gezählt. Skizzen sind optionale 2h-Blöcke, keine zusätzliche tägliche Pflicht. Plane sie nur, wenn sie in die Restzeit passen. An Klausur-Schreibtagen gibt es keine zusätzliche Skizzenpflicht. Freie Tage und Urlaub bleiben frei. Restzeit darf ungenutzt bleiben. Überlastung offen benennen.`;
 }
 
 function buildAgWeeks(): string {
   const overrides = getAgWeekOverrides();
-  const thisWeek = getWeekKey(new Date());
+  const thisWeek = getWeekKey(currentDate());
   const current = getAgDaysForWeek(thisWeek);
   const entries = Object.values(overrides);
   return `AG-WOCHEN:
@@ -346,11 +406,31 @@ function buildAgWeeks(): string {
 ${entries.length > 0 ? `- Overrides: ${entries.map((o) => `${o.weekKey}:${JSON.stringify(o.agDays)}[${o.source}]`).join(", ")}` : "- Keine expliziten Overrides"}`;
 }
 
+function buildFehlerprofil(): string {
+  const profil = getFehlerProfil();
+  const entries = Object.entries(profil.markers);
+  if (entries.length === 0) {
+    return `WIEDERKEHRENDE MUSTER DIESES NUTZERS:
+- Noch keine Daten (erste Korrektur). Erkenne Muster sorgfältig, damit das Profil zu wachsen beginnt.`;
+  }
+  // Nach Häufigkeit, dann Aktualität sortieren; Top 12.
+  const top = entries
+    .sort((a, b) => b[1].count - a[1].count || b[1].lastSeen.localeCompare(a[1].lastSeen))
+    .slice(0, 12)
+    .map(([key, e]) => `- ${e.label} (${key}): ${e.count}× [${e.trend}], zuletzt ${e.lastSeen.slice(0, 10)}`)
+    .join("\n");
+  return `WIEDERKEHRENDE MUSTER DIESES NUTZERS (lernendes Fehlerprofil über bisherige Klausuren):
+${top}
+
+NUTZE diese Muster je nach Aufgabe: Bei einer KORREKTUR besonders darauf achten, Rückfälle ausdrücklich benennen und spürbare Besserungen loben. Bei der LERNPLANUNG gezielt Übungen einplanen, die diese Schwächen trainieren (passende Klausurtypen, Stil-/Form-Drills zu den häufigsten Mustern).`;
+}
+
 const BUILDERS: Record<ContextFlag, () => string> = {
   timeStatus: buildTimeStatus,
   progress: buildProgress,
   tracking: buildTracking,
   tasks: buildTasks,
+  tasksUnreviewed: buildTasksUnreviewed,
   learningNotes: buildLearningNotes,
   selfAssessment: buildSelfAssessment,
   calendar: buildCalendar,
@@ -360,6 +440,7 @@ const BUILDERS: Record<ContextFlag, () => string> = {
   topics: buildTopics,
   agWeeks: buildAgWeeks,
   dailyBudget: buildDailyBudget,
+  fehlerprofil: buildFehlerprofil,
 };
 
 export function buildContextFor(flags: ContextFlag[]): string {

@@ -1,0 +1,23 @@
+✔ Betreiber-Persistenz übernimmt exakt gemeinsamen Produktionsvertrag, ohne URI-/Dateifallback (5.48375ms)
+✔ Produktionsoperator reicht dieselben geprüften Secrets/Origin/DB/Dateien an Service weiter (0.821917ms)
+✔ finish/recover sind explizite injizierte Betreiberaktionen, kein Runtime-/Migrationsaufruf (0.679ms)
+✔ Produktions-init und -Mailvorschau scheitern vor allen Ressourcen/Secretoperationen (0.680958ms)
+✔ gemischte/fehlende/vertippte Modi führen nie auf lokale Dateien oder rohe DATABASE_URL zurück (1.454417ms)
+✔ fehlende Produktionspflichtwerte werden vor Pool-/Servicekonstruktion abgewiesen (0.416583ms)
+✔ lokale Produktionsreste und URI-TLSoptionen können den gemeinsamen Vertrag nicht umgehen (0.324125ms)
+✔ unbekannte Befehle und falsche Argumentzahl werden vor mkdir/Pool gelesen abgewiesen (0.325708ms)
+✔ lokaler Standardweg bleibt Loopback mit bestehenden lokalen Secrets und Dateien (0.359292ms)
+✔ lokale Pfad-/Portüberschreibung und bisheriger expliziter URIweg bleiben erhalten (0.365083ms)
+✔ lokales init bleibt exklusiv wx/0600, vorhandene Dateien erhalten; nur Fakegenerierung (0.226042ms)
+✔ lokale Mailvorschau bleibt privat und maskiert HTML; Links nicht im Terminal (0.252416ms)
+✔ unsichere lokale Pfade werden vor lokalen Schreib-/Secretoperationen verworfen (0.119959ms)
+✔ Ressourcen-/Service-/Aktionsfehler schließen Pool und geben keine Geheimnisursache aus (0.510833ms)
+✔ reine Adapter und injizierte Aufrufe verändern weder Eingabe noch Prozessumgebung (0.266375ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1047.791959

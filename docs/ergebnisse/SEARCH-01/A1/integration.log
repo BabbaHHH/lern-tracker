@@ -1,0 +1,19 @@
+▶ SEARCH-A1: durable real catalog/search/restart/access/restore integration
+  ✔ new versions enqueue in the catalog commit, and unauthorized status/counts/excerpts are absent (11.197208ms)
+  ✔ one committed page survives a real PostgreSQL restart; live workers cannot double-claim (177.528667ms)
+  ✔ phrase, distinct laws, repeated occurrences, blank page and combined role use exact PDF links (43.677458ms)
+  ✔ new version immediately replaces old results; fenced old jobs cannot publish after rebuild (59.969792ms)
+  ✔ session renewal, account mismatch and committed block reject existing query contexts (80.944042ms)
+  ✔ private documents never enter discovery; abort leaves durable work resumable (40.079458ms)
+  ✔ a real 33 MiB catalog PDF is accepted by the worker's explicit 50 MiB limit (300.579875ms)
+  ✔ format-3 restore preserves C1 commands, revokes sessions, and rebuilds derived search state (827.486667ms)
+✔ SEARCH-A1: durable real catalog/search/restart/access/restore integration (4439.523416ms)
+✔ SEARCH-A1: client boundary discards old responses and changed sessions without browser cache (0.15625ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5354.545666

@@ -1,0 +1,29 @@
+Verified boundary: explicit-migrations-001-016
+Verified boundary: no-release-no-runtime-resources
+Verified boundary: default-runtime-real-database-and-auth-pool
+Verified boundary: same-runtime-service-write-and-private-file-roundtrip
+Verified boundary: fixed-https-origin-rejects-foreign-request-without-dns
+Verified boundary: real-file-failure-closes-created-pools
+Verified boundary: real-private-directory-write-permission-denied
+Verified boundary: real-database-role-permission-denied-no-fallback
+Verified boundary: released-runtime-three-ai-routes-still-closed
+Verified boundary: no-request-migration-and-real-close
+Verified integration boundary: explicit-migrations-001-016
+Verified integration boundary: no-release-no-runtime-resources
+Verified integration boundary: default-runtime-real-database-and-auth-pool
+Verified integration boundary: same-runtime-service-write-and-private-file-roundtrip
+Verified integration boundary: fixed-https-origin-rejects-foreign-request-without-dns
+Verified integration boundary: real-file-failure-closes-created-pools
+Verified integration boundary: real-private-directory-write-permission-denied
+Verified integration boundary: real-database-role-permission-denied-no-fallback
+Verified integration boundary: released-runtime-three-ai-routes-still-closed
+Verified integration boundary: no-request-migration-and-real-close
+✔ AUTH03: isolierter Produktionsvertrag mit echter Loopback-DB und privaten Testdateien (2022.159083ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2157.250625

@@ -1,0 +1,58 @@
+# Include in the nginx http context AFTER separate target validation/rendering.
+# No method+URI, query, referrer, cookie, upstream error or auth-link logging.
+log_format stex_pilot_safe '$time_iso8601 $status $body_bytes_sent $request_time';
+
+server {
+    listen 80 default_server;
+    server_name _;
+    access_log off;
+    error_log /dev/null;
+    return 444;
+}
+server {
+    listen 443 ssl default_server;
+    server_name _;
+    ssl_reject_handshake on;
+    access_log off;
+    error_log /dev/null;
+}
+server {
+    listen 443 ssl;
+    server_name __PILOT_HOST__;
+    ssl_certificate /etc/stex/tls/fullchain.pem;
+    ssl_certificate_key /etc/stex/tls/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    access_log /var/log/nginx/stex-pilot-access.log stex_pilot_safe;
+    error_log /dev/null;
+    include /etc/stex/proxy/test-allowlist.conf;
+    # HOST-PREPARATION-BLOCK: target/HTTPS/production acceptance still missing.
+    return 503;
+
+    client_max_body_size 1m;
+    client_body_timeout 15s;
+    client_body_temp_path /var/lib/nginx/stex-pilot-body;
+    client_body_buffer_size 128k;
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy no-referrer always;
+
+    location = /api/catalog/import {
+        client_max_body_size 110m;
+        proxy_read_timeout 120s;
+        include /etc/stex/proxy/proxy-common.conf;
+    }
+    location = /api/learning/documents {
+        # 4 MiB file + <=16 KiB metadata + multipart overhead; app enforces exact limit.
+        client_max_body_size 5m;
+        proxy_read_timeout 60s;
+        include /etc/stex/proxy/proxy-common.conf;
+    }
+    location = /api/ai {
+        # General purpose remains unchanged; planning is closed by the application guard.
+        proxy_read_timeout 130s;
+        include /etc/stex/proxy/proxy-common.conf;
+    }
+    location / {
+        proxy_read_timeout 60s;
+        include /etc/stex/proxy/proxy-common.conf;
+    }
+}

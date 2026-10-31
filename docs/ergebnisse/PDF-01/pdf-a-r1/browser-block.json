@@ -1,0 +1,11 @@
+{
+  "status": "not-accepted",
+  "firstAttempt": "Viewer shell displayed, but application same-origin check rejected the 127.0.0.1-origin fixture. No loaded PDF confirmed.",
+  "fixtureCorrection": "Use localhost consistently with the existing Next request origin; no auth/origin protection changed.",
+  "blockedAction": "navigate the existing own test tab to the corrected isolated localhost fixture",
+  "reportedReason": "Browser Use URL policy blocked data:text/html... of the automatically generated ERR_CONNECTION_REFUSED page for the stopped earlier fixture.",
+  "followup": "No alternate browser, raw CDP, script navigation or new-tab retry. Closing the same own tab was also blocked by that URL check.",
+  "remaining": "One actual successful synthetic viewer opening in a freshly authorized separate test run remains open.",
+  "realDocumentsUsed": false,
+  "privateBrowserProfilesUsed": false
+}

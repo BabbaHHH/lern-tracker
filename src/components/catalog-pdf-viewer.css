@@ -1,0 +1,12 @@
+.catalog-pdf-main { width: 100%; max-width: 1280px; }
+.pdf-stage { width: 100%; overflow: auto; max-height: 80vh; min-height: 320px; background: #e2e8f0; padding: 16px; border-radius: 8px; overscroll-behavior: contain; }
+.pdf-pages { display: flex; flex-direction: column; align-items: center; gap: 16px; width: max-content; min-width: 100%; }
+.pdf-page-slot { position: relative; display: flex; flex: none; align-items: flex-start; justify-content: center; width: max-content; min-width: 100%; }
+.pdf-sheet { position: relative; flex: none; background: white; box-shadow: 0 2px 12px #0002; --user-unit: 1; --scale-round-x: 1px; --scale-round-y: 1px; }
+.pdf-sheet canvas { display: block; }
+.pdf-sheet .textLayer { z-index: 1; }
+.pdf-sheet .textLayer ::selection { background: rgba(59, 130, 246, .35); }
+.pdf-page-placeholder { display: flex; flex: none; align-items: center; justify-content: center; background: white; color: #64748b; box-shadow: 0 2px 12px #0002; }
+.pdf-page-status, .pdf-page-notice, .pdf-page-error { position: absolute; z-index: 2; top: 8px; left: 50%; max-width: calc(100% - 16px); transform: translateX(-50%); border-radius: 6px; padding: 6px 10px; background: #fff; box-shadow: 0 1px 6px #0002; font-size: 13px; }
+.pdf-page-error { top: 40px; background: #fef2f2; color: #991b1b; }
+@media (max-width: 600px) { .pdf-stage { max-height: 72vh; } }

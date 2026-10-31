@@ -1,0 +1,6 @@
+{
+  "extends": "../../../../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": ["../../../../src/lib/server/auth/runtime.ts", "../../../../src/lib/server/auth/production-runtime.ts", "../../../../tests/auth-production-runtime.test.ts"],
+  "exclude": ["../../../../node_modules"]
+}

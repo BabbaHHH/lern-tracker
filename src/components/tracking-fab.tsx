@@ -1,5 +1,7 @@
 "use client";
+import {AccountTrackingForm,type AccountScheduleData} from "./account-schedule";
 
+import { currentDate } from "@/lib/dates";
 import { useState, useMemo } from "react";
 import { addTrackingEntry } from "@/lib/store";
 import { TOPICS, getLeafTopics } from "@/lib/topics";
@@ -20,7 +22,8 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
-export function TrackingFab() {
+export function TrackingFab({account}:{account?:AccountScheduleData}={}) {return account?<AccountTrackingForm data={account}/>:<BrowserTrackingFab/>;}
+function BrowserTrackingFab() {
   const [open, setOpen] = useState(false);
   const [activityType, setActivityType] = useState<ActivityType>("theorie");
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
@@ -57,7 +60,7 @@ export function TrackingFab() {
 
   const handleSave = () => {
     addTrackingEntry({
-      date: format(new Date(), "yyyy-MM-dd"),
+      date: format(currentDate(), "yyyy-MM-dd"),
       activityType,
       topicIds: selectedTopics,
       durationMinutes: duration,

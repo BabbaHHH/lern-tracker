@@ -1,0 +1,10 @@
+{
+  "extends": "../../../../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": [
+    "../../../../scripts/search/worker.mts",
+    "../../../../scripts/search/worker-config.ts",
+    "../../../../tests/search-worker-config.test.ts"
+  ],
+  "exclude": ["../../../../node_modules"]
+}

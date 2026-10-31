@@ -1,6 +1,10 @@
 # NotebookLM Prompt — Klausur-Klassifizierung für Stex Tracker
 
-**Zweck:** Diesen Prompt in NotebookLM einfügen, nachdem du alle Klausuren UND Lösungs-PDFs als Quellen hochgeladen hast. NotebookLM gibt dir eine strukturierte JSON-Datei zurück, die du auf `/klausuren` in die Lern-Tracker-App importieren kannst.
+> **Historischer Prompt, geprüft am 09.10.2026:** Die Themenkennungen entsprechen einem früheren Stand. Der aktuelle Import verlangt außerdem `date` im Format `YYYY-MM-DD`; dieses Ausgabeformat liefert kein Datum. Zusatzfelder wie `solutionMatched` und die Schwerpunkttexte werden derzeit nicht übernommen. Vor erneutem Einsatz Themen und Schema aktualisieren. Ein weiterer Analyseprompt wurde im Hamburg-Skript gefunden. Fundstellen und geplante Konsolidierung: [To-do-Liste, Abschnitt 7](./TODO.md#7-gefundene-klausurwerkzeuge-und-analyseprompts).
+
+**Dieser Hinweis betrifft die Wiederverwendung dieses alten Prompts für neue Importe.** Die rund 450 bereits klassifizierten Klausuren sollen weiterverwendet werden. Der lokale Strukturcheck der vorhandenen Klausur-JSONs zeigte gültige Themenkennungen; eine erneute Klassifizierung ist nicht vorgesehen.
+
+**Bisheriger Zweck:** Diesen Prompt in NotebookLM einfügen, nachdem du alle Klausuren UND Lösungs-PDFs als Quellen hochgeladen hast. NotebookLM erzeugt eine strukturierte JSON-Datei. Für den heutigen Import auf `/klausuren` muss das folgende historische Schema überarbeitet werden.
 
 **Wichtig vor dem Einfügen:**
 1. Lade **alle Klausur-Sachverhalte** als Quellen hoch (PDFs)

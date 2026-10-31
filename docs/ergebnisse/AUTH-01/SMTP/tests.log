@@ -1,0 +1,23 @@
+✔ SMTP-Konfiguration: explizite TLSmodi/Ports, Absender und keine Overrides (5.1275ms)
+✔ fehlende Pflichtwerte und Header-/Credentialinjektion werden rein abgewiesen (0.738167ms)
+✔ bewusst erzeugter Adapter startet nichts; ungültige Mail und Preabort ohne Bibliotheksaufruf (1.158417ms)
+✔ zertifikatgeprüfte TLSoptionen, feste Fristen/Envelope und deaktivierte Logs/Quellen (0.899625ms)
+✔ STARTTLS ist zwingend; keine Anmeldung ohne sichere Bibliotheksverbindung (0.379917ms)
+✔ positive RCPT-Liste allein genügt nicht: nur finale 2xx-Annahme für genau einen Empfänger (0.606292ms)
+✔ explizite negative SMTPantwort darf Retry entscheiden; Verbindungsverlust/Timeout bleibt unklar (1.165791ms)
+✔ Authfehler ist vor Sendebeginn endgültig und ohne Inhalts-/Fehlerursachenausgabe (0.217ms)
+✔ Abort vor Sendebeginn schließt Verbindung; spätes Connect startet keine Anmeldung (0.282917ms)
+✔ Abort/absolute Deadline nach Sendebeginn schließen aktiv und bleiben trotz später Annahme unklar (0.606667ms)
+✔ Bibliotheks-Eventfehler, Streamfehler und synchrone Fabrikfehler bleiben bereinigt (0.383167ms)
+✔ alle drei Mailzwecke haben feste Betreffzeilen; echte Bibliotheks-MIME bleibt lokal (16.632375ms)
+✔ EinzelbatchCLI: nur once, Produktionsvertrag und SMTP vollständig vor Ressourcen validiert (1.553417ms)
+✔ EinzelbatchCLI übergibt Vertrag einmal, gibt nur Zähler aus und schließt Pool (0.524459ms)
+✔ Config-/Adapterkonstruktion verändert keine Eingabe und erzeugt keine Ressourcen (0.130333ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 340.353

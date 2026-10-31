@@ -1,0 +1,18 @@
+{
+  "sourceSha256": {
+    "scripts/data-migration/local-config.ts": "4e2cee8fdb95945ad9b6804782a136275b82125070ff101821408ee299e67c83",
+    "scripts/auth/operator.mts": "da2f94b9dd1bbcaf594d837ec151d457ead82c69c4dd5d16d57af0eaac89d5dd",
+    "scripts/auth/production-operator-config.ts": "8d5584d57fda82c8138f47b544791d7a87d1cd97a1aeddbfaf3daad198ab40ef",
+    "tests/auth-production-operator.test.ts": "819596db349835a22f9291274f2158b345d62d10615acdf0762d0d06d5840240"
+  },
+  "protectedComparison": {
+    "count": 28,
+    "changed": []
+  },
+  "cleanup": {
+    "temporaryTypeConfigurationRemoved": true,
+    "noDatabaseServerOrOperatorRuntimeStarted": true,
+    "noActualSecretFilesOrDirectoriesCreated": true
+  },
+  "openAdjacentPath": "scripts/data-migration/persistence.mts retains its own backup-key fallback; unchanged, not approved as production backup/restore entrypoint by this task"
+}

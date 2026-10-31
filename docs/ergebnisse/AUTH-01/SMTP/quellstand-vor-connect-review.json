@@ -1,0 +1,29 @@
+{
+  "sourceSha256": {
+    "src/lib/server/auth/smtp-config.ts": "b92bc6ff713d64525ee5bbef5fd87d244ba3601dec56ae3166a3bbeb5e093316",
+    "src/lib/server/auth/smtp-transport.ts": "318ad23b9cb63f2c9aac98c2544e2edb5468fa250ddeefae8b2f50635cbbafa6",
+    "scripts/auth/mail-dispatch.mts": "d057371711ba2bd7bea1f32ecc6101fdbff2a102d498514ea105a9c1bc3445b6",
+    "tests/auth-smtp.test.ts": "8594b3b7f86f82951777a6e4f1daa045418bbb2129897e32b8753af3809a881f",
+    "package.json": "7b5dc52eb0201d9565e875e139fedd55190368c6cbf979c7ea54cd3c7fd543a3",
+    "package-lock.json": "b8b1f24ae4c0a82c845030055c2c25eaaa2078e9665302f12ed54c7e4a2231ac"
+  },
+  "protectedComparison": {
+    "count": 27,
+    "changed": []
+  },
+  "packageChange": {
+    "onlyAddedDirectDependency": "nodemailer@10.1.2",
+    "onlyAddedLockPackage": "node_modules/nodemailer",
+    "existingPackagesUnchanged": true,
+    "installedVersion": "10.1.2",
+    "nodeEngine": ">=20.0.0",
+    "bundledTypes": true,
+    "installScriptsRun": false,
+    "registryIntegrity": "sha512-rnQn9Rzh8RAwcp42MVsIvxbsv6YZ2a2/av+uyJ/LPU1+2QSlrRgFsWWZTKenyRUqkIl8urOI0c4+CEcmFdsvQw=="
+  },
+  "cleanup": {
+    "temporaryPackageComparisonRootRemoved": true,
+    "temporaryTypeConfigurationRemoved": true,
+    "noSocketDnsSmtpDbOrActualCliRuntimeStarted": true
+  }
+}

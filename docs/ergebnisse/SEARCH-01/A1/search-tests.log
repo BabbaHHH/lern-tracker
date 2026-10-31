@@ -1,0 +1,37 @@
+✔ SEARCH-A0: case-insensitive phrase maps hyphens, whitespace and repeated occurrences to PDF-A (3.288125ms)
+✔ SEARCH-A0: normalization preserves UTF-16 positions, ligatures, soft hyphens and real compound hyphens (0.810209ms)
+✔ SEARCH-A0: normalized partial ligature matches deduplicate the same original glyph (0.145ms)
+✔ SEARCH-A0: norm spelling variants require exact law and paragraph, with original citation evidence (1.509ms)
+✔ SEARCH-A0: explicit norm lists stay evidenced, bare numbers and unexpanded ranges are not guessed (0.361833ms)
+✔ SEARCH-A0: explicitly combined phrase/norm queries return a union without duplicate intervals (0.1815ms)
+✔ SEARCH-A0: no-text, failed and stale pages are reported separately, never searched (0.09375ms)
+✔ SEARCH-A0: hit limit reports true total and rejects empty/unbounded queries (0.238625ms)
+✔ SEARCH-A0: full page text is retained beyond onboarding-style truncation (18.914375ms)
+✔ SEARCH-A0: actual synthetic PDF extraction resumes bounded batches after JSON restart (1114.134791ms)
+Warning: Please use the `legacy` build in Node.js environments.
+✔ SEARCH-A0: server extraction equals PDF-A's regular browser-engine text construction (108.143958ms)
+✔ SEARCH-A0: new document version keeps old offsets and roles isolated; rebuild is reproducible (39.334625ms)
+✔ SEARCH-A0: actual PDF pages beyond page 100 remain searchable in successive portions (45.511ms)
+✔ SEARCH-A0: invalid PDFs and resource limits fail honestly without truncated searchable text (4.142542ms)
+✔ SEARCH-A0: immutable byte/role conflicts, cancellation and invalid limits leave index untouched (4.143667ms)
+✔ SEARCH-A0: adapter revision conflicts reject concurrent stale commits (7.257791ms)
+▶ SEARCH-A1: durable real catalog/search/restart/access/restore integration
+  ✔ new versions enqueue in the catalog commit, and unauthorized status/counts/excerpts are absent (10.038417ms)
+  ✔ one committed page survives a real PostgreSQL restart; live workers cannot double-claim (162.524792ms)
+  ✔ phrase, distinct laws, repeated occurrences, blank page and combined role use exact PDF links (34.457125ms)
+  ✔ new version immediately replaces old results; fenced old jobs cannot publish after rebuild (62.091291ms)
+  ✔ session renewal, account mismatch and committed block reject existing query contexts (79.557375ms)
+  ✔ private documents never enter discovery; abort leaves durable work resumable (37.635666ms)
+  ✔ a real 33 MiB catalog PDF is accepted by the worker's explicit 50 MiB limit (260.885959ms)
+  ✔ format-3 restore preserves C1 commands, revokes sessions, and rebuilds derived search state (982.585916ms)
+✔ SEARCH-A1: durable real catalog/search/restart/access/restore integration (4021.923ms)
+✔ SEARCH-A1: client boundary discards old responses and changed sessions without browser cache (0.173375ms)
+✔ SEARCH-A1: oversized legacy metadata is rejected before any private file I/O (0.127209ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4995.768666

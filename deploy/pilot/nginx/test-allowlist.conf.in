@@ -1,0 +1,3 @@
+# Fill with explicitly approved test device IPs/CIDRs. No default public access.
+allow __TEST_IP_OR_CIDR__;
+deny all;

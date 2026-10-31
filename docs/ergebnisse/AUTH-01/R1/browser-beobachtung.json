@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-13T12:29:22.995Z",
+  "I02": {
+    "actualNextInvitationOpens": 3,
+    "mailPreviewOpens": 2,
+    "registrationSubmitted": false,
+    "readonlyInvitationEmail": true
+  },
+  "A06": {
+    "realAWasVisibleBeforeBLogin": true,
+    "realBVisibleAfterLogin": true,
+    "realBVisibleAfterReload": true,
+    "usernameAutocomplete": "username",
+    "loginPasswordAutocomplete": "current-password",
+    "setupPasswordAutocomplete": "new-password",
+    "setupPasswordMin": 15,
+    "setupPasswordMax": 128,
+    "resetPasswordAutocomplete": "new-password",
+    "resetPasswordMin": 15,
+    "nativeFieldEntry": true,
+    "auxiliaryCookieInjectionIsNotACompleteBrowserProof": true
+  },
+  "limits": {
+    "passwordManagerAutofillTested": false,
+    "iPadSafariTested": false,
+    "externalMailSent": false
+  }
+}

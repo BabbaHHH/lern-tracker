@@ -1,0 +1,56 @@
+{
+  "recordedAt": "2026-10-16T20:26:46.676797+02:00",
+  "scope": "Exactly one authorized fresh local synthetic PDF-A-R1 viewer attempt; no substitute or escalation attempted",
+  "authorization": "Niklas: Ja, nur diesen lokalen Testlauf; call_950abde6aa894c5589e5681c33b2e12f item 0",
+  "status": "blocked_before_local_port_allocation",
+  "error": "Error: listen EPERM: operation not permitted 127.0.0.1 (node:net:1915; errno -1; syscall listen)",
+  "stage": "First port() call before PostgreSQL initialization, synthetic account/PDF creation or webserver spawn",
+  "exitCode": 1,
+  "browserToolInvoked": false,
+  "newTabsCreated": 0,
+  "viewerRendered": false,
+  "pageAction": false,
+  "zoomAction": false,
+  "screenshots": [],
+  "serverTestsOrBuildRepeated": false,
+  "productFilesEdited": false,
+  "oldPdfAndDataTab9Untouched": true,
+  "sourceManifest": "sicht-source-20261016.json",
+  "sourceChecks": {
+    "src/lib/server/catalog-pdf/service.ts": {
+      "workspaceSha256": "337e02987aa7c5d83846796114fd1e57bc679387acc8451a800df1156e2eedb3",
+      "snapshotSha256": "337e02987aa7c5d83846796114fd1e57bc679387acc8451a800df1156e2eedb3",
+      "manifestSha256": "337e02987aa7c5d83846796114fd1e57bc679387acc8451a800df1156e2eedb3",
+      "identical": true
+    },
+    "src/lib/server/catalog-pdf/http.ts": {
+      "workspaceSha256": "621b384ba83dbbc13a4dfe67e59382bdbeb9a412622678b2903fd01332e464d5",
+      "snapshotSha256": "621b384ba83dbbc13a4dfe67e59382bdbeb9a412622678b2903fd01332e464d5",
+      "manifestSha256": "621b384ba83dbbc13a4dfe67e59382bdbeb9a412622678b2903fd01332e464d5",
+      "identical": true
+    },
+    "src/components/catalog-pdf-viewer.tsx": {
+      "workspaceSha256": "c450fbeb1d24813c5a2836270b4bc512a736365f68a92837588fb59efe999f2f",
+      "snapshotSha256": "c450fbeb1d24813c5a2836270b4bc512a736365f68a92837588fb59efe999f2f",
+      "manifestSha256": "c450fbeb1d24813c5a2836270b4bc512a736365f68a92837588fb59efe999f2f",
+      "identical": true
+    },
+    "scripts/pdf-viewer/pdf-a-r1-browser.mts": {
+      "workspaceSha256": "5396908ed1228fdd06e8e9cb0e0e704249d6b82aacfd2b439fab0f55750398f2",
+      "snapshotSha256": "5396908ed1228fdd06e8e9cb0e0e704249d6b82aacfd2b439fab0f55750398f2",
+      "manifestSha256": "5396908ed1228fdd06e8e9cb0e0e704249d6b82aacfd2b439fab0f55750398f2",
+      "identical": true
+    }
+  },
+  "cleanup": {
+    "emptyRuntimeDirectory": "/var/folders/2z/d8k58lh10v762t58rnvqkpyc0000gn/T/stex-pdf-a-r1-browser-z2ub25",
+    "runtimeRemoved": true,
+    "snapshotDirectory": "/private/tmp/stex-pdf-a-r1-sicht-20261016-2026",
+    "snapshotRemoved": true,
+    "runtimeInfoCreated": false,
+    "serverLogCreated": false,
+    "helperExited": true,
+    "databaseOrWebserverStarted": false
+  },
+  "remaining": "Successful visible rendering with page/zoom actions and screenshots remains open. Existing R1 server evidence retained. No further attempt started."
+}

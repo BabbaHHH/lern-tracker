@@ -1,0 +1,87 @@
+{
+  "production": {
+    "src/lib/server/catalog-pdf/service.ts": {
+      "workspace": "337e02987aa7c5d83846796114fd1e57bc679387acc8451a800df1156e2eedb3",
+      "build": "337e02987aa7c5d83846796114fd1e57bc679387acc8451a800df1156e2eedb3",
+      "browser": "337e02987aa7c5d83846796114fd1e57bc679387acc8451a800df1156e2eedb3"
+    },
+    "src/lib/server/catalog-pdf/http.ts": {
+      "workspace": "621b384ba83dbbc13a4dfe67e59382bdbeb9a412622678b2903fd01332e464d5",
+      "build": "621b384ba83dbbc13a4dfe67e59382bdbeb9a412622678b2903fd01332e464d5",
+      "browser": "621b384ba83dbbc13a4dfe67e59382bdbeb9a412622678b2903fd01332e464d5"
+    }
+  },
+  "readonly": {
+    "src/lib/server/persistence/files.ts": {
+      "before": "b53be7793582cf5ccbb3e91ce35182e79dc67ddcc2cad9bbf4e44e370720194b",
+      "after": "b53be7793582cf5ccbb3e91ce35182e79dc67ddcc2cad9bbf4e44e370720194b",
+      "unchanged": true
+    },
+    "src/lib/server/persistence/database.ts": {
+      "before": "7a39d009e768d4eb67dbf76222cc7451d8675a166f733c0288c66cd6fd096f94",
+      "after": "7a39d009e768d4eb67dbf76222cc7451d8675a166f733c0288c66cd6fd096f94",
+      "unchanged": true
+    },
+    "src/lib/server/auth/service.ts": {
+      "before": "23affb93b29ea432c9b3a0e568a1d5d0a79dedcd268faf753d4f180028b73aea",
+      "after": "23affb93b29ea432c9b3a0e568a1d5d0a79dedcd268faf753d4f180028b73aea",
+      "unchanged": true
+    },
+    "src/lib/server/catalog/import-service.ts": {
+      "before": "67293cba7e4b4627f40bd9f1598703a654eda224fa6a699c6e691db207563a68",
+      "after": "67293cba7e4b4627f40bd9f1598703a654eda224fa6a699c6e691db207563a68",
+      "unchanged": true
+    },
+    "src/app/api/catalog/pdf/route.ts": {
+      "before": "c1f73dc1cea324734d3de0c133f6b17b2142f253a9cf83394ae7d190a4d36fa3",
+      "after": "c1f73dc1cea324734d3de0c133f6b17b2142f253a9cf83394ae7d190a4d36fa3",
+      "unchanged": true
+    },
+    "src/components/catalog-pdf-viewer.tsx": {
+      "before": "c450fbeb1d24813c5a2836270b4bc512a736365f68a92837588fb59efe999f2f",
+      "after": "c450fbeb1d24813c5a2836270b4bc512a736365f68a92837588fb59efe999f2f",
+      "unchanged": true
+    },
+    "src/lib/pdf-viewer/contract.ts": {
+      "before": "bc511698a2ef564590172fc552f7a4c5336c4dd0f598426a555acbcaffa6f3dc",
+      "after": "bc511698a2ef564590172fc552f7a4c5336c4dd0f598426a555acbcaffa6f3dc",
+      "unchanged": true
+    },
+    "src/lib/pdf-viewer/text.ts": {
+      "before": "2a276015cda009e59cf9a96e1c7530a47d64714e3fd6cc25a77c54d56f4c1724",
+      "after": "2a276015cda009e59cf9a96e1c7530a47d64714e3fd6cc25a77c54d56f4c1724",
+      "unchanged": true
+    },
+    "package.json": {
+      "before": "37b5a5d6ef0844beaba1215cb3a5c4db313c8d97fadd10061eed274acfb91855",
+      "after": "37b5a5d6ef0844beaba1215cb3a5c4db313c8d97fadd10061eed274acfb91855",
+      "unchanged": true
+    },
+    "package-lock.json": {
+      "before": "22cb0c8807a533e088e10e8e7178aecef13c2c0c0f8cc88b906f126e7e25314c",
+      "after": "22cb0c8807a533e088e10e8e7178aecef13c2c0c0f8cc88b906f126e7e25314c",
+      "unchanged": true
+    },
+    "next.config.ts": {
+      "before": "d0c1ddb4f85ad66d3723d3efe0ce512b9f159881f19c17b349b7a98945998661",
+      "after": "d0c1ddb4f85ad66d3723d3efe0ce512b9f159881f19c17b349b7a98945998661",
+      "unchanged": true
+    },
+    "tsconfig.json": {
+      "before": "355fe442adae4f35b7cde676340e20ca50f42e67dbaba01df9791b52910dda4d",
+      "after": "355fe442adae4f35b7cde676340e20ca50f42e67dbaba01df9791b52910dda4d",
+      "unchanged": true
+    }
+  },
+  "assignedFiles": {
+    "scripts/pdf-viewer/pdf-a-r1-browser.mts": "5396908ed1228fdd06e8e9cb0e0e704249d6b82aacfd2b439fab0f55750398f2",
+    "scripts/pdf-viewer/pdf-a-r1-fixture.ts": "a00a44e42b105c3d558114612a2c4b1e8ed74d745cefc6e132f63ca428540ea0",
+    "scripts/pdf-viewer/pdf-a-r1-frozen.py": "7c5de459114791326301d156459c8f8a3bb6576d02122bac531934acf0248ebf",
+    "scripts/pdf-viewer/pdf-a-r1-production.mts": "4b4751e71c4116a65d6a1fadf9d9049b9dfda301ecd3fa07465e3fcf0da2257e",
+    "scripts/pdf-viewer/pdf-a-r1-snapshot.py": "11a7026a15bc7413d17a03ea357f56357b56e72766a6a778d127c1d6537be92a",
+    "scripts/pdf-viewer/pdf-a-r1-tsconfig.json": "a2eda9ee55ca5161690755beac300c2b22b1583b44d475957f856edda3ffe048",
+    "src/lib/server/catalog-pdf/http.ts": "621b384ba83dbbc13a4dfe67e59382bdbeb9a412622678b2903fd01332e464d5",
+    "src/lib/server/catalog-pdf/service.ts": "337e02987aa7c5d83846796114fd1e57bc679387acc8451a800df1156e2eedb3",
+    "tests/catalog-pdf-lock.test.ts": "6cedda333802687157f527efa7534f4272e624b3c1e66f432daf2358a489a8c0"
+  }
+}

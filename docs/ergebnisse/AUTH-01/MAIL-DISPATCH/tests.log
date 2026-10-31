@@ -1,0 +1,32 @@
+▶ AUTH03: begrenzter PostgreSQL-Outboxdispatcher, nur künstliche Transporte
+  ✔ 016: vorhandene 015-Outbox additiv übernehmen, Constraints und wiederholte Migration (340.660166ms)
+  ✔ echter Service erzeugt kompatible Outbox; Sinkannahme bleibt von Postfachzustellung getrennt (16.53275ms)
+  ✔ Postcommit: offene Zeile unsichtbar, Rollback ohne Transport, Commit wird verarbeitet (12.469708ms)
+  ✔ bestehender Authdienst: tatsächlich erzeugte Bestätigungs-/Resetlinks an Fake übergeben (126.799917ms)
+  ✔ zwei Dispatcher konkurrieren; Batch höchstens zehn, jeder Kandidat einmal (40.075625ms)
+  ✔ keine DBsperre im Transport; nachfolgender Widerruf, Tokenrotation und Kontosperre verhindern Versand (8.552625ms)
+  ✔ Einladung verbraucht/abgelaufen und Outboxablauf: kein Transport (8.313667ms)
+  ✔ Bestätigung und Reset: aktuelle Registry/Identität, bestätigte oder gesperrte Konten (16.47375ms)
+  ✔ Nachweise laufen früher als 24h-Outbox ab: Bestätigung/Reset werden nicht gesendet (5.721459ms)
+  ✔ Bibliothekscommit vor Appzuordnung wartet begrenzt, danach normaler Versand (5.536708ms)
+  ✔ fehlende Appzuordnung ohne offene passende Einladung wird verworfen (3.245459ms)
+  ✔ unfertige Appzuordnung wartet höchstens fünf Versuche (10.665625ms)
+  ✔ definitiv nicht angenommen: Backoff, höchstens fünf Versuche, kein Hotloop (14.193791ms)
+  ✔ endgültige Ablehnung, Exception und explizit unbekannter Ausgang bleiben ohne Wiederholung (10.73925ms)
+  ✔ Timeout mit nicht kooperativem Transport: abort, unklar, keine wachsenden Altversuche (35.336667ms)
+  ✔ abgelaufener Claim vor Transport kann erneut versucht werden; sending nach Crash bleibt unklar (6.3795ms)
+  ✔ Leaseverlust während Fakeannahme: spätes Ergebnis überschreibt Recovery nicht (4.304583ms)
+  ✔ veralteter Claim vor Sendebeginn bleibt durch UUID-Fence ausgesperrt (4.971584ms)
+  ✔ Zeile während Fake entfernt: kein Wiederanlegen/erneuter Versand, Abschluss fenced (2.991125ms)
+  ✔ korrupte Verschlüsselung und fremde/mehrdeutige Links erreichen keinen Transport (11.617084ms)
+  ✔ Konstruktor begrenzt Operatorwerte und feste Origin (0.286334ms)
+  ✔ Format4: alle Zustände/Spalten verschlüsselt sichern, Restore leert Outbox und widerruft Nachweise (293.263792ms)
+✔ AUTH03: begrenzter PostgreSQL-Outboxdispatcher, nur künstliche Transporte (2074.930459ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2942.312667

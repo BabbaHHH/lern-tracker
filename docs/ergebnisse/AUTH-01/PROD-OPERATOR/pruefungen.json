@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-18",
+  "tests": {
+    "command": "node --import tsx --test --test-reporter=spec tests/auth-production-operator.test.ts",
+    "exitCode": 0,
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "syntheticInstrumentedOnly": true
+  },
+  "lint": {
+    "exitCode": 0,
+    "scope": "four owned module/test files"
+  },
+  "types": {
+    "exitCode": 0,
+    "scope": "same four entrypoints with read-only imports; no repository/build scan"
+  },
+  "protectedSourceCount": 28,
+  "sourceHashesStillMatch": true,
+  "cleanup": {
+    "temporaryTypeConfigurationRemoved": true,
+    "noDatabaseServerOrOperatorRuntimeStarted": true,
+    "noActualSecretFilesOrDirectoriesCreated": true
+  },
+  "noOldSuitesOrBuild": true,
+  "noActualOperatorCommandsOrResources": true,
+  "remainingBoundary": "scripts/data-migration/persistence.mts retains its own backup-key fallback; unchanged, not approved as production backup/restore entrypoint by this task",
+  "evidenceSha256": {
+    "tests.log": "735fe85dd193d148493c257460b48e56a80bca50cb3a5476c8ad3b8bd61e5989",
+    "lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "typen.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "quellstand.json": "4ac84a91b57126e49a3ca6283bcd55f388ee5394e01f00a42ab58b077002ee0e",
+    "ausgangsstand.json": "1f7ebc9ec123e76a34e50f3bbee50282e1fedfeee91e688b7ee3ee4a80bb294f",
+    "ERGEBNIS.md": "e40a91d06ebbce4ea3456ad1ae7f495349a6bd6c685e994f596bc79176b1011c"
+  }
+}

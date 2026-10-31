@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { fetchAi } from "@/lib/ai-settings";
+import { type ReactNode, useState, useEffect } from "react";
 import { Settings, Loader2, Sparkles, RotateCcw, Save } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
@@ -12,13 +13,18 @@ import {
   getPromptById, updatePrompt, resetPrompt, type SystemPrompt,
 } from "@/lib/prompts";
 
-interface PromptGearProps {
+import {useAccountLearningMode} from "./account-learning-boundary";
+import {AccountSettingsPromptGear} from "./account-settings-prompt-gear";
+export interface PromptGearProps {
   promptId: string;
   /** Optional: kleine Variante (nur Icon ohne Border) */
   compact?: boolean;
 }
 
-export function PromptGear({ promptId, compact }: PromptGearProps) {
+export function PromptGear(props:PromptGearProps){return useAccountLearningMode()?<AccountSettingsPromptGear {...props}/>:<OriginalPromptGear {...props}/>;}
+export interface PromptGearSession {prompt:SystemPrompt;save:(draft:string)=>Promise<boolean>;reset:()=>Promise<boolean>}
+export function OriginalPromptGear({ promptId, compact,remote }: PromptGearProps & {remote?:{disabled:boolean;status:ReactNode;open:()=>PromptGearSession|null}}) {
+  const [session,setSession]=useState<PromptGearSession|null>(null);
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState<SystemPrompt | null>(null);
   const [draft, setDraft] = useState("");
@@ -27,7 +33,7 @@ export function PromptGear({ promptId, compact }: PromptGearProps) {
   const [rewritten, setRewritten] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (remote || !open) return;
     const p = getPromptById(promptId);
     if (p) {
       // Prompt-Daten aus localStorage laden wenn Dialog öffnet — SSR-safe Pattern
@@ -37,18 +43,23 @@ export function PromptGear({ promptId, compact }: PromptGearProps) {
       setRewritten(null);
       setInstruction("");
     }
-  }, [open, promptId]);
+  }, [open, promptId,remote]);
 
+  const changeOpen=(next:boolean)=>{
+    if(next&&remote){const captured=remote.open();if(!captured)return;setSession(captured);setPrompt(captured.prompt);setDraft(captured.prompt.prompt);setRewritten(null);setInstruction("");}
+    setOpen(next);
+  };
   if (!prompt && !open) {
     // Render trigger only
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={changeOpen}>
         <DialogTrigger
           render={
             <Button
               variant={compact ? "ghost" : "outline"}
               size="icon-sm"
               title="Prompt bearbeiten"
+              disabled={remote?.disabled}
             />
           }
         >
@@ -58,12 +69,14 @@ export function PromptGear({ promptId, compact }: PromptGearProps) {
     );
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if(remote){if(session&&await session.save(draft))setOpen(false);return;}
     updatePrompt(promptId, draft);
     setOpen(false);
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
+    if(remote){if(session&&await session.reset())setOpen(false);return;}
     resetPrompt(promptId);
     const p = getPromptById(promptId);
     if (p) {
@@ -79,7 +92,7 @@ export function PromptGear({ promptId, compact }: PromptGearProps) {
     setRewritten(null);
     try {
       const rewriter = getPromptById("prompt-rewriter");
-      const res = await fetch("/api/ai", {
+      const res = await fetchAi({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -103,13 +116,14 @@ export function PromptGear({ promptId, compact }: PromptGearProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={changeOpen}>
       <DialogTrigger
         render={
           <Button
             variant={compact ? "ghost" : "outline"}
             size="icon-sm"
             title="Prompt bearbeiten"
+              disabled={remote?.disabled}
           />
         }
       >
@@ -150,7 +164,8 @@ export function PromptGear({ promptId, compact }: PromptGearProps) {
           />
         </div>
 
-        <div className="space-y-2 border-t border-slate-200 pt-3">
+        {remote?.status}
+        {!remote && <div className="space-y-2 border-t border-slate-200 pt-3">
           <label className="text-xs font-medium text-slate-600 flex items-center gap-1">
             <Sparkles className="h-3 w-3" /> KI verbessern
           </label>
@@ -199,15 +214,16 @@ export function PromptGear({ promptId, compact }: PromptGearProps) {
           )}
         </div>
 
+        }
         <div className="flex items-center justify-between gap-2 border-t border-slate-200 pt-3">
-          <Button variant="ghost" size="sm" onClick={handleReset}>
+          <Button variant="ghost" size="sm" disabled={remote?.disabled} onClick={handleReset}>
             <RotateCcw className="h-3 w-3 mr-1" /> Zurücksetzen
           </Button>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => setOpen(false)}>
               Abbrechen
             </Button>
-            <Button size="sm" onClick={handleSave}>
+            <Button size="sm" disabled={remote?.disabled} onClick={handleSave}>
               <Save className="h-3 w-3 mr-1" /> Speichern
             </Button>
           </div>

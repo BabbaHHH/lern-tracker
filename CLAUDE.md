@@ -9,6 +9,10 @@ Lern-Tracker-App für das **2. juristische Staatsexamen Berlin (GJPA)**, Examens
 - **Persistenz**: ausschließlich `localStorage` (kein Backend, kein Supabase)
 - **KI**: OpenRouter API — Opus 4.6 (premium) für Lernplan, Haiku/Sonnet (cheap) für Check-in-Chat
 - Dev-Server: `npm run dev` in `/lern-tracker`, Port 3000
+  - Standard `npm run dev` läuft jetzt über `scripts/dev.sh`: killt alte Port-3000-Prozesse, setzt RAM-Limit, **auto-restart-Loop bei Crash**.
+  - `npm run dev:clean` → zusätzlich `.next` löschen (bei Turbopack-Korruption)
+  - `npm run dev:webpack` → Webpack statt Turbopack (langsamer aber bombenfest)
+  - `npm run dev:plain` → das alte direkte `next dev` (für Fälle wo das Wrapper-Skript stört)
 
 ## Kernarchitektur
 

@@ -7,15 +7,17 @@
 // Vorher: 11 Call-Sites mit jeweils Loading-State, Fetch, JSON-Parse,
 // Error-Mapping kopiert. Eine zentrale Stelle = einheitliches Verhalten.
 
+import { fetchAi } from "@/lib/ai-settings";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { getPromptById } from "@/lib/prompts";
 import { buildContextFor } from "@/lib/prompt-context";
 import { parseAiJson } from "@/lib/ai-helpers";
+import type { ReasoningEffort } from "./ai-config";
 import type { AiMessage, ModelTier } from "@/lib/ai";
 import type { ContextFlag } from "@/lib/prompts";
 
-/** Default-Timeout für KI-Calls (60s). */
-const DEFAULT_TIMEOUT_MS = 60_000;
+/** Reasoning calls need more time; the server retains its own bounded timeout. */
+const DEFAULT_TIMEOUT_MS = 120_000;
 
 export interface AiCallOptions {
   /**
@@ -32,6 +34,14 @@ export interface AiCallOptions {
   contextFlags?: ContextFlag[];
   /** Override des ModelTiers. */
   tier?: ModelTier;
+  /** Expliziter OpenRouter-Slug — überschreibt das Tier-Modell. */
+  model?: string;
+  /** Max. Output-Tokens (überschreibt Tier-Default). */
+  maxTokens?: number;
+  /** Sampling-Temperatur (überschreibt Tier-Default). */
+  temperature?: number;
+  /** OpenRouter reasoning-Parameter (nur bei Reasoning-Modellen). */
+  reasoning?: { effort: ReasoningEffort };
   /** Externes AbortSignal — wird mit dem internen Timeout-Signal kombiniert. */
   signal?: AbortSignal;
   /** Timeout in ms (Default: 60s). */
@@ -75,21 +85,21 @@ export async function callAi(
   const timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-  if (opts.signal) {
-    if (opts.signal.aborted) controller.abort();
-    else opts.signal.addEventListener("abort", () => controller.abort(), { once: true });
-  }
+  const onAbort = () => controller.abort();
+  if (opts.signal?.aborted) controller.abort();
+  else opts.signal?.addEventListener("abort", onAbort, { once: true });
 
   try {
-    const res = await fetch("/api/ai", {
+    const res = await fetchAi({
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tier, messages }),
+      body: JSON.stringify({ tier, messages, model: opts.model, maxTokens: opts.maxTokens, temperature: opts.temperature, reasoning: opts.reasoning }),
       signal: controller.signal,
     });
 
     const data = await res.json().catch(() => ({ error: "Antwort konnte nicht gelesen werden" }));
-    if (data.error) throw new Error(data.error);
+    const errorMessage = typeof data.error === "object" && data.error ? data.error.message : data.error;
+    if (!res.ok || errorMessage) throw new Error(typeof errorMessage === "string" ? errorMessage : `KI-Anfrage fehlgeschlagen (${res.status})`);
 
     return { reply: (data.reply as string) ?? "", tier };
   } catch (e) {
@@ -100,6 +110,7 @@ export async function callAi(
     throw err;
   } finally {
     clearTimeout(timeoutId);
+    opts.signal?.removeEventListener("abort", onAbort);
   }
 }
 
@@ -128,19 +139,20 @@ export function useAi(promptId: string | null) {
 
   const call = useCallback(async (opts: AiCallOptions = {}): Promise<AiCallResult | null> => {
     abortRef.current?.abort();
-    abortRef.current = new AbortController();
+    const requestController = new AbortController();
+    abortRef.current = requestController;
 
     setLoading(true);
     setError(null);
 
     try {
-      const result = await callAi(promptId, { ...opts, signal: abortRef.current.signal });
-      if (!mountedRef.current) return null;
+      const result = await callAi(promptId, { ...opts, signal: requestController.signal });
+      if (!mountedRef.current || abortRef.current !== requestController || requestController.signal.aborted) return null;
       setLoading(false);
       return result;
     } catch (e) {
       const msg = (e as Error).message;
-      if (!mountedRef.current) return null;
+      if (!mountedRef.current || abortRef.current !== requestController || requestController.signal.aborted) return null;
       // Wenn der Call durch einen neuen Call ersetzt wurde → keine Fehlermeldung
       if (msg.includes("abgebrochen") && !msg.includes("Timeout")) {
         return null;
@@ -165,6 +177,7 @@ export function useAi(promptId: string | null) {
 
   const reset = useCallback(() => {
     abortRef.current?.abort();
+    abortRef.current = null;
     setError(null);
     setLoading(false);
   }, []);

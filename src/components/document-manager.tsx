@@ -1,6 +1,8 @@
 "use client";
 
+import { fetchAi } from "@/lib/ai-settings";
 import { useEffect, useRef, useState } from "react";
+import { format as formatDate } from "date-fns";
 import { Upload, Trash2, FileText, CheckSquare, Square, Loader2, CalendarRange } from "lucide-react";
 import {
   getDocuments,
@@ -31,6 +33,8 @@ export function DocumentManager() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    // Hydrate browser-owned documents after the server render.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDocs(getDocuments());
   }, []);
 
@@ -84,7 +88,7 @@ export function DocumentManager() {
     }
 
     try {
-      const res = await fetch("/api/ai", {
+      const res = await fetchAi({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -131,7 +135,7 @@ export function DocumentManager() {
     try {
       const sys = getPromptById("ag-parser");
       const context = buildContextFor(sys?.contextFlags || ["docs", "timeStatus"]);
-      const res = await fetch("/api/ai", {
+      const res = await fetchAi({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -201,7 +205,7 @@ export function DocumentManager() {
           ref={inputRef}
           type="file"
           multiple
-          accept=".pdf,.docx,.xlsx,.xls,.txt,.md,image/*"
+          accept=".pdf,.docx,.xlsx,.xls,.txt,.md,.csv,image/*"
           className="hidden"
           onChange={(e) => handleFiles(e.target.files)}
         />
@@ -227,7 +231,7 @@ export function DocumentManager() {
               <div className="flex-1 min-w-0">
                 <div className="font-serif text-[14px] text-slate-900 truncate leading-tight">{d.name}</div>
                 <div className="font-sans text-[10px] uppercase tracking-[0.14em] font-bold text-slate-500 mt-0.5">
-                  {formatSize(d.size)} · {new Date(d.uploadedAt).toLocaleDateString("de-DE")}
+                  {formatSize(d.size)} · {formatDate(new Date(d.uploadedAt), "d.M.yyyy")}
                 </div>
               </div>
               <button

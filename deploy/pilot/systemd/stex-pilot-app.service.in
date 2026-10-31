@@ -1,0 +1,26 @@
+[Unit]
+Description=Stex pilot app - PREPARATION BLOCKED
+After=network.target
+
+[Service]
+Type=simple
+User=stex-app
+Group=stex-app
+WorkingDirectory=/srv/stex/current
+EnvironmentFile=/etc/stex/common.env
+EnvironmentFile=/etc/stex/core-secrets.env
+# HOST-PREPARATION-BLOCK: runtime is implemented; operator release/target acceptance are missing.
+ExecStartPre=/usr/bin/false
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3000
+Restart=no
+TimeoutStopSec=45
+KillSignal=SIGTERM
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/srv/stex/data/files /srv/stex/cache
+# No raw Next diagnostics or token-bearing URLs in the journal.
+StandardOutput=null
+StandardError=null

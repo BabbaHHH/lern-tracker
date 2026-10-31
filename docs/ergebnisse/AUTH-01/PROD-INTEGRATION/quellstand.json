@@ -1,0 +1,1274 @@
+{
+  "newSources": {
+    "scripts/auth/production-integration-fixture.ts": "9187a0289dffb88b65baa6656d0eac2d2c619ab830b4828bd05708b370f10610",
+    "scripts/auth/production-integration-worker.ts": "1d6659708db113129cf3155cd57c7e43fa8706b05a76563b824551fb3159da46",
+    "tests/auth-production-integration.test.ts": "5a3b6b85136a38216ca93f02ad0f8d0cdf7611ebf740188cfe403352291e30e3"
+  },
+  "protectedComparison": {
+    "src/app/favicon.ico": {
+      "before": "2b8ad2d33455a8f736fc3a8ebf8f0bdea8848ad4c0db48a2833bd0f9cd775932",
+      "after": "2b8ad2d33455a8f736fc3a8ebf8f0bdea8848ad4c0db48a2833bd0f9cd775932"
+    },
+    "src/app/layout.tsx": {
+      "before": "486a5e70a5914b250dd8ba2132bb7522d1e8003bbc4d9707a0808b88ca7a86bd",
+      "after": "486a5e70a5914b250dd8ba2132bb7522d1e8003bbc4d9707a0808b88ca7a86bd"
+    },
+    "src/app/page.tsx": {
+      "before": "c9413f31fff480b7c76d6f224d6cbc7166c661cf03fc384c3503ec80857b9ebe",
+      "after": "c9413f31fff480b7c76d6f224d6cbc7166c661cf03fc384c3503ec80857b9ebe"
+    },
+    "src/app/globals.css": {
+      "before": "ebd3c3bff2b6cfcdeb23658d2b2dcc207d0cb9dfa7e9e550377dccea27e0f8fd",
+      "after": "ebd3c3bff2b6cfcdeb23658d2b2dcc207d0cb9dfa7e9e550377dccea27e0f8fd"
+    },
+    "src/styles/shadcn.css": {
+      "before": "daa3a2d8be7f45f60bd2529ffd27852519b599fed6ee26f6e71766fab8b2d969",
+      "after": "daa3a2d8be7f45f60bd2529ffd27852519b599fed6ee26f6e71766fab8b2d969"
+    },
+    "src/styles/shadcn.LICENSE": {
+      "before": "1564074e13439397221ffd522e2e504d56561994a23d371aa5e3ad43e4f5423f",
+      "after": "1564074e13439397221ffd522e2e504d56561994a23d371aa5e3ad43e4f5423f"
+    },
+    "src/components/study-phase-editor.tsx": {
+      "before": "25bc0fb48ecea7584bb98d3721254d26698a5677a44bd946b58c23b55c14501f",
+      "after": "25bc0fb48ecea7584bb98d3721254d26698a5677a44bd946b58c23b55c14501f"
+    },
+    "src/components/admin-confirmation.tsx": {
+      "before": "efffd250efc69a6755f4ed647089e5f228c875d618fccb5735cd92828338fef8",
+      "after": "efffd250efc69a6755f4ed647089e5f228c875d618fccb5735cd92828338fef8"
+    },
+    "src/components/account-checkin-panel.tsx": {
+      "before": "3bbb831b75bc6078307def2653068d2319f35796843d74619112bbbae9c1c171",
+      "after": "3bbb831b75bc6078307def2653068d2319f35796843d74619112bbbae9c1c171"
+    },
+    "src/components/klausur-des-tages.tsx": {
+      "before": "4dbd98d17841de91f52fc5a0ae0389a0b7065c5a0b8e5ddb6d602b2f03d3e620",
+      "after": "4dbd98d17841de91f52fc5a0ae0389a0b7065c5a0b8e5ddb6d602b2f03d3e620"
+    },
+    "src/components/ai-credentials-page.tsx": {
+      "before": "71ad94c2cb3c19a4303a8e0ef7b1e440e5da08e839c79f6dcc130e5708e637f8",
+      "after": "71ad94c2cb3c19a4303a8e0ef7b1e440e5da08e839c79f6dcc130e5708e637f8"
+    },
+    "src/components/catalog-pdf-viewer.css": {
+      "before": "26b7218fd2095ce67c5dc711edda51242726b77d744da4506f4a8f595b062db6",
+      "after": "26b7218fd2095ce67c5dc711edda51242726b77d744da4506f4a8f595b062db6"
+    },
+    "src/components/account-profile-page.tsx": {
+      "before": "1cc58300990c51e6a3ff07b95376aefe94a36d85b118cf24f4c7c17725730239",
+      "after": "1cc58300990c51e6a3ff07b95376aefe94a36d85b118cf24f4c7c17725730239"
+    },
+    "src/components/account-documents-page.tsx": {
+      "before": "5962b8f2beeafc77f13db90daba06612bef8c238ea6ce21fcb11d664266688d9",
+      "after": "5962b8f2beeafc77f13db90daba06612bef8c238ea6ce21fcb11d664266688d9"
+    },
+    "src/components/catalog-import-app.tsx": {
+      "before": "41ea0727894992e232f69c44ddf534846e4c06b0657094702481f43812745067",
+      "after": "41ea0727894992e232f69c44ddf534846e4c06b0657094702481f43812745067"
+    },
+    "src/components/day-learning-history.tsx": {
+      "before": "389c7d0983050e69b06405297e943bd9ee2ac95b2ec31784d017353233cf8c1a",
+      "after": "389c7d0983050e69b06405297e943bd9ee2ac95b2ec31784d017353233cf8c1a"
+    },
+    "src/components/korrektur-panel.tsx": {
+      "before": "403d90c6ccd58b2f6ff4c941233f8a400d18db76fc741b380bf65ba6e42c6b38",
+      "after": "403d90c6ccd58b2f6ff4c941233f8a400d18db76fc741b380bf65ba6e42c6b38"
+    },
+    "src/components/nav-bar.tsx": {
+      "before": "0f20bfe5cd2e39825d177a263db401b73a442f22117a31c486f0654cd0ce790c",
+      "after": "0f20bfe5cd2e39825d177a263db401b73a442f22117a31c486f0654cd0ce790c"
+    },
+    "src/components/tracking-fab.tsx": {
+      "before": "bbb26dd26ff21b6a26f5d3db199872f9665c2a93b839cc190d7f7db506b7c11e",
+      "after": "bbb26dd26ff21b6a26f5d3db199872f9665c2a93b839cc190d7f7db506b7c11e"
+    },
+    "src/components/admin-overview.tsx": {
+      "before": "c5d4799e72586afcd1b9d54d75ca5cc5e68bdda1e13a084b635abb7002a94032",
+      "after": "c5d4799e72586afcd1b9d54d75ca5cc5e68bdda1e13a084b635abb7002a94032"
+    },
+    "src/components/ai-reasoning-settings.tsx": {
+      "before": "32b1a2cdb865ac8b8a3c1913717c9da8557e6515783cee14f52636aba5bf20bd",
+      "after": "32b1a2cdb865ac8b8a3c1913717c9da8557e6515783cee14f52636aba5bf20bd"
+    },
+    "src/components/study-sprint-info.tsx": {
+      "before": "8a336b3ee6db4c3d2435507b6379610b2d130234e489c94bc370b38db8657d4e",
+      "after": "8a336b3ee6db4c3d2435507b6379610b2d130234e489c94bc370b38db8657d4e"
+    },
+    "src/components/catalog-search-app.tsx": {
+      "before": "b7726767c9205c1e0d3d7fdd917cec14126d3b746a854477b52ae9707160d63d",
+      "after": "b7726767c9205c1e0d3d7fdd917cec14126d3b746a854477b52ae9707160d63d"
+    },
+    "src/components/account-writing-list.tsx": {
+      "before": "fb7147e30b17827b10e6ce035a7315f1a7ba68af9409ced3213b65bcdb7af15b",
+      "after": "fb7147e30b17827b10e6ce035a7315f1a7ba68af9409ced3213b65bcdb7af15b"
+    },
+    "src/components/pdf-ipad-qr.tsx": {
+      "before": "51a25e80bb4ca432827c90f11c0aa60616160e253c04055dabe310157ebd1ffc",
+      "after": "51a25e80bb4ca432827c90f11c0aa60616160e253c04055dabe310157ebd1ffc"
+    },
+    "src/components/quota-banner.tsx": {
+      "before": "38dfacf3d7c95e140c76f39cc7478e9328c9dd700b8259a043e8a068be047e52",
+      "after": "38dfacf3d7c95e140c76f39cc7478e9328c9dd700b8259a043e8a068be047e52"
+    },
+    "src/components/calendar-export.tsx": {
+      "before": "a32e63513aaca20e7f328c7f33cce75718755eff63269a629fc12a8c6c1dcf24",
+      "after": "a32e63513aaca20e7f328c7f33cce75718755eff63269a629fc12a8c6c1dcf24"
+    },
+    "src/components/credit-badge.tsx": {
+      "before": "f150f47ffb0556868dd23c7d40996b449e3efe9fc49b225318ea91018394adc5",
+      "after": "f150f47ffb0556868dd23c7d40996b449e3efe9fc49b225318ea91018394adc5"
+    },
+    "src/components/account-writing-status.tsx": {
+      "before": "a2c36c7872af9ecf6edc017ec3903ba91fe3ecfcf52f9af60f91a2866ea423f4",
+      "after": "a2c36c7872af9ecf6edc017ec3903ba91fe3ecfcf52f9af60f91a2866ea423f4"
+    },
+    "src/components/account-plan-page.tsx": {
+      "before": "5c0f04a6260bebcf8d364d597190950365685fe034bb5f22d46897fdaf74e512",
+      "after": "5c0f04a6260bebcf8d364d597190950365685fe034bb5f22d46897fdaf74e512"
+    },
+    "src/components/account-settings-provider.tsx": {
+      "before": "c57f060b7d51296302dab96fcc8c30260e973a243ee0d04151146a5581efca3b",
+      "after": "c57f060b7d51296302dab96fcc8c30260e973a243ee0d04151146a5581efca3b"
+    },
+    "src/components/planning-source-preview.tsx": {
+      "before": "b4cc1353b6e404ae4a77d1651c9c6b1cb46d1da25bc973445496631b62c39f19",
+      "after": "b4cc1353b6e404ae4a77d1651c9c6b1cb46d1da25bc973445496631b62c39f19"
+    },
+    "src/components/account-schedule.tsx": {
+      "before": "0b4505fb7e21498c5245abca0613fa16b764be95a2914493af4ff912064394e1",
+      "after": "0b4505fb7e21498c5245abca0613fa16b764be95a2914493af4ff912064394e1"
+    },
+    "src/components/catalog-pdf-viewer.tsx": {
+      "before": "c450fbeb1d24813c5a2836270b4bc512a736365f68a92837588fb59efe999f2f",
+      "after": "c450fbeb1d24813c5a2836270b4bc512a736365f68a92837588fb59efe999f2f"
+    },
+    "src/components/countdown.tsx": {
+      "before": "1933a664574763cec9870596758f4b2d2957b9d83df1c01f96b5c285cadc2f27",
+      "after": "1933a664574763cec9870596758f4b2d2957b9d83df1c01f96b5c285cadc2f27"
+    },
+    "src/components/feedback-widget.tsx": {
+      "before": "ca121c6d12200d860ec8fa9dbf9a8f2e6bea067db00fadb1d8932478881c1e49",
+      "after": "ca121c6d12200d860ec8fa9dbf9a8f2e6bea067db00fadb1d8932478881c1e49"
+    },
+    "src/components/document-manager.tsx": {
+      "before": "6c79e8fe62b1f39eced1c523750df6e51b3f07e8080362e3031c69e589ab317e",
+      "after": "6c79e8fe62b1f39eced1c523750df6e51b3f07e8080362e3031c69e589ab317e"
+    },
+    "src/components/account-writing-editor.tsx": {
+      "before": "a98dc5e489b1789200f502c5a0116cb32b4d18aeff5351a3c0968ed2f072afb1",
+      "after": "a98dc5e489b1789200f502c5a0116cb32b4d18aeff5351a3c0968ed2f072afb1"
+    },
+    "src/components/schreiben-workspace.tsx": {
+      "before": "bed3c0cf82df9b5f58d50a3bf8ddf7886ff36ee0e2b98f00aee252217be58cb6",
+      "after": "bed3c0cf82df9b5f58d50a3bf8ddf7886ff36ee0e2b98f00aee252217be58cb6"
+    },
+    "src/components/sachverhalt-panel.tsx": {
+      "before": "e594a8fe4446f6d0996274b4ef8ef12a0481466217a1363a791bc7328b9a905e",
+      "after": "e594a8fe4446f6d0996274b4ef8ef12a0481466217a1363a791bc7328b9a905e"
+    },
+    "src/components/prompt-gear.tsx": {
+      "before": "075520fa6aa5b2055388289079c25d843b5d78acebde62d631c7d47caa50d574",
+      "after": "075520fa6aa5b2055388289079c25d843b5d78acebde62d631c7d47caa50d574"
+    },
+    "src/components/topic-grid.tsx": {
+      "before": "73243c60323f1ae96e9f218d732a6013c791008742cef09c91680397daedc4ca",
+      "after": "73243c60323f1ae96e9f218d732a6013c791008742cef09c91680397daedc4ca"
+    },
+    "src/components/admin-model.ts": {
+      "before": "bbe661731f50dab1e3f758fc37fdc422b36ae3db07ba98cdd5231e49606ffed3",
+      "after": "bbe661731f50dab1e3f758fc37fdc422b36ae3db07ba98cdd5231e49606ffed3"
+    },
+    "src/components/account-personal-status.tsx": {
+      "before": "196b27625c05650c4f75e2c27fcbc62fdfac0f7ede07bfe84b9362caf2276ccc",
+      "after": "196b27625c05650c4f75e2c27fcbc62fdfac0f7ede07bfe84b9362caf2276ccc"
+    },
+    "src/components/account-settings-page.tsx": {
+      "before": "6087e596648e5211c96dd61ea3c79be4f221a6791bd72508987c7376dfc3439a",
+      "after": "6087e596648e5211c96dd61ea3c79be4f221a6791bd72508987c7376dfc3439a"
+    },
+    "src/components/backup-reminder.tsx": {
+      "before": "639fd1b770a503b6eb4c3a8b87a4655e554b4560844500807f88d4c4e814454b",
+      "after": "639fd1b770a503b6eb4c3a8b87a4655e554b4560844500807f88d4c4e814454b"
+    },
+    "src/components/account-learning-boundary.tsx": {
+      "before": "711106807edabc9a313594ac5a2e7012f567f8d4c8de94cebf3aa3782f8ac451",
+      "after": "711106807edabc9a313594ac5a2e7012f567f8d4c8de94cebf3aa3782f8ac451"
+    },
+    "src/components/klausur-calendar-link.tsx": {
+      "before": "d1dff9cf040e48e2dd825121adf45abaff6c8599d7cf7c3199179199128fc742",
+      "after": "d1dff9cf040e48e2dd825121adf45abaff6c8599d7cf7c3199179199128fc742"
+    },
+    "src/components/account-correction-panel.tsx": {
+      "before": "84ccb542413cea2b8d13c9eaee90b577d1d111162e16ced6f2d33ce159cad36d",
+      "after": "84ccb542413cea2b8d13c9eaee90b577d1d111162e16ced6f2d33ce159cad36d"
+    },
+    "src/components/korrektur-setup-dialog.tsx": {
+      "before": "9a5134f0ffc792c8ce512e289ad6e177f5573c9e69846430630017bed73471e4",
+      "after": "9a5134f0ffc792c8ce512e289ad6e177f5573c9e69846430630017bed73471e4"
+    },
+    "src/components/theme-picker.tsx": {
+      "before": "faa73d70b4dcfcd315c0a7ea359feb93d78be5b1f1414881682f7a3572344103",
+      "after": "faa73d70b4dcfcd315c0a7ea359feb93d78be5b1f1414881682f7a3572344103"
+    },
+    "src/components/theme-bootstrap.tsx": {
+      "before": "229cea69e93779c09941c7921536d4a5bd9a0ece8a5539082e0d02c873df07a5",
+      "after": "229cea69e93779c09941c7921536d4a5bd9a0ece8a5539082e0d02c873df07a5"
+    },
+    "src/components/today-program.tsx": {
+      "before": "c7480f1ba6f0e2c32cd05c18d7d1c6878387a706ff5fb18d6c3c28d27b161498",
+      "after": "c7480f1ba6f0e2c32cd05c18d7d1c6878387a706ff5fb18d6c3c28d27b161498"
+    },
+    "src/components/planning-backlog.tsx": {
+      "before": "391279ebe5ee1ff867333138af792a5ef41d7f59ac1108dcbca5788d810eded9",
+      "after": "391279ebe5ee1ff867333138af792a5ef41d7f59ac1108dcbca5788d810eded9"
+    },
+    "src/components/account-learning-dashboard.tsx": {
+      "before": "1a16507abcc78e2fd8e6fa521bbe4191549779c6cac06b07659a2b748f71c0d4",
+      "after": "1a16507abcc78e2fd8e6fa521bbe4191549779c6cac06b07659a2b748f71c0d4"
+    },
+    "src/components/klausur-editor.tsx": {
+      "before": "9a27ea17094e139f55e24198b7a68ed58ab22229e8eaeb4361472f6981e3ba7f",
+      "after": "9a27ea17094e139f55e24198b7a68ed58ab22229e8eaeb4361472f6981e3ba7f"
+    },
+    "src/components/account-preparation-panel.tsx": {
+      "before": "f407ca42fb6840b4142120853fdf6e24579bcaee18d3e18c318712b99e1fa16b",
+      "after": "f407ca42fb6840b4142120853fdf6e24579bcaee18d3e18c318712b99e1fa16b"
+    },
+    "src/components/topic-tile.tsx": {
+      "before": "2a3e9aa004dda7c3a44c8ccd4cdc55aad5c8398d373a8056c58c40fe61b0c3ff",
+      "after": "2a3e9aa004dda7c3a44c8ccd4cdc55aad5c8398d373a8056c58c40fe61b0c3ff"
+    },
+    "src/components/account-app.tsx": {
+      "before": "387329f31394cb0981b322663f7592ea60edfdff0fafa47717d5d7ced23689ba",
+      "after": "387329f31394cb0981b322663f7592ea60edfdff0fafa47717d5d7ced23689ba"
+    },
+    "src/components/checkin-chat.tsx": {
+      "before": "7d3d2502245b9d809071e41e252744c8d319984ffaff4cdc8fd73aa40b84fc54",
+      "after": "7d3d2502245b9d809071e41e252744c8d319984ffaff4cdc8fd73aa40b84fc54"
+    },
+    "src/components/account-writing-provider.tsx": {
+      "before": "92a2fdd94d32bbe2dc7de0f166f290945bb538e3e17abdf66574446bf2271778",
+      "after": "92a2fdd94d32bbe2dc7de0f166f290945bb538e3e17abdf66574446bf2271778"
+    },
+    "src/lib/ai-helpers.ts": {
+      "before": "7dd85e0af882ab3042cd5c4910009416dd4ff13091a5c14793a44b98fee8e927",
+      "after": "7dd85e0af882ab3042cd5c4910009416dd4ff13091a5c14793a44b98fee8e927"
+    },
+    "src/lib/plan-applier.ts": {
+      "before": "44123e7b676be56bedffc62cd353cbec0c0c76e196922ed407815d60d6c5f80a",
+      "after": "44123e7b676be56bedffc62cd353cbec0c0c76e196922ed407815d60d6c5f80a"
+    },
+    "src/lib/plan-core.ts": {
+      "before": "8b72aa11f46deb7c2973a157e879b343d1b7a216a6a4dc516aae71b0d2e124a6",
+      "after": "8b72aa11f46deb7c2973a157e879b343d1b7a216a6a4dc516aae71b0d2e124a6"
+    },
+    "src/lib/free-models.ts": {
+      "before": "9e073cd4681af83f8f1f3ac3003d7ab9f84691f60a3b6d2bd7990d441fffbe96",
+      "after": "9e073cd4681af83f8f1f3ac3003d7ab9f84691f60a3b6d2bd7990d441fffbe96"
+    },
+    "src/lib/model-info.ts": {
+      "before": "1bb670b1474f19fb3b6a0400f5c4545de26a6f4c55977b3ffaf1313fdcc4b1de",
+      "after": "1bb670b1474f19fb3b6a0400f5c4545de26a6f4c55977b3ffaf1313fdcc4b1de"
+    },
+    "src/lib/dates.ts": {
+      "before": "c4b25529fec49d988d9797c5466964d32744e7b5f1f6d12081bdbb50ea673b0f",
+      "after": "c4b25529fec49d988d9797c5466964d32744e7b5f1f6d12081bdbb50ea673b0f"
+    },
+    "src/lib/study-phases.ts": {
+      "before": "4b90139b905d25733d769f9a8565bb0a09cc1cdbc09a038c725fb318bffcb02c",
+      "after": "4b90139b905d25733d769f9a8565bb0a09cc1cdbc09a038c725fb318bffcb02c"
+    },
+    "src/lib/use-ai.ts": {
+      "before": "58987b2256bdce662b7363ca37a3a19013b03f9783af980d02be52830f767fc7",
+      "after": "58987b2256bdce662b7363ca37a3a19013b03f9783af980d02be52830f767fc7"
+    },
+    "src/lib/utils.ts": {
+      "before": "7c8c3dfc0cdd370d44932828eb067ef771c8fe7996693221d5d4b90af6d54f2d",
+      "after": "7c8c3dfc0cdd370d44932828eb067ef771c8fe7996693221d5d4b90af6d54f2d"
+    },
+    "src/lib/topics.ts": {
+      "before": "834dd8a42e414234187e4c29e9bff8c7ef5130219ca380bfb114bdbf1096c9ae",
+      "after": "834dd8a42e414234187e4c29e9bff8c7ef5130219ca380bfb114bdbf1096c9ae"
+    },
+    "src/lib/ai-config.ts": {
+      "before": "aab066ca9aa961d09fd8f4127f4aeefd0b8af207906032632dfddfeb6e349146",
+      "after": "aab066ca9aa961d09fd8f4127f4aeefd0b8af207906032632dfddfeb6e349146"
+    },
+    "src/lib/ai-models.ts": {
+      "before": "d54ae6906f5ae6cad759919e6473fce25b2eb7e7e4f34fbd400da77e194b78fe",
+      "after": "d54ae6906f5ae6cad759919e6473fce25b2eb7e7e4f34fbd400da77e194b78fe"
+    },
+    "src/lib/ai-limits.ts": {
+      "before": "3cc0e4c8f1e79fc68eb874c6c6b8edb20186307e919b97185a78444a264be755",
+      "after": "3cc0e4c8f1e79fc68eb874c6c6b8edb20186307e919b97185a78444a264be755"
+    },
+    "src/lib/tiptap-indent.ts": {
+      "before": "bcc828855d243d024ca32bf5be6e90f94c2f10bfcaf8a9872f7cde9204cb2ec9",
+      "after": "bcc828855d243d024ca32bf5be6e90f94c2f10bfcaf8a9872f7cde9204cb2ec9"
+    },
+    "src/lib/prompts.ts": {
+      "before": "8a548fd2d8c37fa4ea7d060f1f3c02c82b7f71ab92bc898a993bd047be93a10b",
+      "after": "8a548fd2d8c37fa4ea7d060f1f3c02c82b7f71ab92bc898a993bd047be93a10b"
+    },
+    "src/lib/spaced-repetition.ts": {
+      "before": "e955d683940cbfe0d046bd8f0c58a3601729f017a83322e4903ec257a258f04c",
+      "after": "e955d683940cbfe0d046bd8f0c58a3601729f017a83322e4903ec257a258f04c"
+    },
+    "src/lib/types.ts": {
+      "before": "259c504a47f4a561faff1bf91fd1df2a81b612d2e8d3d7634e49363e1894845a",
+      "after": "259c504a47f4a561faff1bf91fd1df2a81b612d2e8d3d7634e49363e1894845a"
+    },
+    "src/lib/ai-settings.ts": {
+      "before": "a7cebc83533b84847c7c5cfaf444fb28e8f98a8c7c9b79541a507174132727be",
+      "after": "a7cebc83533b84847c7c5cfaf444fb28e8f98a8c7c9b79541a507174132727be"
+    },
+    "src/lib/day-budget.ts": {
+      "before": "48a6b6745540eca91192695e92d4586f8a7853f50bece3ff7d0af0398bd4a948",
+      "after": "48a6b6745540eca91192695e92d4586f8a7853f50bece3ff7d0af0398bd4a948"
+    },
+    "src/lib/planning-documents.ts": {
+      "before": "792be0b98ba1685f68eb10286d3b0aed927dabdce414fe891ff269f869e357c1",
+      "after": "792be0b98ba1685f68eb10286d3b0aed927dabdce414fe891ff269f869e357c1"
+    },
+    "src/lib/recurrence.ts": {
+      "before": "cb849d99fb8b93299b3bc1ff98e9d40d5aa4d85cf4b39802b56fd458ab43c980",
+      "after": "cb849d99fb8b93299b3bc1ff98e9d40d5aa4d85cf4b39802b56fd458ab43c980"
+    },
+    "src/lib/storage-backup.ts": {
+      "before": "cbcef5c1010bc3e43ff5e5a21c21ab57b95a9259cb03e44e645e24a2831c7f27",
+      "after": "cbcef5c1010bc3e43ff5e5a21c21ab57b95a9259cb03e44e645e24a2831c7f27"
+    },
+    "src/lib/calendar-export.ts": {
+      "before": "d0bc053885b9e83dba5cd86a1b53adef66ddbe54cdccfa3df62b8e76f41337bd",
+      "after": "d0bc053885b9e83dba5cd86a1b53adef66ddbe54cdccfa3df62b8e76f41337bd"
+    },
+    "src/lib/ai.ts": {
+      "before": "a29d2ae638b9925c95385977e7c0dc6088080ace41c9d2f4bac311846afa7693",
+      "after": "a29d2ae638b9925c95385977e7c0dc6088080ace41c9d2f4bac311846afa7693"
+    },
+    "src/lib/feedback.ts": {
+      "before": "92abc9c2100c7b59c1377fa01552b60d8f245bbde7117fc9d0662811728d60e2",
+      "after": "92abc9c2100c7b59c1377fa01552b60d8f245bbde7117fc9d0662811728d60e2"
+    },
+    "src/lib/klausur-calendar.ts": {
+      "before": "73edd1930af0f619a8370d27e423bda44910181af231b523f5a29119b58251fa",
+      "after": "73edd1930af0f619a8370d27e423bda44910181af231b523f5a29119b58251fa"
+    },
+    "src/lib/prompt-context.ts": {
+      "before": "617395de12d476a90484584d7317741176dd64703f931dbc6ef21a98813457c5",
+      "after": "617395de12d476a90484584d7317741176dd64703f931dbc6ef21a98813457c5"
+    },
+    "src/lib/klausur-korrektur.ts": {
+      "before": "01099e408361e4bd2cd253f24bdcc463b88afd4fb480b1ba5bc12a020424d3d8",
+      "after": "01099e408361e4bd2cd253f24bdcc463b88afd4fb480b1ba5bc12a020424d3d8"
+    },
+    "src/lib/auto-picker.ts": {
+      "before": "114d2a0569d419bf664fb121a1be71254916e5ffcc70b4b337a882d5db67e4cc",
+      "after": "114d2a0569d419bf664fb121a1be71254916e5ffcc70b4b337a882d5db67e4cc"
+    },
+    "src/lib/klausur-recommender.ts": {
+      "before": "13d5f9e476a304deb80a2c6e2b2c11171556b8378a946194863d2cca7210ba3a",
+      "after": "13d5f9e476a304deb80a2c6e2b2c11171556b8378a946194863d2cca7210ba3a"
+    },
+    "src/lib/store.ts": {
+      "before": "486f32d3dfecc56459497d7b1cc1941f0b25de3256005b2f70ec73d67cca40af",
+      "after": "486f32d3dfecc56459497d7b1cc1941f0b25de3256005b2f70ec73d67cca40af"
+    },
+    "src/lib/learning-planner.ts": {
+      "before": "ad567fc98c54e31bed97b479698000fe86e62a536d60cff0e1b352232f13640c",
+      "after": "ad567fc98c54e31bed97b479698000fe86e62a536d60cff0e1b352232f13640c"
+    },
+    "src/lib/data-migration/inventory.ts": {
+      "before": "cbb63887c5a3d9e4e2014fb180ad77046d5d2da96f958456b432e139b16aebe8",
+      "after": "cbb63887c5a3d9e4e2014fb180ad77046d5d2da96f958456b432e139b16aebe8"
+    },
+    "src/lib/data-migration/validation.ts": {
+      "before": "a94f71cff4c8b0ab1efabab973f12a557c268fd01000eb1fac0988f47e710d1f",
+      "after": "a94f71cff4c8b0ab1efabab973f12a557c268fd01000eb1fac0988f47e710d1f"
+    },
+    "src/lib/data-migration/contract.ts": {
+      "before": "a76c4325ac728a0873ffa132c540cbca560fc0527e29a29dd01e33457b5aaac3",
+      "after": "a76c4325ac728a0873ffa132c540cbca560fc0527e29a29dd01e33457b5aaac3"
+    },
+    "src/lib/data-migration/migration.ts": {
+      "before": "ae9761a54e4268990ef0f383e37b1879a8d23c9c838448062b22aa5be510018f",
+      "after": "ae9761a54e4268990ef0f383e37b1879a8d23c9c838448062b22aa5be510018f"
+    },
+    "src/lib/ai-credentials/contract.ts": {
+      "before": "5310377d0102782419d7114dff3193d3dc53872813a6749712c0788a363cce3c",
+      "after": "5310377d0102782419d7114dff3193d3dc53872813a6749712c0788a363cce3c"
+    },
+    "src/lib/ai-credentials/client-boundary.ts": {
+      "before": "831e6fe7c370ea302e3888ad271ee8d45d8a77071c565b717a8352fc20e42a1d",
+      "after": "831e6fe7c370ea302e3888ad271ee8d45d8a77071c565b717a8352fc20e42a1d"
+    },
+    "src/lib/learning/writing-client.ts": {
+      "before": "ad4b5732b92e6e15789b5c18356ab1222cb1f84500ff9ba87651cc77bb00f689",
+      "after": "ad4b5732b92e6e15789b5c18356ab1222cb1f84500ff9ba87651cc77bb00f689"
+    },
+    "src/lib/learning/schedule-contract.ts": {
+      "before": "f0d9a0bffdf8b5511625c9d5bae3b8f7cc4d0666e7dfaa47594765763c83032a",
+      "after": "f0d9a0bffdf8b5511625c9d5bae3b8f7cc4d0666e7dfaa47594765763c83032a"
+    },
+    "src/lib/learning/schedule-client.ts": {
+      "before": "ab7a63852e0dcba6dc7991b964cdc04a1d12f4b2c699758d85ef2a62497d9033",
+      "after": "ab7a63852e0dcba6dc7991b964cdc04a1d12f4b2c699758d85ef2a62497d9033"
+    },
+    "src/lib/learning/personal-client.ts": {
+      "before": "0e5ef5a83a76bcfe371b884aee9a87da6a378bd19dbbd288c0ec17adca6e4d6a",
+      "after": "0e5ef5a83a76bcfe371b884aee9a87da6a378bd19dbbd288c0ec17adca6e4d6a"
+    },
+    "src/lib/learning/preparation-client.ts": {
+      "before": "f2cb9047f0dce26c4bf85244dc78ad086cec59ec65bcc7821b95e2f7d15c9284",
+      "after": "f2cb9047f0dce26c4bf85244dc78ad086cec59ec65bcc7821b95e2f7d15c9284"
+    },
+    "src/lib/learning/preparation-selection.ts": {
+      "before": "b340c7c19e5fb7982e65807a08a168485eaec04a669859f03cf194847823a8e9",
+      "after": "b340c7c19e5fb7982e65807a08a168485eaec04a669859f03cf194847823a8e9"
+    },
+    "src/lib/learning/use-account-preparation.ts": {
+      "before": "ff52180664b8591efbb805dfe971233f46bf1dce8bc4df2fa57b11c932f894f0",
+      "after": "ff52180664b8591efbb805dfe971233f46bf1dce8bc4df2fa57b11c932f894f0"
+    },
+    "src/lib/learning/progress-client.ts": {
+      "before": "69c6f7c9ede08ef606caa62cfca31638a67aa85b120fbc283aa41fa835230aa4",
+      "after": "69c6f7c9ede08ef606caa62cfca31638a67aa85b120fbc283aa41fa835230aa4"
+    },
+    "src/lib/learning/use-account-documents.ts": {
+      "before": "209f15f475c4f6c5f6bbc3d463b0475065d9ba972287063f75317b2fe4254314",
+      "after": "209f15f475c4f6c5f6bbc3d463b0475065d9ba972287063f75317b2fe4254314"
+    },
+    "src/lib/learning/documents-contract.ts": {
+      "before": "7c9786a344e4fd5c8f050b345dc1e75c6c4f5ece1af842ebfa5fd6480d9fbd56",
+      "after": "7c9786a344e4fd5c8f050b345dc1e75c6c4f5ece1af842ebfa5fd6480d9fbd56"
+    },
+    "src/lib/learning/preparation-duration.ts": {
+      "before": "87638e747e61871c52dabe9ae09d73edce3a4b12e408f0a983256d4c622906bf",
+      "after": "87638e747e61871c52dabe9ae09d73edce3a4b12e408f0a983256d4c622906bf"
+    },
+    "src/lib/learning/use-account-plans.ts": {
+      "before": "e7b2184f1ecf28aa257e90b4f1d20317261fddda84a60f2c3a21caafccf886eb",
+      "after": "e7b2184f1ecf28aa257e90b4f1d20317261fddda84a60f2c3a21caafccf886eb"
+    },
+    "src/lib/learning/settings-client.ts": {
+      "before": "f2ae73f5f47d39152840693add7feff0760019491d24c0a810e5726d9e65635f",
+      "after": "f2ae73f5f47d39152840693add7feff0760019491d24c0a810e5726d9e65635f"
+    },
+    "src/lib/learning/correction-contract.ts": {
+      "before": "8eeaedc5a7f0102897b09cdab93dcc8ca0c9d3655139860a62c524e25587bbce",
+      "after": "8eeaedc5a7f0102897b09cdab93dcc8ca0c9d3655139860a62c524e25587bbce"
+    },
+    "src/lib/learning/settings-contract.ts": {
+      "before": "ae1672cc7de69cf252f505f9af1699756f4d53fdee93f947cfb1ef33b1f0cf0f",
+      "after": "ae1672cc7de69cf252f505f9af1699756f4d53fdee93f947cfb1ef33b1f0cf0f"
+    },
+    "src/lib/learning/correction-core.ts": {
+      "before": "2bfd0c362fab61b17bd22211464f7d53d1342f6c07b42994f12c5ea5fdcd6f7e",
+      "after": "2bfd0c362fab61b17bd22211464f7d53d1342f6c07b42994f12c5ea5fdcd6f7e"
+    },
+    "src/lib/learning/checkin-contract.ts": {
+      "before": "01832e684356961e04a47208a81cad310ed06337b4b1247bd2aecbdb5f6801f7",
+      "after": "01832e684356961e04a47208a81cad310ed06337b4b1247bd2aecbdb5f6801f7"
+    },
+    "src/lib/learning/correction-client.ts": {
+      "before": "c214624530e2b858e3f9ddb26b40d8da44f86a2ff945ef2fe7652cd09c167a1c",
+      "after": "c214624530e2b858e3f9ddb26b40d8da44f86a2ff945ef2fe7652cd09c167a1c"
+    },
+    "src/lib/learning/writing-html.ts": {
+      "before": "23d68e641570bda01b9486919b06294aff8e4a70db8dc525a9014d11630ce11f",
+      "after": "23d68e641570bda01b9486919b06294aff8e4a70db8dc525a9014d11630ce11f"
+    },
+    "src/lib/learning/checkin-client.ts": {
+      "before": "653a9dff654aeed847dcec799dede69428f7a3cb1da4e45973bbe2f506be1077",
+      "after": "653a9dff654aeed847dcec799dede69428f7a3cb1da4e45973bbe2f506be1077"
+    },
+    "src/lib/learning/use-account-settings.ts": {
+      "before": "202993797a118ca8cdefea019b7f82a6af769e2fb52541c29ffa608c6f5a2a32",
+      "after": "202993797a118ca8cdefea019b7f82a6af769e2fb52541c29ffa608c6f5a2a32"
+    },
+    "src/lib/learning/writing-contract.ts": {
+      "before": "ab8768218925c4b94b1482b0d8f0807ed100cf3215654396c0d832647eb1b545",
+      "after": "ab8768218925c4b94b1482b0d8f0807ed100cf3215654396c0d832647eb1b545"
+    },
+    "src/lib/learning/use-account-correction.ts": {
+      "before": "546692ca1967de6f1ae889e7b2bcddf98af3bf515befe1e2aa25d5d34d3ffeaf",
+      "after": "546692ca1967de6f1ae889e7b2bcddf98af3bf515befe1e2aa25d5d34d3ffeaf"
+    },
+    "src/lib/learning/documents-client.ts": {
+      "before": "0d69d6258a6e917372eba4918b5f4215fff8ca0df68635e4ea481b7e96bf0c72",
+      "after": "0d69d6258a6e917372eba4918b5f4215fff8ca0df68635e4ea481b7e96bf0c72"
+    },
+    "src/lib/learning/plan-contract.ts": {
+      "before": "880b6de79f165329bc1da58856a6ae56688db9e03dd78f07210571a7c8728adc",
+      "after": "880b6de79f165329bc1da58856a6ae56688db9e03dd78f07210571a7c8728adc"
+    },
+    "src/lib/learning/preparation-contract.ts": {
+      "before": "ac6f350d6c8169f7b85a770df953b91c65e49792b994e939f133e3521e465f42",
+      "after": "ac6f350d6c8169f7b85a770df953b91c65e49792b994e939f133e3521e465f42"
+    },
+    "src/lib/learning/personal-contract.ts": {
+      "before": "9fb14a3553cf4d5c0930dc23151204faca443e92febbfc5c418c68cb506615e1",
+      "after": "9fb14a3553cf4d5c0930dc23151204faca443e92febbfc5c418c68cb506615e1"
+    },
+    "src/lib/learning/use-account-progress.ts": {
+      "before": "92f78654071363c433ccd344d1e4e4e1fbfa8a50390a8c68e94199e15e1b59cd",
+      "after": "92f78654071363c433ccd344d1e4e4e1fbfa8a50390a8c68e94199e15e1b59cd"
+    },
+    "src/lib/learning/use-account-schedule.ts": {
+      "before": "163c67b191f7699e1d62676ac2089eb4300fd843cfae4bf0ce1d4d5716fe2904",
+      "after": "163c67b191f7699e1d62676ac2089eb4300fd843cfae4bf0ce1d4d5716fe2904"
+    },
+    "src/lib/learning/use-account-checkin.ts": {
+      "before": "9fae3ff08b4ff4187b784de3651c1a83c0941cedb9b977ede74199ab94fa6eb8",
+      "after": "9fae3ff08b4ff4187b784de3651c1a83c0941cedb9b977ede74199ab94fa6eb8"
+    },
+    "src/lib/learning/use-account-writing.ts": {
+      "before": "577fb34c1a44868a2825e9eed38dae930d2d1bef3c1e1729756090b3036bf0b1",
+      "after": "577fb34c1a44868a2825e9eed38dae930d2d1bef3c1e1729756090b3036bf0b1"
+    },
+    "src/lib/learning/use-account-personal.ts": {
+      "before": "4e2b79e0d1bb263ed71b27236ed604edee923be903a02e053b63c416c08e96ae",
+      "after": "4e2b79e0d1bb263ed71b27236ed604edee923be903a02e053b63c416c08e96ae"
+    },
+    "src/lib/learning/progress-contract.ts": {
+      "before": "b4fb271e61c72f165cdf08a46c98ce8bce5e853ef8c64d3f513e81f430c46f78",
+      "after": "b4fb271e61c72f165cdf08a46c98ce8bce5e853ef8c64d3f513e81f430c46f78"
+    },
+    "src/lib/learning/plan-client.ts": {
+      "before": "b2a5976dea7db5ac157f1966877a4f43bfe4b9cf1be1740528c095fa3fe27ea6",
+      "after": "b2a5976dea7db5ac157f1966877a4f43bfe4b9cf1be1740528c095fa3fe27ea6"
+    },
+    "src/lib/catalog/limits.ts": {
+      "before": "5a4410a6ac5324a17c5ec0b2141c13f86e963b0b8d3fb0ae8df974c216acedbd",
+      "after": "5a4410a6ac5324a17c5ec0b2141c13f86e963b0b8d3fb0ae8df974c216acedbd"
+    },
+    "src/lib/server/pilot-ai-guard.ts": {
+      "before": "4f5a20df46e3dbe27e8dd804207259a6220fa30d88a206be4c8b40c4e60a49b3",
+      "after": "4f5a20df46e3dbe27e8dd804207259a6220fa30d88a206be4c8b40c4e60a49b3"
+    },
+    "src/lib/server/request-safety.ts": {
+      "before": "0380e197c03982ba08ce293130ce22904743f7481a2e6d8966a93e7cff8ddba5",
+      "after": "0380e197c03982ba08ce293130ce22904743f7481a2e6d8966a93e7cff8ddba5"
+    },
+    "src/lib/server/pdf-files.ts": {
+      "before": "8112a636c4257ff5bd0a0f8cf8db8de456f56592ac6500c5742dc35d9a97b752",
+      "after": "8112a636c4257ff5bd0a0f8cf8db8de456f56592ac6500c5742dc35d9a97b752"
+    },
+    "src/lib/server/pdf-planning-text.ts": {
+      "before": "3d619b87395c2ce6c1bc5bf3c1fa8a6bfe03978ee14507ab95b8a37ea749f7a9",
+      "after": "3d619b87395c2ce6c1bc5bf3c1fa8a6bfe03978ee14507ab95b8a37ea749f7a9"
+    },
+    "src/lib/search/norms.ts": {
+      "before": "2844d64de993b411585e868e7a05eed655f544aeb6c881b0efe4d8ea60cd427c",
+      "after": "2844d64de993b411585e868e7a05eed655f544aeb6c881b0efe4d8ea60cd427c"
+    },
+    "src/lib/search/contract.ts": {
+      "before": "865a02b23a6fdc2fd3704e191a8d492347972d81aba5f19131718f520aa36009",
+      "after": "865a02b23a6fdc2fd3704e191a8d492347972d81aba5f19131718f520aa36009"
+    },
+    "src/lib/search/client-boundary.ts": {
+      "before": "01e6ecfb585481def84034d2fb43b908ee7b0f9f99f83f1b7cc00a38b387ad79",
+      "after": "01e6ecfb585481def84034d2fb43b908ee7b0f9f99f83f1b7cc00a38b387ad79"
+    },
+    "src/lib/search/core.ts": {
+      "before": "544004be2f4ac769c6af27d1eb0c777d07b3936c338595247c7414b60303883b",
+      "after": "544004be2f4ac769c6af27d1eb0c777d07b3936c338595247c7414b60303883b"
+    },
+    "src/lib/search/normalize.ts": {
+      "before": "70eb44d2e4f0b8e0e3724347247ba01c80ac6c56bff90c012c816d247be6eb29",
+      "after": "70eb44d2e4f0b8e0e3724347247ba01c80ac6c56bff90c012c816d247be6eb29"
+    },
+    "src/lib/search/catalog-contract.ts": {
+      "before": "b8e8261a5af3c548b7fef7391831e6baab105b4cc6498be885c808b01d298a18",
+      "after": "b8e8261a5af3c548b7fef7391831e6baab105b4cc6498be885c808b01d298a18"
+    },
+    "src/lib/pdf-viewer/contract.ts": {
+      "before": "bc511698a2ef564590172fc552f7a4c5336c4dd0f598426a555acbcaffa6f3dc",
+      "after": "bc511698a2ef564590172fc552f7a4c5336c4dd0f598426a555acbcaffa6f3dc"
+    },
+    "src/lib/pdf-viewer/geometry.ts": {
+      "before": "8dd4d51a3637bd83940950cc79c63b423868e89021adfbc206b68d1d838dc3aa",
+      "after": "8dd4d51a3637bd83940950cc79c63b423868e89021adfbc206b68d1d838dc3aa"
+    },
+    "src/lib/pdf-viewer/text.ts": {
+      "before": "2a276015cda009e59cf9a96e1c7530a47d64714e3fd6cc25a77c54d56f4c1724",
+      "after": "2a276015cda009e59cf9a96e1c7530a47d64714e3fd6cc25a77c54d56f4c1724"
+    },
+    "src/lib/server/ai-credentials/crypto.ts": {
+      "before": "399d8527abc37ac5fd0711dd265b70b531b049eb905204395773455f0d699c39",
+      "after": "399d8527abc37ac5fd0711dd265b70b531b049eb905204395773455f0d699c39"
+    },
+    "src/lib/server/ai-credentials/runtime.ts": {
+      "before": "2b858cf58c483c94105106acbdfcca4200ca163b2a6ae6b5d01ec2b0a429bc55",
+      "after": "2b858cf58c483c94105106acbdfcca4200ca163b2a6ae6b5d01ec2b0a429bc55"
+    },
+    "src/lib/server/ai-credentials/openrouter.ts": {
+      "before": "37903fe97f7b851e5abbd5f7389635644a4857f9586181c787e159c939bf31d4",
+      "after": "37903fe97f7b851e5abbd5f7389635644a4857f9586181c787e159c939bf31d4"
+    },
+    "src/lib/server/ai-credentials/service.ts": {
+      "before": "ba6df9851b749a6e44599c1b32c510c4144d9fc9b602ba4fb59263f1f99783d0",
+      "after": "ba6df9851b749a6e44599c1b32c510c4144d9fc9b602ba4fb59263f1f99783d0"
+    },
+    "src/lib/server/auth/smtp-config.ts": {
+      "before": "b92bc6ff713d64525ee5bbef5fd87d244ba3601dec56ae3166a3bbeb5e093316",
+      "after": "b92bc6ff713d64525ee5bbef5fd87d244ba3601dec56ae3166a3bbeb5e093316"
+    },
+    "src/lib/server/auth/smtp-transport.ts": {
+      "before": "c2c0f275c24fba57ec89ab9d77c571c8ca2101c6c4332ab881c9647025ccca63",
+      "after": "c2c0f275c24fba57ec89ab9d77c571c8ca2101c6c4332ab881c9647025ccca63"
+    },
+    "src/lib/server/auth/runtime.ts": {
+      "before": "475ee5f7fbc0d8d979147cbd7c5be742c8c14abea7df494c388836e849206032",
+      "after": "475ee5f7fbc0d8d979147cbd7c5be742c8c14abea7df494c388836e849206032"
+    },
+    "src/lib/server/auth/production-config.ts": {
+      "before": "0344a00e6bcea0f59e179b61f87e52f662c7982e8cdb514620ff2ad1d6196146",
+      "after": "0344a00e6bcea0f59e179b61f87e52f662c7982e8cdb514620ff2ad1d6196146"
+    },
+    "src/lib/server/auth/security.ts": {
+      "before": "83c4e9e5c83cc7ca93db0d85a480531191368e982d36833dfbd22854e79c81b3",
+      "after": "83c4e9e5c83cc7ca93db0d85a480531191368e982d36833dfbd22854e79c81b3"
+    },
+    "src/lib/server/auth/mail-dispatcher.ts": {
+      "before": "39c6bcb08fd2f8766a5178b36a3c9e482205bb28b02e83466148e400587bf2b0",
+      "after": "39c6bcb08fd2f8766a5178b36a3c9e482205bb28b02e83466148e400587bf2b0"
+    },
+    "src/lib/server/auth/mail-transport.ts": {
+      "before": "73cc22201e1b6461daca326fa668d74c97045e77cdd9ca9b9aaab6cc262924d6",
+      "after": "73cc22201e1b6461daca326fa668d74c97045e77cdd9ca9b9aaab6cc262924d6"
+    },
+    "src/lib/server/auth/production-runtime.ts": {
+      "before": "a3b25655312479ead2f985ff740a15fcff9396b98641b6f9f4a10ba4d4533532",
+      "after": "a3b25655312479ead2f985ff740a15fcff9396b98641b6f9f4a10ba4d4533532"
+    },
+    "src/lib/server/auth/service.ts": {
+      "before": "23affb93b29ea432c9b3a0e568a1d5d0a79dedcd268faf753d4f180028b73aea",
+      "after": "23affb93b29ea432c9b3a0e568a1d5d0a79dedcd268faf753d4f180028b73aea"
+    },
+    "src/lib/server/learning/documents-service.ts": {
+      "before": "11047d28cd09c930545c547ad54d25dac8fe2fe14e55794953e97b775f9f2ae1",
+      "after": "11047d28cd09c930545c547ad54d25dac8fe2fe14e55794953e97b775f9f2ae1"
+    },
+    "src/lib/server/learning/settings-http.ts": {
+      "before": "681451e6f3a8b6927938576e447df8d3971859468697e3290db98299b031f883",
+      "after": "681451e6f3a8b6927938576e447df8d3971859468697e3290db98299b031f883"
+    },
+    "src/lib/server/learning/settings-values.ts": {
+      "before": "62d77b9cdc2f68497ef77f6aa49d17369eb1a2f1a43165e4f97df3d120803938",
+      "after": "62d77b9cdc2f68497ef77f6aa49d17369eb1a2f1a43165e4f97df3d120803938"
+    },
+    "src/lib/server/learning/plan-calculation.ts": {
+      "before": "cd8b3036e2a29f964e67087f8c6749136a4a5031cd323b924e5b2144e71cc43e",
+      "after": "cd8b3036e2a29f964e67087f8c6749136a4a5031cd323b924e5b2144e71cc43e"
+    },
+    "src/lib/server/learning/correction-service.ts": {
+      "before": "220b5bb65e968555b312818ab2888b974ae30722a9072d62a18416d5bb06057e",
+      "after": "220b5bb65e968555b312818ab2888b974ae30722a9072d62a18416d5bb06057e"
+    },
+    "src/lib/server/learning/checkin-http.ts": {
+      "before": "3b63e25168316b31a9c308a3c3fbfce657f913b5728fa437708bfb2e2c4918f6",
+      "after": "3b63e25168316b31a9c308a3c3fbfce657f913b5728fa437708bfb2e2c4918f6"
+    },
+    "src/lib/server/learning/documents-http.ts": {
+      "before": "fe5b52b031149c02947386e34024b9474e0d0261402627bda3b315fd10cc4d1c",
+      "after": "fe5b52b031149c02947386e34024b9474e0d0261402627bda3b315fd10cc4d1c"
+    },
+    "src/lib/server/learning/writing-service.ts": {
+      "before": "30d355d204600f59b4a7871df63b1ddf0d1f996e9724b8da7066f33a89ba8ae3",
+      "after": "30d355d204600f59b4a7871df63b1ddf0d1f996e9724b8da7066f33a89ba8ae3"
+    },
+    "src/lib/server/learning/checkin-service.ts": {
+      "before": "f7ee60ecec5bf76cd52d250ff40f29c1d13b088331b8adc01c4293b3fb3426da",
+      "after": "f7ee60ecec5bf76cd52d250ff40f29c1d13b088331b8adc01c4293b3fb3426da"
+    },
+    "src/lib/server/learning/http.ts": {
+      "before": "d814c8f73dd75fc77fbcefe88ed8a37f22964021f33511cb324a053240077baa",
+      "after": "d814c8f73dd75fc77fbcefe88ed8a37f22964021f33511cb324a053240077baa"
+    },
+    "src/lib/server/learning/writing-http.ts": {
+      "before": "cecf72ad1f002cb21f0d738196e89c2211ad722a5669f41a304cdc1e2445596c",
+      "after": "cecf72ad1f002cb21f0d738196e89c2211ad722a5669f41a304cdc1e2445596c"
+    },
+    "src/lib/server/learning/progress-service.ts": {
+      "before": "d5b60e865935d6e2a55a0a5b3f419e0cfc53df4f4eba950a0ada59aae3aec9c0",
+      "after": "d5b60e865935d6e2a55a0a5b3f419e0cfc53df4f4eba950a0ada59aae3aec9c0"
+    },
+    "src/lib/server/learning/plan-service.ts": {
+      "before": "6796f80bf75a6ba50fcc9d86e3f6bf6eae521473a2516cb035069102a5cd3881",
+      "after": "6796f80bf75a6ba50fcc9d86e3f6bf6eae521473a2516cb035069102a5cd3881"
+    },
+    "src/lib/server/learning/runtime.ts": {
+      "before": "56e9c31a96a500112adf180c232eec449766a0989368b2c70c78f68070f6884c",
+      "after": "56e9c31a96a500112adf180c232eec449766a0989368b2c70c78f68070f6884c"
+    },
+    "src/lib/server/learning/correction-context.ts": {
+      "before": "1f822d7939de78f8f5e37b8cd2f93f080deaf2fac1d786c9071f182c7a2dcae6",
+      "after": "1f822d7939de78f8f5e37b8cd2f93f080deaf2fac1d786c9071f182c7a2dcae6"
+    },
+    "src/lib/server/learning/schedule-service.ts": {
+      "before": "e374c3bc6e0683c904be7ed1f6ff3607b22e39b571a9f63a3f18b8504f541ce9",
+      "after": "e374c3bc6e0683c904be7ed1f6ff3607b22e39b571a9f63a3f18b8504f541ce9"
+    },
+    "src/lib/server/learning/personal-service.ts": {
+      "before": "f752f3c0d356698acb4e6d7d19e3623c57b91ac586b0c1306b7c083ddf480b2c",
+      "after": "f752f3c0d356698acb4e6d7d19e3623c57b91ac586b0c1306b7c083ddf480b2c"
+    },
+    "src/lib/server/learning/settings-service.ts": {
+      "before": "b92a0c1f30eaa527eb5ff33ad1ff7c0a363162b9fea8dcf5b3d5c0469a562264",
+      "after": "b92a0c1f30eaa527eb5ff33ad1ff7c0a363162b9fea8dcf5b3d5c0469a562264"
+    },
+    "src/lib/server/learning/settings-metrics.ts": {
+      "before": "8eee51310882f84e47ebc4b584a7a2d24d2c4e4253a1a2e7004ac4157011636c",
+      "after": "8eee51310882f84e47ebc4b584a7a2d24d2c4e4253a1a2e7004ac4157011636c"
+    },
+    "src/lib/server/learning/correction-http.ts": {
+      "before": "17a5bc058c41a879899732b4ecdfeb4b611be763bbfc517553480169766dd7df",
+      "after": "17a5bc058c41a879899732b4ecdfeb4b611be763bbfc517553480169766dd7df"
+    },
+    "src/lib/server/learning/preparation-service.ts": {
+      "before": "899d4c1453cefe832cebc9eb8a92b1656c7927121a07ed7fb969f752d56e9905",
+      "after": "899d4c1453cefe832cebc9eb8a92b1656c7927121a07ed7fb969f752d56e9905"
+    },
+    "src/lib/server/learning/checkin-context.ts": {
+      "before": "d06dcc448b6bc4760de313027c6806ffc0d3efdbea1158afd9fdb68cc462371c",
+      "after": "d06dcc448b6bc4760de313027c6806ffc0d3efdbea1158afd9fdb68cc462371c"
+    },
+    "src/lib/server/learning/preparation-calculation.ts": {
+      "before": "2a5bd23e57b0d66c955c8b169c90b1999877db20dd662be9df9682fd0f3728cb",
+      "after": "2a5bd23e57b0d66c955c8b169c90b1999877db20dd662be9df9682fd0f3728cb"
+    },
+    "src/lib/server/learning/documents-validation.ts": {
+      "before": "ffee7c6c0067a6e5a49a12023451aa445eb8dd5c02f9319b3180ad330b490a59",
+      "after": "ffee7c6c0067a6e5a49a12023451aa445eb8dd5c02f9319b3180ad330b490a59"
+    },
+    "src/lib/server/catalog/import-service.ts": {
+      "before": "67293cba7e4b4627f40bd9f1598703a654eda224fa6a699c6e691db207563a68",
+      "after": "67293cba7e4b4627f40bd9f1598703a654eda224fa6a699c6e691db207563a68"
+    },
+    "src/lib/server/catalog/http.ts": {
+      "before": "f1ddaaaceceb6606feb48cee8c493835cd180d28d46972fcae8ef7aa69c638fb",
+      "after": "f1ddaaaceceb6606feb48cee8c493835cd180d28d46972fcae8ef7aa69c638fb"
+    },
+    "src/lib/server/catalog/runtime.ts": {
+      "before": "35b3fc6c87f859b507b0071fd4bd1b7d1b59877a565fb0b91273fa69ec676c21",
+      "after": "35b3fc6c87f859b507b0071fd4bd1b7d1b59877a565fb0b91273fa69ec676c21"
+    },
+    "src/lib/server/admin/http.ts": {
+      "before": "4835b33b2e462af62b83aa2888fa56b8ab011c30b6a3a282f43e3d8b5bb5ba71",
+      "after": "4835b33b2e462af62b83aa2888fa56b8ab011c30b6a3a282f43e3d8b5bb5ba71"
+    },
+    "src/lib/server/admin/service.ts": {
+      "before": "4a3af98f08426950007f279a2b1a5e350276a3c67893240a886cbb58da635cb2",
+      "after": "4a3af98f08426950007f279a2b1a5e350276a3c67893240a886cbb58da635cb2"
+    },
+    "src/lib/server/search/extract.ts": {
+      "before": "4d1616c5ef23534fcf06bb215572d4724161e357b3ae412d8066295a116ed1a7",
+      "after": "4d1616c5ef23534fcf06bb215572d4724161e357b3ae412d8066295a116ed1a7"
+    },
+    "src/lib/server/search/http.ts": {
+      "before": "dbc7b0d54d3d6ab537ab6ce90ac2795be31c12afcc9e99ffd73364208ebe8ccd",
+      "after": "dbc7b0d54d3d6ab537ab6ce90ac2795be31c12afcc9e99ffd73364208ebe8ccd"
+    },
+    "src/lib/server/search/runtime.ts": {
+      "before": "fb9c9ae03d623be29caafafc5a9987a14cb9fae03129f761ee02e97b7b67f2e9",
+      "after": "fb9c9ae03d623be29caafafc5a9987a14cb9fae03129f761ee02e97b7b67f2e9"
+    },
+    "src/lib/server/search/service.ts": {
+      "before": "5bf2d33a0a876217d0808430fe53e4b1bc05378431b24cd5432b31119eaa4f90",
+      "after": "5bf2d33a0a876217d0808430fe53e4b1bc05378431b24cd5432b31119eaa4f90"
+    },
+    "src/lib/server/search/worker.ts": {
+      "before": "4f2d9c54690f61daec5808f850f29ec1709a74e5f37eccfe3fc22a6df02733eb",
+      "after": "4f2d9c54690f61daec5808f850f29ec1709a74e5f37eccfe3fc22a6df02733eb"
+    },
+    "src/lib/server/search/store.ts": {
+      "before": "80d4c6bf88a9e66e39b9463e9e20ec13a1efa1cb69ee3eafde61d440b46f0a85",
+      "after": "80d4c6bf88a9e66e39b9463e9e20ec13a1efa1cb69ee3eafde61d440b46f0a85"
+    },
+    "src/lib/server/persistence/repository.ts": {
+      "before": "249bc771abef61a5cc6bd0f06f3b04bce5e94e7483efb414160acabfd0a5d99d",
+      "after": "249bc771abef61a5cc6bd0f06f3b04bce5e94e7483efb414160acabfd0a5d99d"
+    },
+    "src/lib/server/persistence/database.ts": {
+      "before": "7a39d009e768d4eb67dbf76222cc7451d8675a166f733c0288c66cd6fd096f94",
+      "after": "7a39d009e768d4eb67dbf76222cc7451d8675a166f733c0288c66cd6fd096f94"
+    },
+    "src/lib/server/persistence/backup.ts": {
+      "before": "a23056bb3e625acea8ba182b9010581bc57a2988bef7f3e3f17b1ee589a87ac5",
+      "after": "a23056bb3e625acea8ba182b9010581bc57a2988bef7f3e3f17b1ee589a87ac5"
+    },
+    "src/lib/server/persistence/files.ts": {
+      "before": "b53be7793582cf5ccbb3e91ce35182e79dc67ddcc2cad9bbf4e44e370720194b",
+      "after": "b53be7793582cf5ccbb3e91ce35182e79dc67ddcc2cad9bbf4e44e370720194b"
+    },
+    "src/lib/server/catalog-pdf/http.ts": {
+      "before": "621b384ba83dbbc13a4dfe67e59382bdbeb9a412622678b2903fd01332e464d5",
+      "after": "621b384ba83dbbc13a4dfe67e59382bdbeb9a412622678b2903fd01332e464d5"
+    },
+    "src/lib/server/catalog-pdf/service.ts": {
+      "before": "337e02987aa7c5d83846796114fd1e57bc679387acc8451a800df1156e2eedb3",
+      "after": "337e02987aa7c5d83846796114fd1e57bc679387acc8451a800df1156e2eedb3"
+    },
+    "src/components/ui/tabs.tsx": {
+      "before": "8bf9ee3935ab86c268a2a71cb5b4b67d3d5587ca9f2e0bf25f37ffdb1980434c",
+      "after": "8bf9ee3935ab86c268a2a71cb5b4b67d3d5587ca9f2e0bf25f37ffdb1980434c"
+    },
+    "src/components/ui/card.tsx": {
+      "before": "a41b4d3d618416128d0093af2575048a2de8ef25c0926bcea4f19a24a59de476",
+      "after": "a41b4d3d618416128d0093af2575048a2de8ef25c0926bcea4f19a24a59de476"
+    },
+    "src/components/ui/slider.tsx": {
+      "before": "b40e3b4a0a8eb3ff6c3ba06960c207855270dfb2bef04fb749312921250f79e6",
+      "after": "b40e3b4a0a8eb3ff6c3ba06960c207855270dfb2bef04fb749312921250f79e6"
+    },
+    "src/components/ui/progress.tsx": {
+      "before": "9c433ab1f9af041545689c7c158f81c4595cba7b5575ce7afd0fca0b0d053633",
+      "after": "9c433ab1f9af041545689c7c158f81c4595cba7b5575ce7afd0fca0b0d053633"
+    },
+    "src/components/ui/scroll-area.tsx": {
+      "before": "42de3962daca60255bf1d3cd90bd3c038db73a3ed61ecaac6cffc6a153181e4a",
+      "after": "42de3962daca60255bf1d3cd90bd3c038db73a3ed61ecaac6cffc6a153181e4a"
+    },
+    "src/components/ui/tooltip.tsx": {
+      "before": "2cea2294d4947b88d815860f64e0b5e0eb47a59bde47cfd194aac2230c923865",
+      "after": "2cea2294d4947b88d815860f64e0b5e0eb47a59bde47cfd194aac2230c923865"
+    },
+    "src/components/ui/dialog.tsx": {
+      "before": "ccabf6cc674a68b09d9168904bb46b7c1075a67312cf6f51f3e38b8eeacd2fdb",
+      "after": "ccabf6cc674a68b09d9168904bb46b7c1075a67312cf6f51f3e38b8eeacd2fdb"
+    },
+    "src/components/ui/badge.tsx": {
+      "before": "968b0403af74a785c9408ca69a677235e49d0c80b2c27fb9858ad421a8778c7d",
+      "after": "968b0403af74a785c9408ca69a677235e49d0c80b2c27fb9858ad421a8778c7d"
+    },
+    "src/components/ui/separator.tsx": {
+      "before": "75085bd84ff6965e4a356c53a4689799cabf65caa93c0bba064d5a0c6fa78f13",
+      "after": "75085bd84ff6965e4a356c53a4689799cabf65caa93c0bba064d5a0c6fa78f13"
+    },
+    "src/components/ui/button.tsx": {
+      "before": "13076996de4a924922935376faa0a66221e4fec9eb8e6fd53ac45f3cf1c05c6b",
+      "after": "13076996de4a924922935376faa0a66221e4fec9eb8e6fd53ac45f3cf1c05c6b"
+    },
+    "src/components/ui/textarea.tsx": {
+      "before": "58b58d84fc54ba5f4ca46937870c619349fd9eccc4d494250ac7bc73a94e05e9",
+      "after": "58b58d84fc54ba5f4ca46937870c619349fd9eccc4d494250ac7bc73a94e05e9"
+    },
+    "src/components/ui/input.tsx": {
+      "before": "f7d6ecff9a4d631feeaf401c02bb87e26ddb38131c55d15a43b9290747390847",
+      "after": "f7d6ecff9a4d631feeaf401c02bb87e26ddb38131c55d15a43b9290747390847"
+    },
+    "src/app/konto/layout.tsx": {
+      "before": "ad9b1b55de55bff9313800290cb7978f24ed46cf8354b4055c7f9e58d899267c",
+      "after": "ad9b1b55de55bff9313800290cb7978f24ed46cf8354b4055c7f9e58d899267c"
+    },
+    "src/app/konto/page.tsx": {
+      "before": "be8b965e4c1e3d17f36f5591feb168d752a812166f6c98128a885bcaa0c4b57b",
+      "after": "be8b965e4c1e3d17f36f5591feb168d752a812166f6c98128a885bcaa0c4b57b"
+    },
+    "src/app/kalender/page.tsx": {
+      "before": "3b8f6211f6a5c97923410380d7c23f2d5ad86d5a2858580c5240cc8d39e208e1",
+      "after": "3b8f6211f6a5c97923410380d7c23f2d5ad86d5a2858580c5240cc8d39e208e1"
+    },
+    "src/app/plan/page.tsx": {
+      "before": "029802c9defb9959f1c756b00d08b27012eed0e10e508300f773457ebfc57388",
+      "after": "029802c9defb9959f1c756b00d08b27012eed0e10e508300f773457ebfc57388"
+    },
+    "src/app/admin/page.tsx": {
+      "before": "a9556ab215f06ef7a746f0c86553fe5910067a161642f99b272452210fb049da",
+      "after": "a9556ab215f06ef7a746f0c86553fe5910067a161642f99b272452210fb049da"
+    },
+    "src/app/feedback/page.tsx": {
+      "before": "d503eb21ae9fa58fd8f67a88055ac9f30a65ce8a3aab038d4d03bb4f5cd038e6",
+      "after": "d503eb21ae9fa58fd8f67a88055ac9f30a65ce8a3aab038d4d03bb4f5cd038e6"
+    },
+    "src/app/klausuren/page.tsx": {
+      "before": "102b20bd3b379041c78c70a4d94373289ec280791df8e06c91a336dd757b426d",
+      "after": "102b20bd3b379041c78c70a4d94373289ec280791df8e06c91a336dd757b426d"
+    },
+    "src/app/schreiben/page.tsx": {
+      "before": "2815c4018cc8dc1d2888ce6009a061d747f24cc8ec2f2a1a78660428583678a0",
+      "after": "2815c4018cc8dc1d2888ce6009a061d747f24cc8ec2f2a1a78660428583678a0"
+    },
+    "src/app/wochenplan/page.tsx": {
+      "before": "19086c4c352bcf82b3b55353958a45ce85e6848b71cf46dd46eab16cdb18360b",
+      "after": "19086c4c352bcf82b3b55353958a45ce85e6848b71cf46dd46eab16cdb18360b"
+    },
+    "src/app/onboarding/page.tsx": {
+      "before": "884f8cb4419654de7fe6099dd610da2f0b7be155708cc1952fb821b2ff042767",
+      "after": "884f8cb4419654de7fe6099dd610da2f0b7be155708cc1952fb821b2ff042767"
+    },
+    "src/app/themen/page.tsx": {
+      "before": "020c905440ae1e99223b32239cecafd9531c430223ac8580c695155645d5836d",
+      "after": "020c905440ae1e99223b32239cecafd9531c430223ac8580c695155645d5836d"
+    },
+    "src/app/api/openrouter-credits/route.ts": {
+      "before": "f6b274a33629c0f88fe1923884e7de22d1aa7ad7aab8ef096fefc65d9f42e61e",
+      "after": "f6b274a33629c0f88fe1923884e7de22d1aa7ad7aab8ef096fefc65d9f42e61e"
+    },
+    "src/app/api/lan-url/route.ts": {
+      "before": "fa0a0d22afd4e61de385233199ed31e5e42fb85fabcb527575c1e743e139af1a",
+      "after": "fa0a0d22afd4e61de385233199ed31e5e42fb85fabcb527575c1e743e139af1a"
+    },
+    "src/app/api/pdf-file/route.ts": {
+      "before": "bd1039db2e2ae75f88ba67f5641d4ee74a411f43fe98dffa9ddc3cf1fafd04c2",
+      "after": "bd1039db2e2ae75f88ba67f5641d4ee74a411f43fe98dffa9ddc3cf1fafd04c2"
+    },
+    "src/app/api/openrouter-models/route.ts": {
+      "before": "1313a48ef23c76fb6f530b66802e4e33af3057ca5d246b58a2c1969f0bfab2f2",
+      "after": "1313a48ef23c76fb6f530b66802e4e33af3057ca5d246b58a2c1969f0bfab2f2"
+    },
+    "src/app/api/feedback/route.ts": {
+      "before": "3bc8e35ed54393103376e826de769aebded77ba52762871a59574d510f6ff689",
+      "after": "3bc8e35ed54393103376e826de769aebded77ba52762871a59574d510f6ff689"
+    },
+    "src/app/api/ai/route.ts": {
+      "before": "10bb3d1d6a9233cc4294588f219217a287938e7ef726d5b12f101bf3162632df",
+      "after": "10bb3d1d6a9233cc4294588f219217a287938e7ef726d5b12f101bf3162632df"
+    },
+    "src/app/api/pdf-open/route.ts": {
+      "before": "219906744566b32cb0b718cec458d5cc9ede2c7429854ba49a78baa50555f9b0",
+      "after": "219906744566b32cb0b718cec458d5cc9ede2c7429854ba49a78baa50555f9b0"
+    },
+    "src/app/api/account/ai-credential/route.ts": {
+      "before": "8ced748cdad5c08194f6799a099fa3ad16d47c16cbe0734c72116cd4743b3ca3",
+      "after": "8ced748cdad5c08194f6799a099fa3ad16d47c16cbe0734c72116cd4743b3ca3"
+    },
+    "src/app/api/account/admin-overview/route.ts": {
+      "before": "b3a7b18220832a91f5a48bcb3ac6e3e6a7da6d33c0a0d8374d761945d7a5dd64",
+      "after": "b3a7b18220832a91f5a48bcb3ac6e3e6a7da6d33c0a0d8374d761945d7a5dd64"
+    },
+    "src/app/api/account/[[...action]]/route.ts": {
+      "before": "04acbfe88101a271e7177b5c112b0a8e961fe8db8d3a0438b9504c76d15ffd89",
+      "after": "04acbfe88101a271e7177b5c112b0a8e961fe8db8d3a0438b9504c76d15ffd89"
+    },
+    "src/app/api/account/admin/ai-credential/route.ts": {
+      "before": "dc07a6d3559da6e6fffa7e34354cf4e204717bf769b065813ddfb963cd4109c0",
+      "after": "dc07a6d3559da6e6fffa7e34354cf4e204717bf769b065813ddfb963cd4109c0"
+    },
+    "src/app/api/docs/parse/route.ts": {
+      "before": "3ef199399bc980b05995530fa648bd271936af2ebe205937648652384336f9e6",
+      "after": "3ef199399bc980b05995530fa648bd271936af2ebe205937648652384336f9e6"
+    },
+    "src/app/api/docs/tag/route.ts": {
+      "before": "079c86ec7fdf04014820b293cdb3f6e7f8825f69f8a0c9aa6c001619199347ee",
+      "after": "079c86ec7fdf04014820b293cdb3f6e7f8825f69f8a0c9aa6c001619199347ee"
+    },
+    "src/app/api/catalog/pdf/route.ts": {
+      "before": "c1f73dc1cea324734d3de0c133f6b17b2142f253a9cf83394ae7d190a4d36fa3",
+      "after": "c1f73dc1cea324734d3de0c133f6b17b2142f253a9cf83394ae7d190a4d36fa3"
+    },
+    "src/app/api/catalog/search/route.ts": {
+      "before": "42d82ab6a5813e4ebec75c32858e271ba1b9db69febb085da0d339c9ac7be704",
+      "after": "42d82ab6a5813e4ebec75c32858e271ba1b9db69febb085da0d339c9ac7be704"
+    },
+    "src/app/api/catalog/klausuren/route.ts": {
+      "before": "161b6fb50a04f3e97d8f8e4f80230a386c91c956b19eca76854b173bf9b4fd28",
+      "after": "161b6fb50a04f3e97d8f8e4f80230a386c91c956b19eca76854b173bf9b4fd28"
+    },
+    "src/app/api/catalog/import/route.ts": {
+      "before": "091ebe7f1cdb8ee7a57fef75d8002a4cd41a486fbdbca7164ce60472ff2fcc82",
+      "after": "091ebe7f1cdb8ee7a57fef75d8002a4cd41a486fbdbca7164ce60472ff2fcc82"
+    },
+    "src/app/api/catalog/pdf-engine/[...asset]/route.ts": {
+      "before": "de25bac8223cf31d6cc1f90b7c8eb8707267ef695ff4a9c4aefc8c33adb88d75",
+      "after": "de25bac8223cf31d6cc1f90b7c8eb8707267ef695ff4a9c4aefc8c33adb88d75"
+    },
+    "src/app/api/learning/personal/route.ts": {
+      "before": "9b8b5cea935f52027f6191cbb0caa0f2b07868cef2b530cccfdaabd0ddba7fe4",
+      "after": "9b8b5cea935f52027f6191cbb0caa0f2b07868cef2b530cccfdaabd0ddba7fe4"
+    },
+    "src/app/api/learning/settings/route.ts": {
+      "before": "942c92d787f90d162f6b69a32a8b99300c7390a8de2fc1202b5de768f8fa9ca3",
+      "after": "942c92d787f90d162f6b69a32a8b99300c7390a8de2fc1202b5de768f8fa9ca3"
+    },
+    "src/app/api/learning/schedule/route.ts": {
+      "before": "c9a2cc10c4e3b8f49ad0ad5fc4f61e88382dc6e8733c599113b75df9ed4e9382",
+      "after": "c9a2cc10c4e3b8f49ad0ad5fc4f61e88382dc6e8733c599113b75df9ed4e9382"
+    },
+    "src/app/api/learning/correction/route.ts": {
+      "before": "61ba145693e01b2ef0184ee4cf98915648d4e09b5f6a95850ca36858a47b2917",
+      "after": "61ba145693e01b2ef0184ee4cf98915648d4e09b5f6a95850ca36858a47b2917"
+    },
+    "src/app/api/learning/progress/route.ts": {
+      "before": "921a0f5559a1a65f7b849d0103d60176b89a0274301045804d76ca106e1cb3c5",
+      "after": "921a0f5559a1a65f7b849d0103d60176b89a0274301045804d76ca106e1cb3c5"
+    },
+    "src/app/api/learning/plans/route.ts": {
+      "before": "95705beacf5d333ab0c8db0b6b28a3546ff8913fc43142f0eeeb94038d114e3a",
+      "after": "95705beacf5d333ab0c8db0b6b28a3546ff8913fc43142f0eeeb94038d114e3a"
+    },
+    "src/app/api/learning/documents/route.ts": {
+      "before": "d353f3b032ef824f498dddde61d76e602d8031281bd872ec28f9427b23634005",
+      "after": "d353f3b032ef824f498dddde61d76e602d8031281bd872ec28f9427b23634005"
+    },
+    "src/app/api/learning/checkin/route.ts": {
+      "before": "1185242e393285377cd2de5768071ea318376571d922345e654464266bf12cab",
+      "after": "1185242e393285377cd2de5768071ea318376571d922345e654464266bf12cab"
+    },
+    "src/app/api/learning/preparation/route.ts": {
+      "before": "46ffe97cea44a098c605371c8225fbf63e032c4cf8be1755af209a869d937dce",
+      "after": "46ffe97cea44a098c605371c8225fbf63e032c4cf8be1755af209a869d937dce"
+    },
+    "src/app/api/learning/writing/route.ts": {
+      "before": "9a58813c5cb78107d706e12ec5e69ec78bc0ff2dd9e1a2a302f960031bca398d",
+      "after": "9a58813c5cb78107d706e12ec5e69ec78bc0ff2dd9e1a2a302f960031bca398d"
+    },
+    "src/app/api/learning/writing/commands/[requestId]/route.ts": {
+      "before": "f93f8be2b38254b03a6021ed6f942a8b65af0b35989085921895cb79beb52f70",
+      "after": "f93f8be2b38254b03a6021ed6f942a8b65af0b35989085921895cb79beb52f70"
+    },
+    "src/app/api/learning/preparation/preview/route.ts": {
+      "before": "0b9abada238b331f626da49ab4eebf30d3e5344a7201e1707f22324449ede912",
+      "after": "0b9abada238b331f626da49ab4eebf30d3e5344a7201e1707f22324449ede912"
+    },
+    "src/app/api/learning/preparation/commands/[requestId]/route.ts": {
+      "before": "116dceefa9475554bfd909ed95d058cff4f88e988a6ba366bd22b11ecaebcb5f",
+      "after": "116dceefa9475554bfd909ed95d058cff4f88e988a6ba366bd22b11ecaebcb5f"
+    },
+    "src/app/api/learning/checkin/commands/[requestId]/route.ts": {
+      "before": "f1effc003f5ed6ff377715c8d1c3cdc4959a0e02aa7a297882cb8aaad06cf2f7",
+      "after": "f1effc003f5ed6ff377715c8d1c3cdc4959a0e02aa7a297882cb8aaad06cf2f7"
+    },
+    "src/app/api/learning/documents/[id]/versions/[versionId]/route.ts": {
+      "before": "fe68bd2e129265ab4f79e713bae3d33b77425bf893e88c0ddf1f3fe30594c00f",
+      "after": "fe68bd2e129265ab4f79e713bae3d33b77425bf893e88c0ddf1f3fe30594c00f"
+    },
+    "src/app/api/learning/documents/commands/[requestId]/route.ts": {
+      "before": "7d506ca610bda7a4f3a512f9adc46ca87cdf166f5838f0d63b01022356b6c10d",
+      "after": "7d506ca610bda7a4f3a512f9adc46ca87cdf166f5838f0d63b01022356b6c10d"
+    },
+    "src/app/api/learning/commands/[requestId]/route.ts": {
+      "before": "4d5c8db62a86d563f5d4b6bd66ccf30da96da1c01b694536205090b81ea58e9b",
+      "after": "4d5c8db62a86d563f5d4b6bd66ccf30da96da1c01b694536205090b81ea58e9b"
+    },
+    "src/app/api/learning/plans/preview/route.ts": {
+      "before": "3623ab5114f48292df8d79257e61f8d37779b9f5a24dcf9b03e0ebeec844b711",
+      "after": "3623ab5114f48292df8d79257e61f8d37779b9f5a24dcf9b03e0ebeec844b711"
+    },
+    "src/app/api/learning/plans/commands/[requestId]/route.ts": {
+      "before": "b87ec8f26d0dd1cbfef2c053b7630831e1bb0c4d5ef73ad6df0cdc9572a80b4c",
+      "after": "b87ec8f26d0dd1cbfef2c053b7630831e1bb0c4d5ef73ad6df0cdc9572a80b4c"
+    },
+    "src/app/api/learning/correction/commands/[requestId]/route.ts": {
+      "before": "fb02b34887bdce54ede01bad641b01bed9f78e9ff22c013f97c263f5c95c6d90",
+      "after": "fb02b34887bdce54ede01bad641b01bed9f78e9ff22c013f97c263f5c95c6d90"
+    },
+    "src/app/api/learning/schedule/commands/[requestId]/route.ts": {
+      "before": "b2bab1560c661a0b8cdeb6a29d54d8e7da0d609e6cd6dfd2c8d08fa4f6521273",
+      "after": "b2bab1560c661a0b8cdeb6a29d54d8e7da0d609e6cd6dfd2c8d08fa4f6521273"
+    },
+    "src/app/api/learning/settings/commands/[requestId]/route.ts": {
+      "before": "ee50817a8e87e323ec2c0939b9675f5cbcc4abe43880a2018f2297caed5192b9",
+      "after": "ee50817a8e87e323ec2c0939b9675f5cbcc4abe43880a2018f2297caed5192b9"
+    },
+    "src/app/api/learning/personal/commands/[requestId]/route.ts": {
+      "before": "294801ac9bea9d8d677dd032f4a89802ab6ff87edd107af2a2af6b6c72cba821",
+      "after": "294801ac9bea9d8d677dd032f4a89802ab6ff87edd107af2a2af6b6c72cba821"
+    },
+    "src/app/api/auth/[...all]/route.ts": {
+      "before": "c1145bcd4ed2971cf9c98816c2ad28fda915b6b8b8362c612727c1d224a401b0",
+      "after": "c1145bcd4ed2971cf9c98816c2ad28fda915b6b8b8362c612727c1d224a401b0"
+    },
+    "src/app/schreiben/notizblock/page.tsx": {
+      "before": "1d9d531f45ef8f9db3b24c7e8d2c5fda2d852232809017b50d3ccbaf6f3c548b",
+      "after": "1d9d531f45ef8f9db3b24c7e8d2c5fda2d852232809017b50d3ccbaf6f3c548b"
+    },
+    "src/app/schreiben/[id]/page.tsx": {
+      "before": "6379bc18c371fd480e8c0d297b8ee0d221ff4295452dae9a796361d7ea3f77cd",
+      "after": "6379bc18c371fd480e8c0d297b8ee0d221ff4295452dae9a796361d7ea3f77cd"
+    },
+    "src/app/konto/einstellungen/page.tsx": {
+      "before": "b3a1067823b3b346eec5cf30d27076e465ee39375a369c344d4300b14026f164",
+      "after": "b3a1067823b3b346eec5cf30d27076e465ee39375a369c344d4300b14026f164"
+    },
+    "src/app/konto/zuruecksetzen/page.tsx": {
+      "before": "fd1381d4e036d0142c58726b8b65c121c2466a37dc7754a630b32ccc72ba7d77",
+      "after": "fd1381d4e036d0142c58726b8b65c121c2466a37dc7754a630b32ccc72ba7d77"
+    },
+    "src/app/konto/anmelden/page.tsx": {
+      "before": "cf35eb12715dc9be46b5bb60331a9970d95816372889c4f23a74ce27fd362450",
+      "after": "cf35eb12715dc9be46b5bb60331a9970d95816372889c4f23a74ce27fd362450"
+    },
+    "src/app/konto/einrichten/page.tsx": {
+      "before": "8fc7fff0a1870fdcc83f28ba6d185b05157890ad067d141072cbcef33d0c2645",
+      "after": "8fc7fff0a1870fdcc83f28ba6d185b05157890ad067d141072cbcef33d0c2645"
+    },
+    "src/app/konto/dokumente/page.tsx": {
+      "before": "1288cd9a41782c5dc41cc1cb7d2f1813fa26a1853d84d7513d3b74ccd3b7c325",
+      "after": "1288cd9a41782c5dc41cc1cb7d2f1813fa26a1853d84d7513d3b74ccd3b7c325"
+    },
+    "src/app/konto/klausuren/page.tsx": {
+      "before": "00bb32fc6cf8a2a706b2700c54cbf1931dcb316718ec05301c42d2ae8c6dd909",
+      "after": "00bb32fc6cf8a2a706b2700c54cbf1931dcb316718ec05301c42d2ae8c6dd909"
+    },
+    "src/app/konto/verwaltung/page.tsx": {
+      "before": "29c0e22ef02da550e532b51ea8bcd87e90874ba4894fe8f1f9a6e90a633ba339",
+      "after": "29c0e22ef02da550e532b51ea8bcd87e90874ba4894fe8f1f9a6e90a633ba339"
+    },
+    "src/app/konto/ki/page.tsx": {
+      "before": "b671ea0b92375fc7876ce5b1f13dc6d90f539f7df75081c80c27c36438914733",
+      "after": "b671ea0b92375fc7876ce5b1f13dc6d90f539f7df75081c80c27c36438914733"
+    },
+    "src/app/konto/klausuren/pdf/page.tsx": {
+      "before": "e120ff1622f9d40ccdbc967a8d0b8ab306c0cc9c460be87ad79b59a50ec6451f",
+      "after": "e120ff1622f9d40ccdbc967a8d0b8ab306c0cc9c460be87ad79b59a50ec6451f"
+    },
+    "src/app/konto/klausuren/suche/page.tsx": {
+      "before": "4d903eaeed3c2a956a9d4a3db56d6b1f505deda9d944046fddec5e359378b257",
+      "after": "4d903eaeed3c2a956a9d4a3db56d6b1f505deda9d944046fddec5e359378b257"
+    },
+    "db/migrations/015_personal_settings_commands.sql": {
+      "before": "57c3a0a19219528b7be9849faf98349f48c33b68f0135f685e027270484b8e1c",
+      "after": "57c3a0a19219528b7be9849faf98349f48c33b68f0135f685e027270484b8e1c"
+    },
+    "db/migrations/001_data_contract.sql": {
+      "before": "5fd1ae0df26e4686dc6da196b72b98563a40a74d5891f730e7b946a4ffb374ad",
+      "after": "5fd1ae0df26e4686dc6da196b72b98563a40a74d5891f730e7b946a4ffb374ad"
+    },
+    "db/migrations/007_ai_credentials.sql": {
+      "before": "85d74ee71d246390184117ba1eded674461ced962b0e5847d9a26b883c93d583",
+      "after": "85d74ee71d246390184117ba1eded674461ced962b0e5847d9a26b883c93d583"
+    },
+    "db/migrations/009_plan_commands.sql": {
+      "before": "3e3a5430b0fb4dd731b8d45f73bce54ce26dcb0665418b5511cb4adc7dc9d246",
+      "after": "3e3a5430b0fb4dd731b8d45f73bce54ce26dcb0665418b5511cb4adc7dc9d246"
+    },
+    "db/migrations/006_personal_learning_commands.sql": {
+      "before": "7a63e57bd6eabe092bf1318994b56b83f43af9f39d08cb8b2a178499a05205dd",
+      "after": "7a63e57bd6eabe092bf1318994b56b83f43af9f39d08cb8b2a178499a05205dd"
+    },
+    "db/migrations/016_auth_mail_dispatch.sql": {
+      "before": "d30999151f5c73a81637f7f4b974d6b9072898193081537f56e4780a4931d572",
+      "after": "d30999151f5c73a81637f7f4b974d6b9072898193081537f56e4780a4931d572"
+    },
+    "db/migrations/013_correction_commands.sql": {
+      "before": "d9fd9a9d8f6c63afabf9d074e6b847e2a092345cfd8c956e40d17c19679765fd",
+      "after": "d9fd9a9d8f6c63afabf9d074e6b847e2a092345cfd8c956e40d17c19679765fd"
+    },
+    "db/migrations/005_catalog_search.sql": {
+      "before": "d79eb3af67e339dee606ea4eb7cf66e78de3720102f68c03b5659e51c6b7149a",
+      "after": "d79eb3af67e339dee606ea4eb7cf66e78de3720102f68c03b5659e51c6b7149a"
+    },
+    "db/migrations/004_learning_commands.sql": {
+      "before": "ab30962379462d9d01f982ae116947f049adb46c6d0d4c71b88f3fca20673d27",
+      "after": "ab30962379462d9d01f982ae116947f049adb46c6d0d4c71b88f3fca20673d27"
+    },
+    "db/migrations/003_catalog_import.sql": {
+      "before": "09f09187b2bc870d7a3b5a8052288f6894b001068611bfb8a6718681a522fe76",
+      "after": "09f09187b2bc870d7a3b5a8052288f6894b001068611bfb8a6718681a522fe76"
+    },
+    "db/migrations/002_auth_accounts.sql": {
+      "before": "dcdf32c1a5eb94317934ddd23f049d385b9531bc4b15393e02a8a05a75f15d84",
+      "after": "dcdf32c1a5eb94317934ddd23f049d385b9531bc4b15393e02a8a05a75f15d84"
+    },
+    "db/migrations/008_schedule_commands.sql": {
+      "before": "ca2da2cd010ef8169884300293566a6a2a5b25d749115246a02dce9de5b64f0f",
+      "after": "ca2da2cd010ef8169884300293566a6a2a5b25d749115246a02dce9de5b64f0f"
+    },
+    "db/migrations/014_personal_document_commands.sql": {
+      "before": "d1380a537ce8d3f89ce75551001d1259548847677e6418074eb8f6450c26a400",
+      "after": "d1380a537ce8d3f89ce75551001d1259548847677e6418074eb8f6450c26a400"
+    },
+    "db/migrations/012_writing_commands.sql": {
+      "before": "faa5b9d475089331636648a5517647d185d63d91d81b7a5f8bb4a65735a19a7f",
+      "after": "faa5b9d475089331636648a5517647d185d63d91d81b7a5f8bb4a65735a19a7f"
+    },
+    "db/migrations/010_learning_preparation.sql": {
+      "before": "2279b2f1f352b4d28995f6dca96ee556935926300069cdac449c5b3ecf111f27",
+      "after": "2279b2f1f352b4d28995f6dca96ee556935926300069cdac449c5b3ecf111f27"
+    },
+    "db/migrations/011_checkin_commands.sql": {
+      "before": "73fdcf342d25e27c589aca207947cc8920e2c3b2d2ae3ea10f7d57a835d67983",
+      "after": "73fdcf342d25e27c589aca207947cc8920e2c3b2d2ae3ea10f7d57a835d67983"
+    },
+    "package.json": {
+      "before": "7b5dc52eb0201d9565e875e139fedd55190368c6cbf979c7ea54cd3c7fd543a3",
+      "after": "7b5dc52eb0201d9565e875e139fedd55190368c6cbf979c7ea54cd3c7fd543a3"
+    },
+    "package-lock.json": {
+      "before": "b8b1f24ae4c0a82c845030055c2c25eaaa2078e9665302f12ed54c7e4a2231ac",
+      "after": "b8b1f24ae4c0a82c845030055c2c25eaaa2078e9665302f12ed54c7e4a2231ac"
+    },
+    "deploy/pilot/static-tests.log": {
+      "before": "90185e1a705a07b042e74f8b4c16565120ce288cc826985f54ca20a4f635ce56",
+      "after": "90185e1a705a07b042e74f8b4c16565120ce288cc826985f54ca20a4f635ce56"
+    },
+    "deploy/pilot/static-tests-initial.log": {
+      "before": "db90bee3ef360e1d2bb19e8122b8bf994eaa5181f0f3761acac459a004275d60",
+      "after": "db90bee3ef360e1d2bb19e8122b8bf994eaa5181f0f3761acac459a004275d60"
+    },
+    "deploy/pilot/README.md": {
+      "before": "f6f65d3cc2dd3029643c7a8373b5ade941d6c93cddece012dfe5011f4200a71f",
+      "after": "f6f65d3cc2dd3029643c7a8373b5ade941d6c93cddece012dfe5011f4200a71f"
+    },
+    "deploy/pilot/static-audit.json": {
+      "before": "5e31be78fcaa0b731b40ce5617efb515f96e74745e1aaa05cf42d3a98771e794",
+      "after": "5e31be78fcaa0b731b40ce5617efb515f96e74745e1aaa05cf42d3a98771e794"
+    },
+    "deploy/pilot/release-record.example.json": {
+      "before": "e0d1c4b82c1187d82bfd9a1fb465935ce4380bfe738c6dfcf0bea946e761f3dc",
+      "after": "e0d1c4b82c1187d82bfd9a1fb465935ce4380bfe738c6dfcf0bea946e761f3dc"
+    },
+    "deploy/pilot/static-lint.log": {
+      "before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "deploy/pilot/source-lock.json": {
+      "before": "174a077afef2c1fffcf61c3a5a6874ecef296d96316abb75ab2bccc169c5b735",
+      "after": "174a077afef2c1fffcf61c3a5a6874ecef296d96316abb75ab2bccc169c5b735"
+    },
+    "deploy/pilot/systemd/stex-pilot-mail.timer.in": {
+      "before": "cb4a4b261ceb268fd84c68153f04017adf1219a82dec8c8e4797b6b300f39ad7",
+      "after": "cb4a4b261ceb268fd84c68153f04017adf1219a82dec8c8e4797b6b300f39ad7"
+    },
+    "deploy/pilot/systemd/stex-pilot-search.service.in": {
+      "before": "8114e113273d91254338276fb35aa4b383e5e9ccd2423d2a7725f8bf196cac74",
+      "after": "8114e113273d91254338276fb35aa4b383e5e9ccd2423d2a7725f8bf196cac74"
+    },
+    "deploy/pilot/systemd/stex-pilot-backup@.service.in": {
+      "before": "2fc0e141a3f11c2fed804fe4bdfdad52390b2961c154aff663cf4a9a3db7dd55",
+      "after": "2fc0e141a3f11c2fed804fe4bdfdad52390b2961c154aff663cf4a9a3db7dd55"
+    },
+    "deploy/pilot/systemd/stex-pilot-mail.service.in": {
+      "before": "b911446f21cbac43281d27389c59c406bd1822ed3fd5b46a367be7ca847b1756",
+      "after": "b911446f21cbac43281d27389c59c406bd1822ed3fd5b46a367be7ca847b1756"
+    },
+    "deploy/pilot/systemd/stex-pilot-app.service.in": {
+      "before": "9b43999fad559214fd98c09ab4464f36c97df83b5ed16923dd0b4d742f830a3c",
+      "after": "9b43999fad559214fd98c09ab4464f36c97df83b5ed16923dd0b4d742f830a3c"
+    },
+    "deploy/pilot/env/common.env.example": {
+      "before": "422f21041d62023b98ce976be46d516f9269676fb8e95fa805c915443adf767a",
+      "after": "422f21041d62023b98ce976be46d516f9269676fb8e95fa805c915443adf767a"
+    },
+    "deploy/pilot/env/backup-secrets.env.example": {
+      "before": "ffbd15c48617e7e587ec468ef7b7f8b38481b3e7f938ec45b5566b340ffee43f",
+      "after": "ffbd15c48617e7e587ec468ef7b7f8b38481b3e7f938ec45b5566b340ffee43f"
+    },
+    "deploy/pilot/env/smtp-secrets.env.example": {
+      "before": "e7513c32c6bcf6ee9f97626a8867fa5d601080cb41aa3257b1c08af6d5b23381",
+      "after": "e7513c32c6bcf6ee9f97626a8867fa5d601080cb41aa3257b1c08af6d5b23381"
+    },
+    "deploy/pilot/env/build.env.example": {
+      "before": "677b0f5222c98421a6c38d42c39a5ec3f3324b09174df554f314ad034817706f",
+      "after": "677b0f5222c98421a6c38d42c39a5ec3f3324b09174df554f314ad034817706f"
+    },
+    "deploy/pilot/env/core-secrets.env.example": {
+      "before": "24af14aca905e855bd6fc341dedc800781ef7f65f0e49de12620efa61df8b315",
+      "after": "24af14aca905e855bd6fc341dedc800781ef7f65f0e49de12620efa61df8b315"
+    },
+    "deploy/pilot/nginx/stex-pilot.conf.in": {
+      "before": "32cb5097ce177ddba0541e6cb682e088755d3b31b6031f103054948ef6f89767",
+      "after": "32cb5097ce177ddba0541e6cb682e088755d3b31b6031f103054948ef6f89767"
+    },
+    "deploy/pilot/nginx/test-allowlist.conf.in": {
+      "before": "1bc228db2a8bfea211966d1a45c3b46370c0dd2e3f27309d819eaaa568ae82d4",
+      "after": "1bc228db2a8bfea211966d1a45c3b46370c0dd2e3f27309d819eaaa568ae82d4"
+    },
+    "deploy/pilot/nginx/proxy-common.conf.in": {
+      "before": "56d213281a88e13c9dee9bc09df19e499e598326db707412e95ab2d23b90aba0",
+      "after": "56d213281a88e13c9dee9bc09df19e499e598326db707412e95ab2d23b90aba0"
+    }
+  },
+  "scope": "316 existing public product/schema/package/deployment sources; not an atomic release snapshot"
+}

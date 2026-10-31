@@ -1,0 +1,28 @@
+[Unit]
+Description=Stex pilot logical full backup - PREPARATION BLOCKED
+After=network.target
+
+[Service]
+Type=oneshot
+User=stex-app
+Group=stex-app
+WorkingDirectory=/srv/stex/current
+EnvironmentFile=/etc/stex/common.env
+EnvironmentFile=/etc/stex/core-secrets.env
+EnvironmentFile=/etc/stex/backup-secrets.env
+# HOST-PREPARATION-BLOCK: target/backup operation not authorized or verified.
+# Instance must be a NEW operator-chosen [A-Za-z0-9_-]+ set ID. No automatic timer.
+ExecStartPre=/usr/bin/false
+ExecStart=/usr/bin/node --import tsx scripts/data-migration/persistence.mts backup /srv/stex/backup-staging/%i
+Restart=no
+TimeoutStartSec=30min
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/srv/stex/data/files /srv/stex/backup-staging
+# Existing CLI prints only digest/count/generation or a generic failure.
+StandardOutput=journal
+StandardError=journal

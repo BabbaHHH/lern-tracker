@@ -1,0 +1,1036 @@
+TAP version 13
+# Subtest: a four-minute planning response survives the old deadline; ordinary requests still time out
+ok 1 - a four-minute planning response survives the old deadline; ordinary requests still time out
+  ---
+  duration_ms: 6.899
+  ...
+# Subtest: planning accepts the selected Opus allowance, correction retains its existing allowance
+ok 2 - planning accepts the selected Opus allowance, correction retains its existing allowance
+  ---
+  duration_ms: 2.427791
+  ...
+# Subtest: unknown purposes and excessive budgets are rejected before any provider call
+ok 3 - unknown purposes and excessive budgets are rejected before any provider call
+  ---
+  duration_ms: 3.25075
+  ...
+# Subtest: planning still has a finite fifteen-minute deadline and respects caller cancellation
+ok 4 - planning still has a finite fifteen-minute deadline and respects caller cancellation
+  ---
+  duration_ms: 1.319916
+  ...
+# Subtest: a token-truncated planning response is not returned as a usable plan
+ok 5 - a token-truncated planning response is not returned as a usable plan
+  ---
+  duration_ms: 0.64925
+  ...
+# Subtest: saved preferences override explicit picker defaults; provider mode does not revive high
+ok 6 - saved preferences override explicit picker defaults; provider mode does not revive high
+  ---
+  duration_ms: 0.598875
+  ...
+# Subtest: preferences persist through backup/restore; invalid modes are filtered without touching learning data
+ok 7 - preferences persist through backup/restore; invalid modes are filtered without touching learning data
+  ---
+  duration_ms: 1.590833
+  ...
+# Subtest: every new client request reads the latest preference, including an open correction editor
+ok 8 - every new client request reads the latest preference, including an open correction editor
+  ---
+  duration_ms: 1.064709
+  ...
+# Subtest: replaced Opus/Fable defaults upgrade while stored alternative choices and raw data survive
+ok 9 - replaced Opus/Fable defaults upgrade while stored alternative choices and raw data survive
+  ---
+  duration_ms: 0.214708
+  ...
+# Subtest: server sends tier defaults and selected reasoning; provider mode omits reasoning and unsupported sampling
+ok 10 - server sends tier defaults and selected reasoning; provider mode omits reasoning and unsupported sampling
+  ---
+  duration_ms: 8.15075
+  ...
+# Subtest: truncated reasoning responses are errors, never partially applied plans
+ok 11 - truncated reasoning responses are errors, never partially applied plans
+  ---
+  duration_ms: 1.107083
+  ...
+# Subtest: AUTH-A: echte HTTP-Sitzungen, PostgreSQL und lokale Bibliotheksmails
+    # Subtest: N-01/I-01: expliziter Bootstrap, keine öffentliche Kontoanlage
+    ok 1 - N-01/I-01: expliziter Bootstrap, keine öffentliche Kontoanlage
+      ---
+      duration_ms: 48.545708
+      ...
+    # Subtest: Schema entspricht der festgelegten Bibliothek und erhält alte Konten
+    ok 2 - Schema entspricht der festgelegten Bibliothek und erhält alte Konten
+      ---
+      duration_ms: 28.528792
+      ...
+    # Subtest: A-01/N-02: Adresse, Wartestatus und verifizierte Admin-TOTP-Einrichtung
+    ok 3 - A-01/N-02: Adresse, Wartestatus und verifizierte Admin-TOTP-Einrichtung
+      ---
+      duration_ms: 594.70925
+      ...
+    # Subtest: N-03/N-05: Vertrauensgerät und alternative Authwege sind geschlossen
+    ok 4 - N-03/N-05: Vertrauensgerät und alternative Authwege sind geschlossen
+      ---
+      duration_ms: 3.4885
+      ...
+    # Subtest: I-01/I-08: zwei Mitglieder einladen, Wiederholung und keine zweite Identität
+    ok 5 - I-01/I-08: zwei Mitglieder einladen, Wiederholung und keine zweite Identität
+      ---
+      duration_ms: 33.341375
+      ...
+    # Subtest: I-03/I-07: abgelaufene, fremde und falsch adressierte Einladung
+    ok 6 - I-03/I-07: abgelaufene, fremde und falsch adressierte Einladung
+      ---
+      duration_ms: 19.495625
+      ...
+    # Subtest: I-04: zwanzig konkurrierende Einlösungen erzeugen genau ein Konto
+    ok 7 - I-04: zwanzig konkurrierende Einlösungen erzeugen genau ein Konto
+      ---
+      duration_ms: 99.849166
+      ...
+    # Subtest: I-05/I-06: Fehler nach Authcommit und sichere Wiederaufnahme
+    ok 8 - I-05/I-06: Fehler nach Authcommit und sichere Wiederaufnahme
+      ---
+      duration_ms: 158.815125
+      ...
+    # Subtest: A-01/A-02: echte Mitglieder warten bis zur persönlichen Freischaltung
+    ok 9 - A-01/A-02: echte Mitglieder warten bis zur persönlichen Freischaltung
+      ---
+      duration_ms: 353.896667
+      ...
+    # Subtest: A-03/A-04/A-05: vollständiger persönlicher Schreiben-/Lesen-Ablauf
+    ok 10 - A-03/A-04/A-05: vollständiger persönlicher Schreiben-/Lesen-Ablauf
+      ---
+      duration_ms: 38.34825
+      ...
+    # Subtest: S-03/N-06: Sperre und Schreiben sowie konkurrierende Verwaltung
+    ok 11 - S-03/N-06: Sperre und Schreiben sowie konkurrierende Verwaltung
+      ---
+      duration_ms: 86.100125
+      ...
+    # Subtest: S-01/S-02/S-03/S-04: bestehende Sitzungen sperren, nicht wiederbeleben
+    ok 12 - S-01/S-02/S-03/S-04: bestehende Sitzungen sperren, nicht wiederbeleben
+      ---
+      duration_ms: 214.273042
+      ...
+    # Subtest: S-04: Sperre bleibt bei echtem Fehler der Sitzungsbereinigung wirksam
+    ok 13 - S-04: Sperre bleibt bei echtem Fehler der Sitzungsbereinigung wirksam
+      ---
+      duration_ms: 91.511542
+      ...
+    # Subtest: N-04/N-06/B-01: Rollen, letzter Admin und Origin/CSRF schützen
+    ok 14 - N-04/N-06/B-01: Rollen, letzter Admin und Origin/CSRF schützen
+      ---
+      duration_ms: 12.548167
+      ...
+    # Subtest: A-06/A-07/N-04: falsche Cookies, Ablauf und frische Adminprüfung
+    ok 15 - A-06/A-07/N-04: falsche Cookies, Ablauf und frische Adminprüfung
+      ---
+      duration_ms: 155.557709
+      ...
+    # Subtest: B-01: echte Cookieausgabe bei fest konfigurierter HTTPS-Origin
+    ok 16 - B-01: echte Cookieausgabe bei fest konfigurierter HTTPS-Origin
+      ---
+      duration_ms: 64.865417
+      ...
+    # Subtest: R-01/R-02: Bibliotheksreset, Sessionentzug, Replay und gleiche Besitzer-ID
+    ok 17 - R-01/R-02: Bibliotheksreset, Sessionentzug, Replay und gleiche Besitzer-ID
+      ---
+      duration_ms: 148.152792
+      ...
+    # Subtest: R-02: Fehler beim Passwortspeichern lässt keine alte Sitzung zu
+    ok 18 - R-02: Fehler beim Passwortspeichern lässt keine alte Sitzung zu
+      ---
+      duration_ms: 284.235666
+      ...
+    # Subtest: R-03: echter Recoverycode ist nur einmal nutzbar
+    ok 19 - R-03: echter Recoverycode ist nur einmal nutzbar
+      ---
+      duration_ms: 293.443875
+      ...
+    # Subtest: B-02: atomare, gemeinsam gespeicherte Limits bei parallelen Versuchen
+    ok 20 - B-02: atomare, gemeinsam gespeicherte Limits bei parallelen Versuchen
+      ---
+      duration_ms: 186.425041
+      ...
+    # Subtest: A-03: Daten und echte Sitzungen nach PostgreSQL-Prozessneustart
+    ok 21 - A-03: Daten und echte Sitzungen nach PostgreSQL-Prozessneustart
+      ---
+      duration_ms: 131.679458
+      ...
+    # Subtest: B-04/B-05: geschützte Vollsicherung, Restore und echte Anmeldung mit TOTP
+    ok 22 - B-04/B-05: geschützte Vollsicherung, Restore und echte Anmeldung mit TOTP
+      ---
+      duration_ms: 628.2115
+      ...
+    # Subtest: B-05: Altschema, beschädigte Sicherung und zusätzliche Spalten scheitern geschlossen
+    ok 23 - B-05: Altschema, beschädigte Sicherung und zusätzliche Spalten scheitern geschlossen
+      ---
+      duration_ms: 118.572
+      ...
+    # Subtest: R-04/N-02: betriebliche Adminwiederherstellung erhält Besitzer-ID
+    ok 24 - R-04/N-02: betriebliche Adminwiederherstellung erhält Besitzer-ID
+      ---
+      duration_ms: 304.306125
+      ...
+    # Subtest: A-08: ausgefallene Datenbank ohne Sitzungs-/Browserfallback
+    ok 25 - A-08: ausgefallene Datenbank ohne Sitzungs-/Browserfallback
+      ---
+      duration_ms: 0.895833
+      ...
+    1..25
+ok 12 - AUTH-A: echte HTTP-Sitzungen, PostgreSQL und lokale Bibliotheksmails
+  ---
+  duration_ms: 6255.086584
+  ...
+# Subtest: IMPORT-B: aktiver A-Upload wird nach Prüfung für aktives B sichtbar
+    # Subtest: Multipartgrenze liest auch ohne Content-Length nur bis zum Limit
+    ok 1 - Multipartgrenze liest auch ohne Content-Length nur bis zum Limit
+      ---
+      duration_ms: 39.196791
+      ...
+    # Subtest: Pending-, anonyme und Fremdzugriffe geben keinen Katalogbeleg preis
+    ok 2 - Pending-, anonyme und Fremdzugriffe geben keinen Katalogbeleg preis
+      ---
+      duration_ms: 38.910833
+      ...
+    # Subtest: Wiederholung und Lösungsversion bleiben nachvollziehbar
+    ok 3 - Wiederholung und Lösungsversion bleiben nachvollziehbar
+      ---
+      duration_ms: 66.538917
+      ...
+    # Subtest: Ein liegengebliebener Verarbeitungseintrag wird mit demselben Inhalt fortgesetzt
+    ok 4 - Ein liegengebliebener Verarbeitungseintrag wird mit demselben Inhalt fortgesetzt
+      ---
+      duration_ms: 37.809375
+      ...
+    # Subtest: ID-Konflikt wird dauerhaft abgelehnt und überschreibt den Katalog nicht
+    ok 5 - ID-Konflikt wird dauerhaft abgelehnt und überschreibt den Katalog nicht
+      ---
+      duration_ms: 19.963458
+      ...
+    # Subtest: Fehlende Berechtigung und technische PDF-Grenzen bleiben geschlossen
+    ok 6 - Fehlende Berechtigung und technische PDF-Grenzen bleiben geschlossen
+      ---
+      duration_ms: 4.053125
+      ...
+    # Subtest: Ein Fehler vor dem Commit hinterlässt nur einen dauerhaften Fehlstatus
+    ok 7 - Ein Fehler vor dem Commit hinterlässt nur einen dauerhaften Fehlstatus
+      ---
+      duration_ms: 11.42525
+      ...
+    # Subtest: Konkurrierende Einreichungen erzeugen keine weitere Version
+    ok 8 - Konkurrierende Einreichungen erzeugen keine weitere Version
+      ---
+      duration_ms: 35.425916
+      ...
+    # Subtest: Neustart und geschützte DATA+AUTH-Sicherung erhalten Katalogbytes
+    ok 9 - Neustart und geschützte DATA+AUTH-Sicherung erhalten Katalogbytes
+      ---
+      duration_ms: 553.874042
+      ...
+    # Subtest: Sperre nach dauerhaftem Beginn verhindert den Commit
+    ok 10 - Sperre nach dauerhaftem Beginn verhindert den Commit
+      ---
+      duration_ms: 25.423
+      ...
+    1..10
+ok 13 - IMPORT-B: aktiver A-Upload wird nach Prüfung für aktives B sichtbar
+  ---
+  duration_ms: 3521.314166
+  ...
+# Subtest: inventory covers every actual backup area and accounts for all extra browser keys
+ok 14 - inventory covers every actual backup area and accounts for all extra browser keys
+  ---
+  duration_ms: 1.550208
+  ...
+# Subtest: accepts a backup emitted by the actual exportAll implementation
+ok 15 - accepts a backup emitted by the actual exportAll implementation
+  ---
+  duration_ms: 10.49325
+  ...
+# Subtest: all 24 areas roundtrip with notes, classifications, ordering, feedback and references intact
+ok 16 - all 24 areas roundtrip with notes, classifications, ordering, feedback and references intact
+  ---
+  duration_ms: 2.720458
+  ...
+# Subtest: missing, empty and null exam dates remain unknown without changing original payloads
+ok 17 - missing, empty and null exam dates remain unknown without changing original payloads
+  ---
+  duration_ms: 9.88925
+  ...
+# Subtest: absent, empty arrays/maps and explicit null are not conflated
+ok 18 - absent, empty arrays/maps and explicit null are not conflated
+  ---
+  duration_ms: 0.719041
+  ...
+# Subtest: repeating a request performs no writes and a new request never duplicates records
+ok 19 - repeating a request performs no writes and a new request never duplicates records
+  ---
+  duration_ms: 7.223791
+  ...
+# Subtest: reusing a request ID for different source data is a conflict
+ok 20 - reusing a request ID for different source data is a conflict
+  ---
+  duration_ms: 4.409042
+  ...
+# Subtest: duplicate IDs inside the source block migration without ID replacement
+ok 21 - duplicate IDs inside the source block migration without ID replacement
+  ---
+  duration_ms: 0.180416
+  ...
+# Subtest: existing catalog ID with different content reports conflict and leaves notes untouched
+ok 22 - existing catalog ID with different content reports conflict and leaves notes untouched
+  ---
+  duration_ms: 4.520375
+  ...
+# Subtest: possible duplicates are marked and never silently merged
+ok 23 - possible duplicates are marked and never silently merged
+  ---
+  duration_ms: 2.207875
+  ...
+# Subtest: broken exam, task-calendar, tracking and topic references block migration
+ok 24 - broken exam, task-calendar, tracking and topic references block migration
+  ---
+  duration_ms: 1.776583
+  ...
+# Subtest: nested plan and profile references are checked, including schedule document indexes
+ok 25 - nested plan and profile references are checked, including schedule document indexes
+  ---
+  duration_ms: 1.125375
+  ...
+# Subtest: private source document name without identity remains a visible unresolved hint
+ok 26 - private source document name without identity remains a visible unresolved hint
+  ---
+  duration_ms: 2.026083
+  ...
+# Subtest: same personal IDs in two accounts remain separate while catalog IDs are shared
+ok 27 - same personal IDs in two accounts remain separate while catalog IDs are shared
+  ---
+  duration_ms: 4.789459
+  ...
+# Subtest: a foreign account's calendar reference is unavailable
+ok 28 - a foreign account's calendar reference is unavailable
+  ---
+  duration_ms: 2.261791
+  ...
+# Subtest: document versions hash actual bytes and never fabricate pages or full-text status
+ok 29 - document versions hash actual bytes and never fabricate pages or full-text status
+  ---
+  duration_ms: 2.230583
+  ...
+# Subtest: malformed file bytes, sizes and media types cannot be imported
+ok 30 - malformed file bytes, sizes and media types cannot be imported
+  ---
+  duration_ms: 0.887875
+  ...
+# Subtest: same bytes in distinct private documents do not collapse document ownership or IDs
+ok 31 - same bytes in distinct private documents do not collapse document ownership or IDs
+  ---
+  duration_ms: 1.833
+  ...
+# Subtest: derived caches and device backup markers are disclosed but never persisted
+ok 32 - derived caches and device backup markers are disclosed but never persisted
+  ---
+  duration_ms: 2.000917
+  ...
+# Subtest: unknown areas and credential fields stop migration without echoing their values
+ok 33 - unknown areas and credential fields stop migration without echoing their values
+  ---
+  duration_ms: 0.385542
+  ...
+# Subtest: ownership fields, prototype keys, non-JSON values and unsupported versions are rejected
+ok 34 - ownership fields, prototype keys, non-JSON values and unsupported versions are rejected
+  ---
+  duration_ms: 0.404834
+  ...
+# Subtest: mismatched map identities and malformed record shapes fail before any writes
+ok 35 - mismatched map identities and malformed record shapes fail before any writes
+  ---
+  duration_ms: 0.352875
+  ...
+# Subtest: failure halfway through and cancellation leave target and source exactly intact
+ok 36 - failure halfway through and cancellation leave target and source exactly intact
+  ---
+  duration_ms: 3.924333
+  ...
+# Subtest: stale preview and competing record revision cannot overwrite later edits
+ok 37 - stale preview and competing record revision cannot overwrite later edits
+  ---
+  duration_ms: 3.983
+  ...
+# Subtest: tampered preview payload and record set require a fresh preview
+ok 38 - tampered preview payload and record set require a fresh preview
+  ---
+  duration_ms: 1.872042
+  ...
+# Subtest: a concurrent commit during staging is detected at atomic commit
+ok 39 - a concurrent commit during staging is detected at atomic commit
+  ---
+  duration_ms: 1.430834
+  ...
+# Subtest: rollback restores previous target and receipts, keeps source, and allows a clean retry
+ok 40 - rollback restores previous target and receipts, keeps source, and allows a clean retry
+  ---
+  duration_ms: 7.456458
+  ...
+# Subtest: rollback cannot erase a later edit or reuse a consumed undo token
+ok 41 - rollback cannot erase a later edit or reuse a consumed undo token
+  ---
+  duration_ms: 3.830292
+  ...
+# Subtest: export comparison catches a changed note, array order and lost reference without leaking text
+ok 42 - export comparison catches a changed note, array order and lost reference without leaking text
+  ---
+  duration_ms: 2.352958
+  ...
+# Subtest: old backups without reasoning settings and legacy profiles without document IDs remain usable
+ok 43 - old backups without reasoning settings and legacy profiles without document IDs remain usable
+  ---
+  duration_ms: 2.1855
+  ...
+# Subtest: unknown original file type retains the Data-URL media type without changing legacy fields
+ok 44 - unknown original file type retains the Data-URL media type without changing legacy fields
+  ---
+  duration_ms: 1.908792
+  ...
+# Subtest: replay checks revisions even if text is restored to the same value
+ok 45 - replay checks revisions even if text is restored to the same value
+  ---
+  duration_ms: 2.884125
+  ...
+# Subtest: changed normalized exam date is caught by comparison and cannot replay as success
+ok 46 - changed normalized exam date is caught by comparison and cannot replay as success
+  ---
+  duration_ms: 3.276958
+  ...
+# Subtest: unknown catalog fields cannot leak private text into the shared catalog
+ok 47 - unknown catalog fields cannot leak private text into the shared catalog
+  ---
+  duration_ms: 1.998042
+  ...
+# Subtest: disagreeing duplicate profile dates preserve both values and warn instead of choosing
+ok 48 - disagreeing duplicate profile dates preserve both values and warn instead of choosing
+  ---
+  duration_ms: 2.199708
+  ...
+# Subtest: PDF v2 parser extracts text from a real PDF byte stream
+ok 49 - PDF v2 parser extracts text from a real PDF byte stream
+  ---
+  duration_ms: 669.610083
+  ...
+# Subtest: XLSX and legacy XLS remain supported by the patched parser
+ok 50 - XLSX and legacy XLS remain supported by the patched parser
+  ---
+  duration_ms: 37.438
+  ...
+# Subtest: DOCX extracts plain text without rendering uploaded HTML
+ok 51 - DOCX extracts plain text without rendering uploaded HTML
+  ---
+  duration_ms: 50.632542
+  ...
+# Subtest: formatted empty spreadsheet rows do not consume the document budget
+ok 52 - formatted empty spreadsheet rows do not consume the document budget
+  ---
+  duration_ms: 17.573209
+  ...
+# Subtest: CSV works; unsupported, invalid PDF and oversized uploads fail clearly
+ok 53 - CSV works; unsupported, invalid PDF and oversized uploads fail clearly
+  ---
+  duration_ms: 28.188167
+  ...
+# Subtest: historical planning uses one reference day and production ignores it
+ok 54 - historical planning uses one reference day and production ignores it
+  ---
+  duration_ms: 4.989333
+  ...
+# Subtest: today's imported exam appears as fixed context and future tracking stays out of last seven days
+ok 55 - today's imported exam appears as fixed context and future tracking stays out of last seven days
+  ---
+  duration_ms: 2.684917
+  ...
+# Subtest: source-backed calendar-only conflicts are reported without extending the concrete learning range
+ok 56 - source-backed calendar-only conflicts are reported without extending the concrete learning range
+  ---
+  duration_ms: 3.941333
+  ...
+# Subtest: dated lawyer-AG annotations retain their dates and do not establish station boundaries
+ok 57 - dated lawyer-AG annotations retain their dates and do not establish station boundaries
+  ---
+  duration_ms: 2.485083
+  ...
+# Subtest: source Sunday-review proposals yield to the personal free day and fixed conflicts are disclosed
+ok 58 - source Sunday-review proposals yield to the personal free day and fixed conflicts are disclosed
+  ---
+  duration_ms: 1.948333
+  ...
+# Subtest: normalisiert Fallkennungen ohne Rollen- und Versionssuffixe
+ok 59 - normalisiert Fallkennungen ohne Rollen- und Versionssuffixe
+  ---
+  duration_ms: 1.779834
+  ...
+# Subtest: ordnet Dokumentrollen konservativ zu
+ok 60 - ordnet Dokumentrollen konservativ zu
+  ---
+  duration_ms: 0.54775
+  ...
+# Subtest: normalisiert extrahierten Text für scanunabhängige Fingerprints
+ok 61 - normalisiert extrahierten Text für scanunabhängige Fingerprints
+  ---
+  duration_ms: 1.023583
+  ...
+# Subtest: trennt bytegleiche Dateien, Fassungen, Lösungen und ID-Konflikte
+ok 62 - trennt bytegleiche Dateien, Fassungen, Lösungen und ID-Konflikte
+  ---
+  duration_ms: 10.248375
+  ...
+# Subtest: erzeugt stabile Datei-IDs unabhängig vom absoluten Stamm
+ok 63 - erzeugt stabile Datei-IDs unabhängig vom absoluten Stamm
+  ---
+  duration_ms: 1.671583
+  ...
+# Subtest: macht gleiche Textproben auch bei abweichenden Dateinamen sichtbar
+ok 64 - macht gleiche Textproben auch bei abweichenden Dateinamen sichtbar
+  ---
+  duration_ms: 1.5895
+  ...
+# Subtest: a calendar slot and its selected or completed exam occupy five hours once
+ok 65 - a calendar slot and its selected or completed exam occupy five hours once
+  ---
+  duration_ms: 0.987375
+  ...
+# Subtest: duration handling accepts comma hours and rejects NaN/negative legacy values
+ok 66 - duration handling accepts comma hours and rejects NaN/negative legacy values
+  ---
+  duration_ms: 0.333834
+  ...
+# Subtest: auto filler respects fixed work, manual tasks, free weekdays and vacations
+ok 67 - auto filler respects fixed work, manual tasks, free weekdays and vacations
+  ---
+  duration_ms: 1.566084
+  ...
+# Subtest: overfull plans move forward without altering manual or completed work
+ok 68 - overfull plans move forward without altering manual or completed work
+  ---
+  duration_ms: 8.654166
+  ...
+# Subtest: overflow is preserved as backlog and never pushed onto a free day
+ok 69 - overflow is preserved as backlog and never pushed onto a free day
+  ---
+  duration_ms: 0.491958
+  ...
+# Subtest: weekly and home navigation have identical, idempotent daily suggestions
+ok 70 - weekly and home navigation have identical, idempotent daily suggestions
+  ---
+  duration_ms: 9.127042
+  ...
+# Subtest: recurring duration edits update tasks and remove zero prep, preserving done history
+ok 71 - recurring duration edits update tasks and remove zero prep, preserving done history
+  ---
+  duration_ms: 0.876333
+  ...
+# Subtest: preparation for a next-day appointment is included at the range boundary
+ok 72 - preparation for a next-day appointment is included at the range boundary
+  ---
+  duration_ms: 0.285
+  ...
+# Subtest: AI plan application enforces capacity, schedules exams first, and restores replaced data on undo
+ok 73 - AI plan application enforces capacity, schedules exams first, and restores replaced data on undo
+  ---
+  duration_ms: 2.506167
+  ...
+# Subtest: undo refuses to overwrite edits made after applying a plan
+ok 74 - undo refuses to overwrite edits made after applying a plan
+  ---
+  duration_ms: 1.870833
+  ...
+# Subtest: invalid, empty and past AI plans cannot erase existing work
+ok 75 - invalid, empty and past AI plans cannot erase existing work
+  ---
+  duration_ms: 0.336292
+  ...
+# Subtest: failed plan writes roll back instead of reporting a partial successful plan
+ok 76 - failed plan writes roll back instead of reporting a partial successful plan
+  ---
+  duration_ms: 1.606
+  ...
+# Subtest: recording an exam completes its planned task and logs only one session
+ok 77 - recording an exam completes its planned task and logs only one session
+  ---
+  duration_ms: 0.397083
+  ...
+# Subtest: ordinary task completion uses planned duration, not an unrelated 30-minute default
+ok 78 - ordinary task completion uses planned duration, not an unrelated 30-minute default
+  ---
+  duration_ms: 0.086375
+  ...
+# Subtest: calendar recurrence and multi-day seminars consume the same budget everywhere
+ok 79 - calendar recurrence and multi-day seminars consume the same budget everywhere
+  ---
+  duration_ms: 0.122709
+  ...
+# Subtest: AI context handles unset exam dates and includes the enforced daily limit
+ok 80 - AI context handles unset exam dates and includes the enforced daily limit
+  ---
+  duration_ms: 0.956125
+  ...
+# Subtest: moving an AG in the weekly editor moves its work and preparation as well
+ok 81 - moving an AG in the weekly editor moves its work and preparation as well
+  ---
+  duration_ms: 0.274834
+  ...
+# Subtest: renaming a recurring appointment preserves its identity and entered content
+ok 82 - renaming a recurring appointment preserves its identity and entered content
+  ---
+  duration_ms: 0.2105
+  ...
+# Subtest: learning group preparation stays on the group day during legacy migration
+ok 83 - learning group preparation stays on the group day during legacy migration
+  ---
+  duration_ms: 0.281209
+  ...
+# Subtest: unrelated named calendar appointments are not merged merely because both are AGs
+ok 84 - unrelated named calendar appointments are not merged merely because both are AGs
+  ---
+  duration_ms: 0.103958
+  ...
+# Subtest: exam review tasks are preserved and subject to the same daily limit
+ok 85 - exam review tasks are preserved and subject to the same daily limit
+  ---
+  duration_ms: 0.782125
+  ...
+# Subtest: switching a planned exam to a completed sketch updates that task
+ok 86 - switching a planned exam to a completed sketch updates that task
+  ---
+  duration_ms: 0.154542
+  ...
+# Subtest: two distinct same-named profile appointments keep distinct slots
+ok 87 - two distinct same-named profile appointments keep distinct slots
+  ---
+  duration_ms: 0.201333
+  ...
+# Subtest: missed plan content is carried forward while historical and fixed work stays unchanged
+ok 88 - missed plan content is carried forward while historical and fixed work stays unchanged
+  ---
+  duration_ms: 0.199416
+  ...
+# Subtest: a replacement plan retains overflow, its notes and identity, and undo restores it
+ok 89 - a replacement plan retains overflow, its notes and identity, and undo restores it
+  ---
+  duration_ms: 1.040625
+  ...
+# Subtest: replacing content preserves calendar references of completed and manually assigned exams
+ok 90 - replacing content preserves calendar references of completed and manually assigned exams
+  ---
+  duration_ms: 0.919916
+  ...
+# Subtest: AI daily budget retains calendar slots referenced by fixed tasks
+ok 91 - AI daily budget retains calendar slots referenced by fixed tasks
+  ---
+  duration_ms: 0.659125
+  ...
+# Subtest: missed work never moves to the exam day or later, and completed history stays intact
+ok 92 - missed work never moves to the exam day or later, and completed history stays intact
+  ---
+  duration_ms: 0.1225
+  ...
+# Subtest: PDF-A: Range parsing handles bounded/open/suffix ranges and invalid inputs
+ok 93 - PDF-A: Range parsing handles bounded/open/suffix ranges and invalid inputs
+  ---
+  duration_ms: 0.794291
+  ...
+# Subtest: PDF-A: searchable original positions preserve line breaks, ligatures and occurrence
+ok 94 - PDF-A: searchable original positions preserve line breaks, ligatures and occurrence
+  ---
+  duration_ms: 0.511333
+  ...
+# Subtest: PDF-A: geometry maps rotated/zoomed CropBox positions reversibly
+ok 95 - PDF-A: geometry maps rotated/zoomed CropBox positions reversibly
+  ---
+  duration_ms: 0.141917
+  ...
+# Subtest: PDF-A: real sessions, shared access, triples, conditional/HEAD/Range denial and revocation
+    # Subtest: active A and independent active B read exact bytes and descriptor
+    ok 1 - active A and independent active B read exact bytes and descriptor
+      ---
+      duration_ms: 13.959083
+      ...
+    # Subtest: HEAD, prefix, suffix, open ranges, invalid 416, private conditionals
+    ok 2 - HEAD, prefix, suffix, open ranges, invalid 416, private conditionals
+      ---
+      duration_ms: 28.484
+      ...
+    # Subtest: anonymous and pending never receive document metadata, even via 416/conditional/HEAD
+    ok 3 - anonymous and pending never receive document metadata, even via 416/conditional/HEAD
+      ---
+      duration_ms: 9.487792
+      ...
+    # Subtest: mismatched case/document/version and personal IDs never enter shared storage
+    ok 4 - mismatched case/document/version and personal IDs never enter shared storage
+      ---
+      duration_ms: 18.080792
+      ...
+    # Subtest: account block invalidates the existing session before any new read
+    ok 5 - account block invalidates the existing session before any new read
+      ---
+      duration_ms: 12.976375
+      ...
+    1..5
+ok 96 - PDF-A: real sessions, shared access, triples, conditional/HEAD/Range denial and revocation
+  ---
+  duration_ms: 2414.833958
+  ...
+# Subtest: visible PDF text fields reach planning context with file and page provenance
+ok 97 - visible PDF text fields reach planning context with file and page provenance
+  ---
+  duration_ms: 690.069875
+  ...
+# Subtest: annotation text already in the page and repeated annotations are included only once
+ok 98 - annotation text already in the page and repeated annotations are included only once
+  ---
+  duration_ms: 4.862167
+  ...
+# Subtest: deduplication tolerates page-table separators and annotation line breaks
+ok 99 - deduplication tolerates page-table separators and annotation line breaks
+  ---
+  duration_ms: 4.098667
+  ...
+# Subtest: annotation provenance stays on its own page, including annotation-only pages
+ok 100 - annotation provenance stays on its own page, including annotation-only pages
+  ---
+  duration_ms: 5.013917
+  ...
+# Subtest: hidden, non-display and off-page text fields do not become visible planning sources
+ok 101 - hidden, non-display and off-page text fields do not become visible planning sources
+  ---
+  duration_ms: 5.539209
+  ...
+# Subtest: Unicode and document instructions remain literal source data
+ok 102 - Unicode and document instructions remain literal source data
+  ---
+  duration_ms: 3.108041
+  ...
+# Subtest: page limits are disclosed and do not import annotations from omitted pages
+ok 103 - page limits are disclosed and do not import annotations from omitted pages
+  ---
+  duration_ms: 35.529458
+  ...
+# Subtest: text limits are disclosed in the text that reaches the planning context
+ok 104 - text limits are disclosed in the text that reaches the planning context
+  ---
+  duration_ms: 8.952
+  ...
+# Subtest: unreadable text fields are marked incomplete rather than silently lost
+ok 105 - unreadable text fields are marked incomplete rather than silently lost
+  ---
+  duration_ms: 7.163708
+  ...
+# Subtest: annotation limits disclose omitted sources
+ok 106 - annotation limits disclose omitted sources
+  ---
+  duration_ms: 53.744333
+  ...
+# Subtest: full document text reaches onboarding context and standard rules are appended
+ok 107 - full document text reaches onboarding context and standard rules are appended
+  ---
+  duration_ms: 2.066417
+  ...
+# Subtest: structured document sources and intervals validate before changing storage
+ok 108 - structured document sources and intervals validate before changing storage
+  ---
+  duration_ms: 2.498
+  ...
+# Subtest: normal plan adoption saves extracted stations/appointments, counts their hours, and undo restores all
+ok 109 - normal plan adoption saves extracted stations/appointments, counts their hours, and undo restores all
+  ---
+  duration_ms: 3.032292
+  ...
+# Subtest: distant document appointments do not mark the whole ref as concretely planned
+ok 110 - distant document appointments do not mark the whole ref as concretely planned
+  ---
+  duration_ms: 1.724083
+  ...
+# Subtest: document slots displace content without creating 14-hour learning days
+ok 111 - document slots displace content without creating 14-hour learning days
+  ---
+  duration_ms: 2.099292
+  ...
+# Subtest: spaced repetition starts at one day and expands only from explicit recall
+ok 112 - spaced repetition starts at one day and expands only from explicit recall
+  ---
+  duration_ms: 7.767375
+  ...
+# Subtest: exam ratings, multiple sessions in one day, and future entries cannot fake recall intervals
+ok 113 - exam ratings, multiple sessions in one day, and future entries cannot fake recall intervals
+  ---
+  duration_ms: 0.244667
+  ...
+# Subtest: review completion and undo use actual history and preserve the planned duration
+ok 114 - review completion and undo use actual history and preserve the planned duration
+  ---
+  duration_ms: 0.356208
+  ...
+# Subtest: due reviews occupy existing automatic slots once and leave spare hours unchanged
+ok 115 - due reviews occupy existing automatic slots once and leave spare hours unchanged
+  ---
+  duration_ms: 5.296959
+  ...
+# Subtest: finishing one automatic sprint retains a second useful sprint
+ok 116 - finishing one automatic sprint retains a second useful sprint
+  ---
+  duration_ms: 7.039167
+  ...
+# Subtest: case assignment is idempotent, charges five hours once, and matches actual completion
+ok 117 - case assignment is idempotent, charges five hours once, and matches actual completion
+  ---
+  duration_ms: 0.37725
+  ...
+# Subtest: ICS export has stable UIDs across moves, exclusive all-day end, and no duplicates
+ok 118 - ICS export has stable UIDs across moves, exclusive all-day end, and no duplicates
+  ---
+  duration_ms: 1.214209
+  ...
+# Subtest: ICS tracks historical work without leaking notes or duplicating a completed task
+ok 119 - ICS tracks historical work without leaking notes or duplicating a completed task
+  ---
+  duration_ms: 0.5115
+  ...
+# Subtest: feedback accepts a bounded message and strips unrelated fields
+ok 120 - feedback accepts a bounded message and strips unrelated fields
+  ---
+  duration_ms: 0.217042
+  ...
+# Subtest: a failed review transaction restores both history and completion
+ok 121 - a failed review transaction restores both history and completion
+  ---
+  duration_ms: 0.169
+  ...
+# Subtest: concrete planned case IDs must exist in the database and match its area
+ok 122 - concrete planned case IDs must exist in the database and match its area
+  ---
+  duration_ms: 0.914667
+  ...
+# Subtest: failed exam completion rolls back tracking, progress and tasks
+ok 123 - failed exam completion rolls back tracking, progress and tasks
+  ---
+  duration_ms: 0.340584
+  ...
+# Subtest: DATA-B: echte PostgreSQL-Persistenz mit isolierten Daten
+    # Subtest: Schema kann wiederholt angewendet werden; veränderte Migration blockiert
+    ok 1 - Schema kann wiederholt angewendet werden; veränderte Migration blockiert
+      ---
+      duration_ms: 5.259875
+      ...
+    # Subtest: Alle 24 Bereiche, IDs, Referenzen und Klassifizierungen bleiben erhalten
+    ok 2 - Alle 24 Bereiche, IDs, Referenzen und Klassifizierungen bleiben erhalten
+      ---
+      duration_ms: 3.08775
+      ...
+    # Subtest: Originalbytes liegen separat; PostgreSQL enthält nur Dateimetadaten
+    ok 3 - Originalbytes liegen separat; PostgreSQL enthält nur Dateimetadaten
+      ---
+      duration_ms: 1.121625
+      ...
+    # Subtest: Wiederholung derselben Vorgangs-ID schreibt nichts; neue Vorgangs-ID dupliziert keine Datensätze
+    ok 4 - Wiederholung derselben Vorgangs-ID schreibt nichts; neue Vorgangs-ID dupliziert keine Datensätze
+      ---
+      duration_ms: 51.082042
+      ...
+    # Subtest: ID-Kollision und wiederverwendete Vorgangs-ID überschreiben nichts
+    ok 5 - ID-Kollision und wiederverwendete Vorgangs-ID überschreiben nichts
+      ---
+      duration_ms: 12.806083
+      ...
+    # Subtest: Fehler nach mehreren SQL-Schreibvorgängen rollt die gesamte Transaktion zurück
+    ok 6 - Fehler nach mehreren SQL-Schreibvorgängen rollt die gesamte Transaktion zurück
+      ---
+      duration_ms: 264.889959
+      ...
+    # Subtest: Unzugeordnete eingebettete Dateibytes werden vor dem Datenbankabschluss zurückgewiesen
+    ok 7 - Unzugeordnete eingebettete Dateibytes werden vor dem Datenbankabschluss zurückgewiesen
+      ---
+      duration_ms: 136.186291
+      ...
+    # Subtest: Parallele Imports benötigen nach konkurrierendem Abschluss eine neue Vorschau
+    ok 8 - Parallele Imports benötigen nach konkurrierendem Abschluss eine neue Vorschau
+      ---
+      duration_ms: 44.722334
+      ...
+    # Subtest: Zwei Eigentümer behalten getrennte private Texte, Dateien und Belege; Katalog bleibt gemeinsam
+    ok 9 - Zwei Eigentümer behalten getrennte private Texte, Dateien und Belege; Katalog bleibt gemeinsam
+      ---
+      duration_ms: 44.225416
+      ...
+    # Subtest: Datenbank-Fremdschlüssel verhindern fremde private Referenzen und Dateizuordnung
+    ok 10 - Datenbank-Fremdschlüssel verhindern fremde private Referenzen und Dateizuordnung
+      ---
+      duration_ms: 2.754583
+      ...
+    # Subtest: Seiten und Markierungen haben echte Versions- und Eigentümerbezüge
+    ok 11 - Seiten und Markierungen haben echte Versions- und Eigentümerbezüge
+      ---
+      duration_ms: 10.675667
+      ...
+    # Subtest: Revisionen verhindern verlorene Änderungen und nachträgliches Überschreiben durch Reimport
+    ok 12 - Revisionen verhindern verlorene Änderungen und nachträgliches Überschreiben durch Reimport
+      ---
+      duration_ms: 10.771583
+      ...
+    # Subtest: Reimport erhält bereits fortgeschriebene Extraktionsmetadaten
+    ok 13 - Reimport erhält bereits fortgeschriebene Extraktionsmetadaten
+      ---
+      duration_ms: 36.136042
+      ...
+    # Subtest: Daten bleiben nach echtem PostgreSQL-Prozessneustart und neuen Verbindungen identisch
+    ok 14 - Daten bleiben nach echtem PostgreSQL-Prozessneustart und neuen Verbindungen identisch
+      ---
+      duration_ms: 221.759
+      ...
+    # Subtest: Datenbank und private Dateien werden zusammen gesichert und in leeres Ziel wiederhergestellt
+    ok 15 - Datenbank und private Dateien werden zusammen gesichert und in leeres Ziel wiederhergestellt
+      ---
+      duration_ms: 548.768542
+      ...
+    # Subtest: Beschädigtes Sicherungsmanifest bleibt ohne Wirkung
+    ok 16 - Beschädigtes Sicherungsmanifest bleibt ohne Wirkung
+      ---
+      duration_ms: 116.660667
+      ...
+    # Subtest: Fehlende oder beschädigte Sicherungsdatei verhindert Teilwiederherstellung
+    ok 17 - Fehlende oder beschädigte Sicherungsdatei verhindert Teilwiederherstellung
+      ---
+      duration_ms: 350.753625
+      ...
+    # Subtest: Privater Dateispeicher weist Pfadtraversal, public und symbolische Verknüpfungen zurück
+    ok 18 - Privater Dateispeicher weist Pfadtraversal, public und symbolische Verknüpfungen zurück
+      ---
+      duration_ms: 0.748417
+      ...
+    1..18
+ok 124 - DATA-B: echte PostgreSQL-Persistenz mit isolierten Daten
+  ---
+  duration_ms: 3149.393208
+  ...
+# [/api/openrouter-models] Fehler: Der Onlinezugang ist noch nicht eingerichtet. Diese Funktion ist nur lokal verfügbar.
+# Subtest: every server route is denied in production before accessing keys or files
+ok 125 - every server route is denied in production before accessing keys or files
+  ---
+  duration_ms: 8.321042
+  ...
+# Subtest: local access rejects external hosts, rebinding and foreign browser origins
+ok 126 - local access rejects external hosts, rebinding and foreign browser origins
+  ---
+  duration_ms: 0.785166
+  ...
+# Subtest: JSON reader rejects null, invalid JSON, wrong media type and oversized streamed bodies
+ok 127 - JSON reader rejects null, invalid JSON, wrong media type and oversized streamed bodies
+  ---
+  duration_ms: 3.126583
+  ...
+# Subtest: AI validates limits before making any provider request
+ok 128 - AI validates limits before making any provider request
+  ---
+  duration_ms: 1.026625
+  ...
+# Subtest: request budget renews only after its window
+ok 129 - request budget renews only after its window
+  ---
+  duration_ms: 0.345875
+  ...
+# Subtest: local feedback persists once, retries are idempotent, LAN readers and invalid messages are denied
+ok 130 - local feedback persists once, retries are idempotent, LAN readers and invalid messages are denied
+  ---
+  duration_ms: 9.63625
+  ...
+# Subtest: PDF resolver supports legacy names but blocks traversal and escaping symlinks
+ok 131 - PDF resolver supports legacy names but blocks traversal and escaping symlinks
+  ---
+  duration_ms: 2.680542
+  ...
+# [lerntracker] localStorage quota überschritten beim Speichern von lerntracker-klausur-drafts
+# Subtest: backup restores atomically even when a later write exceeds quota
+ok 132 - backup restores atomically even when a later write exceeds quota
+  ---
+  duration_ms: 0.730375
+  ...
+# Subtest: backup roundtrip includes plan range and prompt arrays, ignores unknown keys
+ok 133 - backup roundtrip includes plan range and prompt arrays, ignores unknown keys
+  ---
+  duration_ms: 1.361458
+  ...
+# Subtest: failed draft save cannot report success or replace stored text
+ok 134 - failed draft save cannot report success or replace stored text
+  ---
+  duration_ms: 0.738083
+  ...
+# Subtest: countdown uses calendar days, handles unset/past dates and exact progress
+ok 135 - countdown uses calendar days, handles unset/past dates and exact progress
+  ---
+  duration_ms: 1.421375
+  ...
+# Subtest: malformed AI markers and prototype keys are rejected without crashing
+ok 136 - malformed AI markers and prototype keys are rejected without crashing
+  ---
+  duration_ms: 0.542458
+  ...
+# Subtest: February example maps state and lawyer passes separately, including the mid-month switch
+ok 137 - February example maps state and lawyer passes separately, including the mid-month switch
+  ---
+  duration_ms: 8.5435
+  ...
+# Subtest: template stays contiguous across leap years and shifted cohorts; invalid dates are rejected
+ok 138 - template stays contiguous across leap years and shifted cohorts; invalid dates are rejected
+  ---
+  duration_ms: 0.920334
+  ...
+# Subtest: malformed settings do not choose a phase; default needs no activation and explicit custom opts out
+ok 139 - malformed settings do not choose a phase; default needs no activation and explicit custom opts out
+  ---
+  duration_ms: 0.32525
+  ...
+# Subtest: fortnight learning blocks end at a station switch and written exam, then restart at one
+ok 140 - fortnight learning blocks end at a station switch and written exam, then restart at one
+  ---
+  duration_ms: 0.75
+  ...
+# Subtest: state and lawyer sprints select the corresponding practical technique in all three areas
+ok 141 - state and lawyer sprints select the corresponding practical technique in all three areas
+  ---
+  duration_ms: 2.877125
+  ...
+# Subtest: focus leaves a regular review share; mixed stages cover all areas even with one slot
+ok 142 - focus leaves a regular review share; mixed stages cover all areas even with one slot
+  ---
+  duration_ms: 13.773042
+  ...
+# Subtest: stable topic rotation does not repeat the same foundation on consecutive days
+ok 143 - stable topic rotation does not repeat the same foundation on consecutive days
+  ---
+  duration_ms: 0.63975
+  ...
+# Subtest: editing a station refreshes only future open automatic work and stays within capacity
+ok 144 - editing a station refreshes only future open automatic work and stays within capacity
+  ---
+  duration_ms: 7.570458
+  ...
+# Subtest: station settings save and AI context carries the complete timeline plus daily sprint boundaries
+ok 145 - station settings save and AI context carries the complete timeline plus daily sprint boundaries
+  ---
+  duration_ms: 1.883
+  ...
+# Subtest: main exam recommendation follows station perspective while a calendar area takes precedence
+ok 146 - main exam recommendation follows station perspective while a calendar area takes precedence
+  ---
+  duration_ms: 4.941083
+  ...
+1..146
+# tests 204
+# suites 0
+# pass 204
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 27350.791334

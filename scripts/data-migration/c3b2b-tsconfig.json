@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.project-check.json",
+  "include": [
+    "../../next-env.d.ts",
+    "../../src/**/*.ts",
+    "../../src/**/*.tsx",
+    "../../tests/learning-checkin.test.ts",
+    "./c3b2b-*.mts"
+  ],
+  "exclude": [
+    "../../node_modules",
+    "../../.next",
+    "../../.next-qa",
+    "../../out",
+    "../../build"
+  ],
+  "compilerOptions": {
+    "incremental": false,
+    "allowImportingTsExtensions": true
+  }
+}

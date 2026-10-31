@@ -1,0 +1,30 @@
+✔ SEARCH07: production once uses shared validated DB/TLS/files without public auth runtime (6.155875ms)
+✔ SEARCH07: production watch uses shared validated DB/TLS/files without public auth runtime (0.427083ms)
+✔ SEARCH07: production rebuild uses shared validated DB/TLS/files without public auth runtime (0.386167ms)
+✔ SEARCH07: local once/watch/rebuild retain local password and default file contract (0.521209ms)
+✔ SEARCH07: explicit local overrides pass through configuredPersistence (0.841541ms)
+✔ SEARCH07: loopback production contract is reused without adding a TLS/URI fallback (0.485542ms)
+✔ SEARCH07: missing/unknown/extra command never defaults to work, rebuild or resource access (0.601542ms)
+✔ SEARCH07: either production marker requires the entire production contract (0.462916ms)
+✔ SEARCH07: invalid local mode and missing local password cannot create resources (0.361417ms)
+✔ SEARCH07: files failure closes once, detaches signals and redacts raw causes (0.462583ms)
+✔ SEARCH07: work failure closes once, detaches signals and redacts raw causes (0.174333ms)
+✔ SEARCH07: discover failure closes once, detaches signals and redacts raw causes (0.124625ms)
+✔ SEARCH07: step failure closes once, detaches signals and redacts raw causes (0.1155ms)
+✔ SEARCH07: pause failure closes once, detaches signals and redacts raw causes (0.20575ms)
+✔ SEARCH07: close failure closes once, detaches signals and redacts raw causes (0.167583ms)
+✔ SEARCH07: instrumented SIGINT aborts an active step and closes without further actions (0.146209ms)
+✔ SEARCH07: instrumented SIGTERM aborts an active step and closes without further actions (0.093834ms)
+✔ SEARCH07: stop during acquisition closes resources before constructing any work (0.221542ms)
+✔ SEARCH07: stop during discovery prevents even the first worker step (0.193042ms)
+✔ SEARCH07: close failure remains visible even after cancellation (0.139666ms)
+✔ SEARCH07: idle wait handles already-aborted and promptly-aborted signals without a live timer (0.265333ms)
+✔ SEARCH07: import and pure preflight have no CLI, signal or resource side effects (30.968125ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 363.923042

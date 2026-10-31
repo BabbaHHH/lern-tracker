@@ -1,0 +1,4 @@
+9a2699b6becfae9aeeebcb0e2137b801f730b802f261f6b2c4053df95842b5ab  scripts/search/worker.mts
+00b0a286060cf030e75327022d94312a4d75fa2def6578cabf0190601ed25c50  scripts/search/worker-config.ts
+774c3dcf3d209dfad25f1aa9776b20a386b944bd5140cf96ae4aabb5435daa99  tests/search-worker-config.test.ts
+12965f9a0a184c2d672b5c7b2930e3a99d04e36ec1f963ec21283913e99c9dbe  docs/ergebnisse/SEARCH-01/SEARCH07/tsconfig.json
