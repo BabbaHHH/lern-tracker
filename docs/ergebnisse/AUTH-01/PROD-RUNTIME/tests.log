@@ -1,0 +1,24 @@
+✔ Runtime: fehlende oder ungenaue Betreiberfreigabe bleibt 503 ohne Ressourcen (5.608708ms)
+✔ Runtime: Request-/Header-/öffentliche und alte Readywerte können nicht freigeben (0.266375ms)
+✔ Runtime: Betreiberfreigabe ersetzt weder Modus noch vollständige Konfiguration (0.619875ms)
+✔ Runtime: gültiger freigegebener Snapshot bindet exakt DB/TLS/Dateien/Origin/Secrets (0.315625ms)
+✔ Runtime: explizite Loopback-DB bleibt derselbe validierte Vertrag (0.267125ms)
+✔ Runtime: konkurrierender Erstzugriff teilt genau einen Ressourcenaufbau (0.144584ms)
+✔ Runtime: database-Fehler bereinigt Geheimnisse und erlaubt Wiederholung (13.18425ms)
+✔ Runtime: files-Fehler bereinigt Geheimnisse und erlaubt Wiederholung (0.298667ms)
+✔ Runtime: initialize-Fehler bereinigt Geheimnisse und erlaubt Wiederholung (0.51925ms)
+✔ Runtime: service-Fehler bereinigt Geheimnisse und erlaubt Wiederholung (0.479417ms)
+✔ Runtime: auch fehlerhaftes Poolclose gibt keine Ressourcenursache aus (0.146833ms)
+✔ Runtime: Releaseentzug und relevante Snapshotänderungen verlangen Neustart (0.634792ms)
+✔ Runtime: Releasepfadänderung verlangt Neustart, fremde Requestwerte bleiben wirkungslos (0.123875ms)
+✔ Runtime: Konfiguration wird vor asynchronem Ressourcenaufbau kopiert (0.139208ms)
+✔ Runtime: lokaler Modus bleibt lokal und Betreiberflag erzeugt keinen Produktionswechsel (0.107542ms)
+✔ Runtime: Eingaben und Prozessumgebung bleiben unverändert; Konfigfehler bleiben geschlossen (0.354542ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 915.516125

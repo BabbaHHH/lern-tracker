@@ -1,0 +1,66 @@
+
+> lern-tracker@0.1.0 build
+> next build --webpack
+
+▲ Next.js 16.4.0 (webpack)
+✓ Running next.config.ts took 17ms
+
+  Creating an optimized production build ...
+Failed to compile.
+
+./src/components/account-learning-boundary.tsx
+Error:   x Expression expected
+    ,-[/private/tmp/stex-pdf-a-r1-check/src/components/account-learning-boundary.tsx:20:1]
+ 17 |     </nav>
+ 18 |     {path==="/konto"&&<p className="mx-auto w-full max-w-3xl px-4 pt-4 text-sm">Lernnotizen bitte in der <Link href="/" className="underline">Lernübersicht</Link> bearbeiten. Der frühere Notizeditor ist in dieser Kontotestansicht geschlossen.</p>}
+ 19 |     {planPageAllowed(path)||writingPageAllowed(path)?children:<main className="mx-auto max-w-2xl px-4 py-12"><h1 className="text-xl font-semibold">Diese Lernansicht wird noch angebunden</h1><p className="mt-3">Deine bisherigen Browserdaten bleiben unverändert. In dieser Kontotestansicht kannst du dein Profil, deine Stationen, Lernnotizen und Themenfortschritt nutzen.</p><Link href="/themen" className="mt-4 inline-block underline">Zu allen Themen</Link></main>}
+ 20 |   </>}</LearningMode.Provider>;
+    :     ^
+ 21 | }
+    `----
+  x Expected '</', got '}'
+    ,-[/private/tmp/stex-pdf-a-r1-check/src/components/account-learning-boundary.tsx:20:1]
+ 17 |     </nav>
+ 18 |     {path==="/konto"&&<p className="mx-auto w-full max-w-3xl px-4 pt-4 text-sm">Lernnotizen bitte in der <Link href="/" className="underline">Lernübersicht</Link> bearbeiten. Der frühere Notizeditor ist in dieser Kontotestansicht geschlossen.</p>}
+ 19 |     {planPageAllowed(path)||writingPageAllowed(path)?children:<main className="mx-auto max-w-2xl px-4 py-12"><h1 className="text-xl font-semibold">Diese Lernansicht wird noch angebunden</h1><p className="mt-3">Deine bisherigen Browserdaten bleiben unverändert. In dieser Kontotestansicht kannst du dein Profil, deine Stationen, Lernnotizen und Themenfortschritt nutzen.</p><Link href="/themen" className="mt-4 inline-block underline">Zu allen Themen</Link></main>}
+ 20 |   </>}</LearningMode.Provider>;
+    :      ^
+ 21 | }
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/account-learning-boundary.tsx
+./src/app/page.tsx
+
+./src/components/account-learning-boundary.tsx
+Error:   x Expression expected
+    ,-[/private/tmp/stex-pdf-a-r1-check/src/components/account-learning-boundary.tsx:20:1]
+ 17 |     </nav>
+ 18 |     {path==="/konto"&&<p className="mx-auto w-full max-w-3xl px-4 pt-4 text-sm">Lernnotizen bitte in der <Link href="/" className="underline">Lernübersicht</Link> bearbeiten. Der frühere Notizeditor ist in dieser Kontotestansicht geschlossen.</p>}
+ 19 |     {planPageAllowed(path)||writingPageAllowed(path)?children:<main className="mx-auto max-w-2xl px-4 py-12"><h1 className="text-xl font-semibold">Diese Lernansicht wird noch angebunden</h1><p className="mt-3">Deine bisherigen Browserdaten bleiben unverändert. In dieser Kontotestansicht kannst du dein Profil, deine Stationen, Lernnotizen und Themenfortschritt nutzen.</p><Link href="/themen" className="mt-4 inline-block underline">Zu allen Themen</Link></main>}
+ 20 |   </>}</LearningMode.Provider>;
+    :     ^
+ 21 | }
+    `----
+  x Expected '</', got '}'
+    ,-[/private/tmp/stex-pdf-a-r1-check/src/components/account-learning-boundary.tsx:20:1]
+ 17 |     </nav>
+ 18 |     {path==="/konto"&&<p className="mx-auto w-full max-w-3xl px-4 pt-4 text-sm">Lernnotizen bitte in der <Link href="/" className="underline">Lernübersicht</Link> bearbeiten. Der frühere Notizeditor ist in dieser Kontotestansicht geschlossen.</p>}
+ 19 |     {planPageAllowed(path)||writingPageAllowed(path)?children:<main className="mx-auto max-w-2xl px-4 py-12"><h1 className="text-xl font-semibold">Diese Lernansicht wird noch angebunden</h1><p className="mt-3">Deine bisherigen Browserdaten bleiben unverändert. In dieser Kontotestansicht kannst du dein Profil, deine Stationen, Lernnotizen und Themenfortschritt nutzen.</p><Link href="/themen" className="mt-4 inline-block underline">Zu allen Themen</Link></main>}
+ 20 |   </>}</LearningMode.Provider>;
+    :      ^
+ 21 | }
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/account-learning-boundary.tsx
+./src/app/layout.tsx
+
+
+> Build failed because of webpack errors

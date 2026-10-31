@@ -1,0 +1,28 @@
+▶ DATA-B: echte PostgreSQL-Persistenz mit isolierten Daten
+  ✔ Schema kann wiederholt angewendet werden; veränderte Migration blockiert (5.165ms)
+  ✔ Alle 24 Bereiche, IDs, Referenzen und Klassifizierungen bleiben erhalten (4.067625ms)
+  ✔ Originalbytes liegen separat; PostgreSQL enthält nur Dateimetadaten (1.030333ms)
+  ✔ Wiederholung derselben Vorgangs-ID schreibt nichts; neue Vorgangs-ID dupliziert keine Datensätze (53.394708ms)
+  ✔ ID-Kollision und wiederverwendete Vorgangs-ID überschreiben nichts (13.42975ms)
+  ✔ Fehler nach mehreren SQL-Schreibvorgängen rollt die gesamte Transaktion zurück (290.518833ms)
+  ✔ Unzugeordnete eingebettete Dateibytes werden vor dem Datenbankabschluss zurückgewiesen (148.880208ms)
+  ✔ Parallele Imports benötigen nach konkurrierendem Abschluss eine neue Vorschau (42.866834ms)
+  ✔ Zwei Eigentümer behalten getrennte private Texte, Dateien und Belege; Katalog bleibt gemeinsam (42.23175ms)
+  ✔ Datenbank-Fremdschlüssel verhindern fremde private Referenzen und Dateizuordnung (3.342917ms)
+  ✔ Seiten und Markierungen haben echte Versions- und Eigentümerbezüge (13.837833ms)
+  ✔ Revisionen verhindern verlorene Änderungen und nachträgliches Überschreiben durch Reimport (11.07475ms)
+  ✔ Reimport erhält bereits fortgeschriebene Extraktionsmetadaten (35.309416ms)
+  ✔ Daten bleiben nach echtem PostgreSQL-Prozessneustart und neuen Verbindungen identisch (224.4935ms)
+  ✔ Datenbank und private Dateien werden zusammen gesichert und in leeres Ziel wiederhergestellt (632.652542ms)
+  ✔ Beschädigtes Sicherungsmanifest bleibt ohne Wirkung (110.523792ms)
+  ✔ Fehlende oder beschädigte Sicherungsdatei verhindert Teilwiederherstellung (287.8525ms)
+  ✔ Privater Dateispeicher weist Pfadtraversal, public und symbolische Verknüpfungen zurück (0.631292ms)
+✔ DATA-B: echte PostgreSQL-Persistenz mit isolierten Daten (3287.176709ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3536.614709

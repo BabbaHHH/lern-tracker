@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-18",
+  "integration": {
+    "command": "node --import tsx --test --test-reporter=spec tests/auth-production-integration.test.ts",
+    "exitCode": 0,
+    "topLevelTests": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "verifiedBoundaries": 10,
+    "realLocalPostgreSQL": true,
+    "realPrivateSyntheticFiles": true,
+    "separateChildEnvironment": true,
+    "releaseOnlyInsideSyntheticChild": true
+  },
+  "types": {
+    "command": "node node_modules/typescript/bin/tsc --project docs/ergebnisse/AUTH-01/PROD-INTEGRATION/tsconfig.json --noEmit",
+    "exitCode": 0
+  },
+  "lint": {
+    "command": "node node_modules/eslint/bin/eslint.js scripts/auth/production-integration-fixture.ts scripts/auth/production-integration-worker.ts tests/auth-production-integration.test.ts --max-warnings 0",
+    "exitCode": 0
+  },
+  "initialProblems": [
+    "sandbox loopback bind EPERM; empty own root removed",
+    "embedded-postgres beforeExit hook masked worker exit status; parent rejected missing complete result",
+    "PostgreSQL inet text includes netmask; test uses host(inet_server_addr())",
+    "mixed .mts/TSX module identities broke instanceof check; worker changed to .ts; checks retained"
+  ],
+  "earlierFailedLogsPreserved": true,
+  "productFilesChanged": false,
+  "protectedSourceCount": 316,
+  "oldSuitesRepeated": false,
+  "build": false,
+  "realProductionEnvironmentChanged": false,
+  "realExternalDnsTlsSmtpProviderContact": false,
+  "existingSecretConfigurationRead": false,
+  "cleanup": "worker verified own root removal and port closed; parent found no remaining own temp roots"
+}

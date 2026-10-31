@@ -1,0 +1,6 @@
+{
+  "extends": "../../../../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": ["../../../../scripts/auth/production-integration-fixture.ts", "../../../../scripts/auth/production-integration-worker.ts", "../../../../tests/auth-production-integration.test.ts"],
+  "exclude": ["../../../../node_modules"]
+}

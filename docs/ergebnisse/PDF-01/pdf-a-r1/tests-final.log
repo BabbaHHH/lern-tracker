@@ -1,0 +1,153 @@
+TAP version 13
+# Subtest: PDF-A-R1: real HTTP, PostgreSQL and unchanged PrivateFiles with delayed I/O
+    # Subtest: independent real account writer commits before the file gate opens; no idle transaction
+    ok 1 - independent real account writer commits before the file gate opens; no idle transaction
+      ---
+      duration_ms: 375.406083
+      ...
+    # Subtest: account block committed during I/O suppresses Range bytes
+    ok 2 - account block committed during I/O suppresses Range bytes
+      ---
+      duration_ms: 187.424417
+      ...
+    # Subtest: deleted session during I/O suppresses full bytes
+    ok 3 - deleted session during I/O suppresses full bytes
+      ---
+      duration_ms: 135.277209
+      ...
+    # Subtest: generation change is rejected even if the same session was updated to the new generation
+    ok 4 - generation change is rejected even if the same session was updated to the new generation
+      ---
+      duration_ms: 128.38225
+      ...
+    # Subtest: pending status effective during I/O suppresses If-Range fallback bytes
+    ok 5 - pending status effective during I/O suppresses If-Range fallback bytes
+      ---
+      duration_ms: 117.099625
+      ...
+    # Subtest: changed document association during I/O suppresses the original bytes
+    ok 6 - changed document association during I/O suppresses the original bytes
+      ---
+      duration_ms: 169.127417
+      ...
+    # Subtest: changed document role during I/O is rejected
+    ok 7 - changed document role during I/O is rejected
+      ---
+      duration_ms: 41.221042
+      ...
+    # Subtest: deleted version during I/O is not returned from the captured metadata
+    ok 8 - deleted version during I/O is not returned from the captured metadata
+      ---
+      duration_ms: 42.771667
+      ...
+    # Subtest: replacement file identity under the same version ID suppresses previously verified bytes
+    ok 9 - replacement file identity under the same version ID suppresses previously verified bytes
+      ---
+      duration_ms: 54.744084
+      ...
+    # Subtest: HEAD/description/416 perform no file read; valid GET/Range/If-Range still verify full file each time
+    ok 10 - HEAD/description/416 perform no file read; valid GET/Range/If-Range still verify full file each time
+      ---
+      duration_ms: 101.072125
+      ...
+    # Subtest: HEAD rechecks revocation under the final writer lock before exposing metadata
+    ok 11 - HEAD rechecks revocation under the final writer lock before exposing metadata
+      ---
+      duration_ms: 163.076917
+      ...
+    # Subtest: description rechecks revocation under the final writer lock before exposing metadata
+    ok 12 - description rechecks revocation under the final writer lock before exposing metadata
+      ---
+      duration_ms: 130.589292
+      ...
+    # Subtest: 416 rechecks revocation under the final writer lock before exposing metadata
+    ok 13 - 416 rechecks revocation under the final writer lock before exposing metadata
+      ---
+      duration_ms: 116.399166
+      ...
+    # Subtest: a second Range detects corruption beyond that range, even after an earlier successful read
+    ok 14 - a second Range detects corruption beyond that range, even after an earlier successful read
+      ---
+      duration_ms: 44.505625
+      ...
+    # Subtest: missing private file fails without PDF bytes or internal paths
+    ok 15 - missing private file fails without PDF bytes or internal paths
+      ---
+      duration_ms: 33.2975
+      ...
+    # Subtest: wrong-size private file fails without PDF bytes or internal paths
+    ok 16 - wrong-size private file fails without PDF bytes or internal paths
+      ---
+      duration_ms: 33.450292
+      ...
+    # Subtest: symlink private file fails without PDF bytes or internal paths
+    ok 17 - symlink private file fails without PDF bytes or internal paths
+      ---
+      duration_ms: 38.199958
+      ...
+    # Subtest: database failure after successful file verification releases no PDF bytes
+    ok 18 - database failure after successful file verification releases no PDF bytes
+      ---
+      duration_ms: 40.359584
+      ...
+    1..18
+ok 1 - PDF-A-R1: real HTTP, PostgreSQL and unchanged PrivateFiles with delayed I/O
+  ---
+  duration_ms: 5315.129334
+  ...
+# {"writerMs":21,"fileHeldMs":291,"writerCommittedBeforeFileRelease":true,"idleTransactionsDuringFileWait":0}
+# Subtest: PDF-A: Range parsing handles bounded/open/suffix ranges and invalid inputs
+ok 2 - PDF-A: Range parsing handles bounded/open/suffix ranges and invalid inputs
+  ---
+  duration_ms: 0.836083
+  ...
+# Subtest: PDF-A: searchable original positions preserve line breaks, ligatures and occurrence
+ok 3 - PDF-A: searchable original positions preserve line breaks, ligatures and occurrence
+  ---
+  duration_ms: 0.985959
+  ...
+# Subtest: PDF-A: geometry maps rotated/zoomed CropBox positions reversibly
+ok 4 - PDF-A: geometry maps rotated/zoomed CropBox positions reversibly
+  ---
+  duration_ms: 0.168084
+  ...
+# Subtest: PDF-A: real sessions, shared access, triples, conditional/HEAD/Range denial and revocation
+    # Subtest: active A and independent active B read exact bytes and descriptor
+    ok 1 - active A and independent active B read exact bytes and descriptor
+      ---
+      duration_ms: 71.089084
+      ...
+    # Subtest: HEAD, prefix, suffix, open ranges, invalid 416, private conditionals
+    ok 2 - HEAD, prefix, suffix, open ranges, invalid 416, private conditionals
+      ---
+      duration_ms: 62.105917
+      ...
+    # Subtest: anonymous and pending never receive document metadata, even via 416/conditional/HEAD
+    ok 3 - anonymous and pending never receive document metadata, even via 416/conditional/HEAD
+      ---
+      duration_ms: 22.351
+      ...
+    # Subtest: mismatched case/document/version and personal IDs never enter shared storage
+    ok 4 - mismatched case/document/version and personal IDs never enter shared storage
+      ---
+      duration_ms: 25.131
+      ...
+    # Subtest: account block invalidates the existing session before any new read
+    ok 5 - account block invalidates the existing session before any new read
+      ---
+      duration_ms: 26.037959
+      ...
+    1..5
+ok 5 - PDF-A: real sessions, shared access, triples, conditional/HEAD/Range denial and revocation
+  ---
+  duration_ms: 3225.204709
+  ...
+1..5
+# tests 28
+# suites 0
+# pass 28
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10392.403

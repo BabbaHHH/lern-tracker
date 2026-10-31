@@ -1,5 +1,7 @@
 "use client";
 
+import {useAccountLearningMode} from "./account-learning-boundary";
+import { fetchAi } from "@/lib/ai-settings";
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +20,10 @@ interface ChatMessage {
 }
 
 export function CheckinChat({}: { onClose?: () => void } = {}) {
+  const accountMode=useAccountLearningMode();
+  return accountMode?<p>Bitte den Konto-Check-in in der Lernübersicht öffnen.</p>:<BrowserCheckinChat/>;
+}
+function BrowserCheckinChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
@@ -71,7 +77,7 @@ ${topicList}`;
         { role: "user" as const, content: input.trim() },
       ];
 
-      const res = await fetch("/api/ai", {
+      const res = await fetchAi({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: apiMessages, tier: "cheap" }),

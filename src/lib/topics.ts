@@ -606,6 +606,28 @@ export function getLeafTopics(topics: Topic[]): Topic[] {
 }
 
 /**
+ * Sammelt rekursiv ALLE Leaf-Topics unterhalb eines Branch — egal wie tief
+ * die Hierarchie geht. Wird für korrekte Aggregation und Branch-Slider-
+ * Propagation gebraucht.
+ */
+export function getLeafDescendants(rootId: string, topics: Topic[] = TOPICS): Topic[] {
+  const leaves: Topic[] = [];
+  const stack = [rootId];
+  while (stack.length > 0) {
+    const cur = stack.pop()!;
+    const children = topics.filter(t => t.parentId === cur);
+    if (children.length === 0) {
+      // cur ist ein Leaf
+      const t = topics.find(x => x.id === cur);
+      if (t) leaves.push(t);
+    } else {
+      stack.push(...children.map(c => c.id));
+    }
+  }
+  return leaves;
+}
+
+/**
  * Gibt alle Themen einer bestimmten Tiefe zurück (0 = Root)
  */
 export function getTopicsByDepth(topics: Topic[], depth: number): Topic[] {

@@ -1,0 +1,19 @@
+{
+  "results": [
+    {
+      "method": "GET",
+      "status": 503,
+      "cache": "private, no-store",
+      "metadata": false,
+      "bodyBytes": 130
+    },
+    {
+      "method": "HEAD",
+      "status": 503,
+      "cache": "private, no-store",
+      "metadata": false,
+      "bodyBytes": 0
+    }
+  ],
+  "childStoppedInFinally": true
+}

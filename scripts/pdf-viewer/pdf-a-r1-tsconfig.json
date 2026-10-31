@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "allowImportingTsExtensions": true
+  },
+  "include": [
+    "../../next-env.d.ts",
+    "../../src/**/*.ts",
+    "../../src/**/*.tsx",
+    "../../tests/catalog-pdf-lock.test.ts",
+    "../../tests/pdf-a.test.ts",
+    "./pdf-a-r1-*.ts",
+    "./pdf-a-r1-*.mts",
+    "../../.next/types/**/*.ts",
+    "../../.next/dev/types/**/*.ts"
+  ],
+  "exclude": ["../../node_modules"]
+}

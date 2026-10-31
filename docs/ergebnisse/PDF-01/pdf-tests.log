@@ -1,0 +1,56 @@
+TAP version 13
+# Subtest: PDF-A: Range parsing handles bounded/open/suffix ranges and invalid inputs
+ok 1 - PDF-A: Range parsing handles bounded/open/suffix ranges and invalid inputs
+  ---
+  duration_ms: 0.77675
+  ...
+# Subtest: PDF-A: searchable original positions preserve line breaks, ligatures and occurrence
+ok 2 - PDF-A: searchable original positions preserve line breaks, ligatures and occurrence
+  ---
+  duration_ms: 1.48175
+  ...
+# Subtest: PDF-A: geometry maps rotated/zoomed CropBox positions reversibly
+ok 3 - PDF-A: geometry maps rotated/zoomed CropBox positions reversibly
+  ---
+  duration_ms: 0.145834
+  ...
+# Subtest: PDF-A: real sessions, shared access, triples, conditional/HEAD/Range denial and revocation
+    # Subtest: active A and independent active B read exact bytes and descriptor
+    ok 1 - active A and independent active B read exact bytes and descriptor
+      ---
+      duration_ms: 13.426583
+      ...
+    # Subtest: HEAD, prefix, suffix, open ranges, invalid 416, private conditionals
+    ok 2 - HEAD, prefix, suffix, open ranges, invalid 416, private conditionals
+      ---
+      duration_ms: 25.960917
+      ...
+    # Subtest: anonymous and pending never receive document metadata, even via 416/conditional/HEAD
+    ok 3 - anonymous and pending never receive document metadata, even via 416/conditional/HEAD
+      ---
+      duration_ms: 8.76725
+      ...
+    # Subtest: mismatched case/document/version and personal IDs never enter shared storage
+    ok 4 - mismatched case/document/version and personal IDs never enter shared storage
+      ---
+      duration_ms: 17.84125
+      ...
+    # Subtest: account block invalidates the existing session before any new read
+    ok 5 - account block invalidates the existing session before any new read
+      ---
+      duration_ms: 13.50325
+      ...
+    1..5
+ok 4 - PDF-A: real sessions, shared access, triples, conditional/HEAD/Range denial and revocation
+  ---
+  duration_ms: 3052.872959
+  ...
+1..4
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3974.122958

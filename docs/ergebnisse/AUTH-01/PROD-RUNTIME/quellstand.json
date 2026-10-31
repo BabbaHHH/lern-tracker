@@ -1,0 +1,134 @@
+{
+  "sources": {
+    "src/lib/server/auth/runtime.ts": "475ee5f7fbc0d8d979147cbd7c5be742c8c14abea7df494c388836e849206032",
+    "src/lib/server/auth/production-runtime.ts": "a3b25655312479ead2f985ff740a15fcff9396b98641b6f9f4a10ba4d4533532",
+    "tests/auth-production-runtime.test.ts": "bc3f0563b51435e8bb877f9763a272b1f029b588192e81144f4ef760e8c0623a"
+  },
+  "protectedComparison": {
+    "src/lib/server/auth/production-config.ts": {
+      "before": "0344a00e6bcea0f59e179b61f87e52f662c7982e8cdb514620ff2ad1d6196146",
+      "after": "0344a00e6bcea0f59e179b61f87e52f662c7982e8cdb514620ff2ad1d6196146"
+    },
+    "src/lib/server/auth/service.ts": {
+      "before": "23affb93b29ea432c9b3a0e568a1d5d0a79dedcd268faf753d4f180028b73aea",
+      "after": "23affb93b29ea432c9b3a0e568a1d5d0a79dedcd268faf753d4f180028b73aea"
+    },
+    "src/lib/server/persistence/database.ts": {
+      "before": "7a39d009e768d4eb67dbf76222cc7451d8675a166f733c0288c66cd6fd096f94",
+      "after": "7a39d009e768d4eb67dbf76222cc7451d8675a166f733c0288c66cd6fd096f94"
+    },
+    "src/lib/server/persistence/files.ts": {
+      "before": "b53be7793582cf5ccbb3e91ce35182e79dc67ddcc2cad9bbf4e44e370720194b",
+      "after": "b53be7793582cf5ccbb3e91ce35182e79dc67ddcc2cad9bbf4e44e370720194b"
+    },
+    "src/lib/server/persistence/backup.ts": {
+      "before": "a23056bb3e625acea8ba182b9010581bc57a2988bef7f3e3f17b1ee589a87ac5",
+      "after": "a23056bb3e625acea8ba182b9010581bc57a2988bef7f3e3f17b1ee589a87ac5"
+    },
+    "scripts/data-migration/local-config.ts": {
+      "before": "4e2cee8fdb95945ad9b6804782a136275b82125070ff101821408ee299e67c83",
+      "after": "4e2cee8fdb95945ad9b6804782a136275b82125070ff101821408ee299e67c83"
+    },
+    "scripts/data-migration/persistence.mts": {
+      "before": "e09eaaf8805bdd89ddbec5362770c9884ef19d4d7049abf00ce208564999804e",
+      "after": "e09eaaf8805bdd89ddbec5362770c9884ef19d4d7049abf00ce208564999804e"
+    },
+    "scripts/search/worker.mts": {
+      "before": "9a2699b6becfae9aeeebcb0e2137b801f730b802f261f6b2c4053df95842b5ab",
+      "after": "9a2699b6becfae9aeeebcb0e2137b801f730b802f261f6b2c4053df95842b5ab"
+    },
+    "package.json": {
+      "before": "7b5dc52eb0201d9565e875e139fedd55190368c6cbf979c7ea54cd3c7fd543a3",
+      "after": "7b5dc52eb0201d9565e875e139fedd55190368c6cbf979c7ea54cd3c7fd543a3"
+    },
+    "package-lock.json": {
+      "before": "b8b1f24ae4c0a82c845030055c2c25eaaa2078e9665302f12ed54c7e4a2231ac",
+      "after": "b8b1f24ae4c0a82c845030055c2c25eaaa2078e9665302f12ed54c7e4a2231ac"
+    },
+    "src/app/layout.tsx": {
+      "before": "486a5e70a5914b250dd8ba2132bb7522d1e8003bbc4d9707a0808b88ca7a86bd",
+      "after": "486a5e70a5914b250dd8ba2132bb7522d1e8003bbc4d9707a0808b88ca7a86bd"
+    },
+    "db/migrations/015_personal_settings_commands.sql": {
+      "before": "57c3a0a19219528b7be9849faf98349f48c33b68f0135f685e027270484b8e1c",
+      "after": "57c3a0a19219528b7be9849faf98349f48c33b68f0135f685e027270484b8e1c"
+    },
+    "db/migrations/001_data_contract.sql": {
+      "before": "5fd1ae0df26e4686dc6da196b72b98563a40a74d5891f730e7b946a4ffb374ad",
+      "after": "5fd1ae0df26e4686dc6da196b72b98563a40a74d5891f730e7b946a4ffb374ad"
+    },
+    "db/migrations/007_ai_credentials.sql": {
+      "before": "85d74ee71d246390184117ba1eded674461ced962b0e5847d9a26b883c93d583",
+      "after": "85d74ee71d246390184117ba1eded674461ced962b0e5847d9a26b883c93d583"
+    },
+    "db/migrations/009_plan_commands.sql": {
+      "before": "3e3a5430b0fb4dd731b8d45f73bce54ce26dcb0665418b5511cb4adc7dc9d246",
+      "after": "3e3a5430b0fb4dd731b8d45f73bce54ce26dcb0665418b5511cb4adc7dc9d246"
+    },
+    "db/migrations/006_personal_learning_commands.sql": {
+      "before": "7a63e57bd6eabe092bf1318994b56b83f43af9f39d08cb8b2a178499a05205dd",
+      "after": "7a63e57bd6eabe092bf1318994b56b83f43af9f39d08cb8b2a178499a05205dd"
+    },
+    "db/migrations/016_auth_mail_dispatch.sql": {
+      "before": "d30999151f5c73a81637f7f4b974d6b9072898193081537f56e4780a4931d572",
+      "after": "d30999151f5c73a81637f7f4b974d6b9072898193081537f56e4780a4931d572"
+    },
+    "db/migrations/013_correction_commands.sql": {
+      "before": "d9fd9a9d8f6c63afabf9d074e6b847e2a092345cfd8c956e40d17c19679765fd",
+      "after": "d9fd9a9d8f6c63afabf9d074e6b847e2a092345cfd8c956e40d17c19679765fd"
+    },
+    "db/migrations/005_catalog_search.sql": {
+      "before": "d79eb3af67e339dee606ea4eb7cf66e78de3720102f68c03b5659e51c6b7149a",
+      "after": "d79eb3af67e339dee606ea4eb7cf66e78de3720102f68c03b5659e51c6b7149a"
+    },
+    "db/migrations/004_learning_commands.sql": {
+      "before": "ab30962379462d9d01f982ae116947f049adb46c6d0d4c71b88f3fca20673d27",
+      "after": "ab30962379462d9d01f982ae116947f049adb46c6d0d4c71b88f3fca20673d27"
+    },
+    "db/migrations/003_catalog_import.sql": {
+      "before": "09f09187b2bc870d7a3b5a8052288f6894b001068611bfb8a6718681a522fe76",
+      "after": "09f09187b2bc870d7a3b5a8052288f6894b001068611bfb8a6718681a522fe76"
+    },
+    "db/migrations/002_auth_accounts.sql": {
+      "before": "dcdf32c1a5eb94317934ddd23f049d385b9531bc4b15393e02a8a05a75f15d84",
+      "after": "dcdf32c1a5eb94317934ddd23f049d385b9531bc4b15393e02a8a05a75f15d84"
+    },
+    "db/migrations/008_schedule_commands.sql": {
+      "before": "ca2da2cd010ef8169884300293566a6a2a5b25d749115246a02dce9de5b64f0f",
+      "after": "ca2da2cd010ef8169884300293566a6a2a5b25d749115246a02dce9de5b64f0f"
+    },
+    "db/migrations/014_personal_document_commands.sql": {
+      "before": "d1380a537ce8d3f89ce75551001d1259548847677e6418074eb8f6450c26a400",
+      "after": "d1380a537ce8d3f89ce75551001d1259548847677e6418074eb8f6450c26a400"
+    },
+    "db/migrations/012_writing_commands.sql": {
+      "before": "faa5b9d475089331636648a5517647d185d63d91d81b7a5f8bb4a65735a19a7f",
+      "after": "faa5b9d475089331636648a5517647d185d63d91d81b7a5f8bb4a65735a19a7f"
+    },
+    "db/migrations/010_learning_preparation.sql": {
+      "before": "2279b2f1f352b4d28995f6dca96ee556935926300069cdac449c5b3ecf111f27",
+      "after": "2279b2f1f352b4d28995f6dca96ee556935926300069cdac449c5b3ecf111f27"
+    },
+    "db/migrations/011_checkin_commands.sql": {
+      "before": "73fdcf342d25e27c589aca207947cc8920e2c3b2d2ae3ea10f7d57a835d67983",
+      "after": "73fdcf342d25e27c589aca207947cc8920e2c3b2d2ae3ea10f7d57a835d67983"
+    },
+    "src/lib/server/auth/mail-dispatcher.ts": {
+      "before": "39c6bcb08fd2f8766a5178b36a3c9e482205bb28b02e83466148e400587bf2b0",
+      "after": "39c6bcb08fd2f8766a5178b36a3c9e482205bb28b02e83466148e400587bf2b0"
+    },
+    "src/lib/server/auth/mail-transport.ts": {
+      "before": "73cc22201e1b6461daca326fa668d74c97045e77cdd9ca9b9aaab6cc262924d6",
+      "after": "73cc22201e1b6461daca326fa668d74c97045e77cdd9ca9b9aaab6cc262924d6"
+    },
+    "src/lib/server/auth/smtp-config.ts": {
+      "before": "b92bc6ff713d64525ee5bbef5fd87d244ba3601dec56ae3166a3bbeb5e093316",
+      "after": "b92bc6ff713d64525ee5bbef5fd87d244ba3601dec56ae3166a3bbeb5e093316"
+    },
+    "src/lib/server/auth/smtp-transport.ts": {
+      "before": "c2c0f275c24fba57ec89ab9d77c571c8ca2101c6c4332ab881c9647025ccca63",
+      "after": "c2c0f275c24fba57ec89ab9d77c571c8ca2101c6c4332ab881c9647025ccca63"
+    }
+  },
+  "scope": "selective comparison, not an atomic release snapshot"
+}

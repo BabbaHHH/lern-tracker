@@ -1,0 +1,1 @@
+{"extends":"./tsconfig.project-check.json","include":["../../next-env.d.ts","../../src/**/*.ts","../../src/**/*.tsx","../../tests/learning-schedule.test.ts","./c3a-*.mts"],"exclude":["../../node_modules","../../.next","../../.next-qa","../../out","../../build"]}

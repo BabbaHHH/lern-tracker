@@ -1,0 +1,25 @@
+✔ SEARCH-A0: case-insensitive phrase maps hyphens, whitespace and repeated occurrences to PDF-A (5.508083ms)
+✔ SEARCH-A0: normalization preserves UTF-16 positions, ligatures, soft hyphens and real compound hyphens (4.055291ms)
+✔ SEARCH-A0: normalized partial ligature matches deduplicate the same original glyph (0.733417ms)
+✔ SEARCH-A0: norm spelling variants require exact law and paragraph, with original citation evidence (4.40775ms)
+✔ SEARCH-A0: explicit norm lists stay evidenced, bare numbers and unexpanded ranges are not guessed (1.537792ms)
+✔ SEARCH-A0: explicitly combined phrase/norm queries return a union without duplicate intervals (0.258875ms)
+✔ SEARCH-A0: no-text, failed and stale pages are reported separately, never searched (0.121417ms)
+✔ SEARCH-A0: hit limit reports true total and rejects empty/unbounded queries (0.379917ms)
+✔ SEARCH-A0: full page text is retained beyond onboarding-style truncation (36.55275ms)
+✔ SEARCH-A0: actual synthetic PDF extraction resumes bounded batches after JSON restart (1900.736125ms)
+Warning: Please use the `legacy` build in Node.js environments.
+✔ SEARCH-A0: server extraction equals PDF-A's regular browser-engine text construction (116.892708ms)
+✔ SEARCH-A0: new document version keeps old offsets and roles isolated; rebuild is reproducible (37.312167ms)
+✔ SEARCH-A0: actual PDF pages beyond page 100 remain searchable in successive portions (44.886292ms)
+✔ SEARCH-A0: invalid PDFs and resource limits fail honestly without truncated searchable text (3.853125ms)
+✔ SEARCH-A0: immutable byte/role conflicts, cancellation and invalid limits leave index untouched (3.347083ms)
+✔ SEARCH-A0: adapter revision conflicts reject concurrent stale commits (7.927417ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2503.679583

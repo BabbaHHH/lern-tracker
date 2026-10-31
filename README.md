@@ -2,11 +2,20 @@
 
 **Intelligenter Lernfortschritts-Tracker für das 2. juristische Staatsexamen (Berlin/GJPA)**
 
+> **Aktueller Stand, 09.10.2026:** Der Lernplan verwendet standardmäßig den persönlichen Stationsplan und die weiteren datierten Unterlagen aus dem Onboarding, jetzt mit tatsächlichem Dokumenttext. Erkannte Abschnitte/Termine werden vor Übernahme mit Quelle gezeigt. Der Klausurenkurs läuft durch alle Stationen. Neu: fällige Themenwiederholungen mit Abrufbewertung, Klausurzuordnung und tatsächliche Lernhistorie im Wochenkalender, ICS-Dateiexport sowie Feedback direkt in der App mit lokaler Übersicht. Tagesgrenze und freie Tage gelten weiterhin. Anki und Onlinebetrieb sind spätere Schritte. Details: [Codeprüfung](docs/CODEPRUEFUNG.md) und [Weiterentwicklungsplan](docs/WEITERENTWICKLUNG.md). Frühere Beschreibungen unten sind teilweise historisch; sensible APIs bleiben im Produktionsmodus bis zu echten Zugriffskontrollen gesperrt.
+
+
+Historischer Dokumenttest: [Ergebnisse und Wiederholung](docs/HISTORISCHER_DOKUMENTTEST.md), ausführbar mit `npm run test:documents`.
+
+**Aktuelle Entscheidungen und Aufgaben:** [To-do-Liste](docs/TODO.md). Hosting als geschlossene Website ist gewählt; Anbieter und Budget bleiben offen. Eingeladene Nutzer werden persönlich freigeschaltet. Regelmäßige Modellprüfung alle 2–3 Wochen, PDF-Viewer mit Markierungen und Klausurimporte sind geplant. Feedbackautomatisierung, Downloadgrenzen und eine größere UI-Überarbeitung werden später besprochen.
+
+**Projektchats:** [Gemeinsamer Status](docs/PROJEKTSTATUS.md), [Architekturentwurf](docs/ARCHITEKTUR.md) und [Chatübersicht](docs/CHATS.md). Ein Planungschat mit Astra und 17 Aufgabenchats mit Sol sind eingerichtet. Neu geplant: echte PDF-Volltext-/Normensuche, später RAG, sowie eigene auswählbare OpenRouter-Schlüssel neben finanzierten Pilotkontingenten. Die rund 450 bereits klassifizierten Klausuren werden weiterverwendet.
+
 > **⚠️ TODO — Persistenz-Migration:** Hochgeladene Dokumente (`lerntracker-documents`),
 > AG-Wochen-Overrides (`lerntracker-ag-weeks`) und Theme-Präferenz (`lerntracker-theme`)
 > werden aktuell als Base64/JSON im **localStorage** gespeichert (Limit ~5 MB, global pro
-> Browser, kein Sync zwischen Geräten). Bei Umzug auf Supabase: Dokumente in **Supabase
-> Storage**, Theme/AG-Wochen in **`user_preferences`** migrieren. Siehe
+> Browser, kein Sync zwischen Geräten). Für Hosting: Dokumente in privaten Dateispeicher,
+> Theme/AG-Wochen in kontobezogene **`user_preferences`** migrieren. Der Anbieter ist offen. Siehe
 > `src/lib/store.ts` → `getDocuments`, `getAgWeekOverrides`, `getTheme`.
 
 Repository: [github.com/BabbaHHH/lern-tracker](https://github.com/BabbaHHH/lern-tracker)
@@ -72,10 +81,10 @@ Der Stex Tracker ist ein persönlicher, KI-gestützter Lernbegleiter speziell f�
 | Frontend-Framework | Next.js 16 + TypeScript | Aktiv |
 | Styling | Tailwind CSS + shadcn/ui | Aktiv |
 | Datenpersistenz | localStorage | Aktiv (temporär) |
-| Datenbank | Supabase (PostgreSQL) | Geplant |
-| Hosting | Vercel | Geplant |
+| Datenbank | Anbieter offen; persönliche und gemeinsame Daten getrennt | Geplant |
+| Hosting | Geschlossene Website; Anbieter offen | Gewählt, Einrichtung ausstehend |
 | KI-Gateway | OpenRouter API | Aktiv |
-| KI-Modelle | Gemini 2.5 Flash, Claude Sonnet 4, Claude Opus 4.6 | Aktiv |
+| KI-Modelle | Aktuelle Konfiguration in `src/lib/ai.ts` und `src/lib/ai-models.ts` | Regelmäßige Qualitäts-/Preisprüfung geplant |
 
 ---
 
@@ -327,18 +336,11 @@ npm run type-check # TypeScript-Überprüfung
 
 ## 11. Deployment
 
-### Vercel (geplant)
+Hosting ist gewählt; Anbieter und Budget sind vertagt. Die früher genannten Dienste Vercel und Supabase sind mögliche Optionen, keine aktuelle Festlegung.
 
-1. Repository mit Vercel verbinden (GitHub-Integration)
-2. Umgebungsvariablen in Vercel-Dashboard eintragen
-3. Automatisches Deployment bei jedem Push auf `main`
+Vor einer Veröffentlichung Konten und Zugriffsprüfungen, Datenmigration, private PDF-Bereitstellung, KI-Kontingente, Sicherung und Wiederherstellung vorbereiten. Die bestehenden Produktionssperren für sensible APIs erst durch diese Prüfungen ersetzen. Änderungen zunächst testen und in einer Vorschau prüfen; Veröffentlichung und Rückkehr zur vorherigen Version dokumentieren.
 
-### Supabase (geplant — Phase 3)
-
-1. Neues Supabase-Projekt anlegen
-2. Migrations-Skripte aus `supabase/migrations/` ausführen
-3. Row-Level Security Policies aktivieren
-4. Supabase-Credentials in Vercel-Umgebungsvariablen eintragen
+Konkrete Arbeitspakete und Abnahmekriterien: [To-do-Liste](docs/TODO.md), insbesondere DATA-01, AUTH-01 und HOST-01. Diese Punkte sind noch nicht implementiert.
 
 ---
 
@@ -348,6 +350,9 @@ Dieses Protokoll dokumentiert wichtige Architektur- und Designentscheidungen.
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-10-09 | Hosting als geschlossene kostenlose Plattform; Anbieter offen | Persönliche Freischaltung, gemeinsame Updates und Nutzung auf mehreren Geräten; möglichst geringe Kosten und Wartung |
+| 2026-10-09 | Modellprüfung alle 2–3 Wochen geplant | Verfügbarkeit, Preis und Qualität regelmäßig prüfen; geprüfte Änderungen nachvollziehbar übernehmen |
+| 2026-10-09 | PDF-Viewer und Klausurimport zuerst vorbereiten; größere Automatisierungen später besprechen | Dokumente sind der Kernnutzen; Markierungen, persönliche Daten und Bearbeitungshistorie müssen zuverlässig bleiben |
 | 2026-04 | localStorage statt Supabase (Phase 2) | Schnellere Entwicklung; Supabase-Migration folgt in Phase 3 sobald Lerngruppe dazukommt |
 | 2026-04 | OpenRouter statt direkter Anthropic/Google-API | Ein einziger API-Key für alle Modelle; einfaches Modell-Switching ohne Code-Änderungen |
 | 2026-04 | 3-Tier KI-Architektur | Kostenoptimierung: teures Opus nur für komplexe Aufgaben; Flash für einfachen Chat |
@@ -356,4 +361,4 @@ Dieses Protokoll dokumentiert wichtige Architektur- und Designentscheidungen.
 
 ---
 
-*Letzte Aktualisierung: April 2026 — Dieses Dokument wächst mit dem Projekt mit.*
+*Letzte Aktualisierung: 9. Oktober 2026. Frühere Etappen und Modellbeispiele sind teilweise historisch; aktuelle Entscheidungen stehen in der To-do-Liste.*

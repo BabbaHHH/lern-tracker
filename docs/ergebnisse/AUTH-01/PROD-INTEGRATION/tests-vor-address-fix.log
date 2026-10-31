@@ -1,0 +1,28 @@
+✖ AUTH03: isolierter Produktionsvertrag mit echter Loopback-DB und privaten Testdateien (1733.92725ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1903.010375
+
+✖ failing tests:
+
+test at tests/auth-production-integration.test.ts:2:1034
+✖ AUTH03: isolierter Produktionsvertrag mit echter Loopback-DB und privaten Testdateien (1733.92725ms)
+  AssertionError [ERR_ASSERTION]: Isolated stage: explicit-migrations-001-016
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (/Users/niklashauser/Desktop/Coding/Stex. Countdown/lern-tracker/tests/auth-production-integration.test.ts:26:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async Test.run (node:internal/test_runner/test:980:9)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual'
+  }

@@ -1,0 +1,68 @@
+{
+  "recordedAt": "2026-10-17T01:35:25.502128+02:00",
+  "status": "visible_viewer_rest_passed",
+  "scope": "Continuation of the same authorized synthetic local viewer test through regular tool escalation after port EPERM",
+  "startEscalationAllowed": true,
+  "origin": "http://localhost:65244",
+  "syntheticOnly": true,
+  "sourceManifest": "sicht-source-20261017.json",
+  "sourceChecks": {
+    "src/lib/server/catalog-pdf/service.ts": {
+      "workspaceSha256": "337e02987aa7c5d83846796114fd1e57bc679387acc8451a800df1156e2eedb3",
+      "snapshotSha256": "337e02987aa7c5d83846796114fd1e57bc679387acc8451a800df1156e2eedb3",
+      "manifestSha256": "337e02987aa7c5d83846796114fd1e57bc679387acc8451a800df1156e2eedb3",
+      "identical": true
+    },
+    "src/lib/server/catalog-pdf/http.ts": {
+      "workspaceSha256": "621b384ba83dbbc13a4dfe67e59382bdbeb9a412622678b2903fd01332e464d5",
+      "snapshotSha256": "621b384ba83dbbc13a4dfe67e59382bdbeb9a412622678b2903fd01332e464d5",
+      "manifestSha256": "621b384ba83dbbc13a4dfe67e59382bdbeb9a412622678b2903fd01332e464d5",
+      "identical": true
+    },
+    "src/components/catalog-pdf-viewer.tsx": {
+      "workspaceSha256": "c450fbeb1d24813c5a2836270b4bc512a736365f68a92837588fb59efe999f2f",
+      "snapshotSha256": "c450fbeb1d24813c5a2836270b4bc512a736365f68a92837588fb59efe999f2f",
+      "manifestSha256": "c450fbeb1d24813c5a2836270b4bc512a736365f68a92837588fb59efe999f2f",
+      "identical": true
+    },
+    "scripts/pdf-viewer/pdf-a-r1-browser.mts": {
+      "workspaceSha256": "5396908ed1228fdd06e8e9cb0e0e704249d6b82aacfd2b439fab0f55750398f2",
+      "snapshotSha256": "5396908ed1228fdd06e8e9cb0e0e704249d6b82aacfd2b439fab0f55750398f2",
+      "manifestSha256": "5396908ed1228fdd06e8e9cb0e0e704249d6b82aacfd2b439fab0f55750398f2",
+      "identical": true
+    }
+  },
+  "observations": [
+    "Page 2 of 3 visibly rendered at 100%; second quote occurrence visibly selected",
+    "Previous-page button changed URL/control/text/render to page 1",
+    "Enlarge button changed zoom from 100% to 125%; page 1 visibly rerendered"
+  ],
+  "screenshotsSha256": {
+    "sicht-20261017-seite2-100.png": "3b5e1330d4405f6d6af8022fdddb9f1953517a17ee0df2cf775caf48480889be",
+    "sicht-20261017-seite1-100.png": "86b93caaecd3e2b083c320513604b6757009c1e6ca6dd0cdd1203ebdaeafbb71",
+    "sicht-20261017-seite1-125.png": "d93e95561c4aa7a5ffc8608920338388c96058cb26ad227342b0d1fd7ab28198"
+  },
+  "browserTabCreatedAndClosed": "own tab 1 closed successfully before server termination",
+  "oldBlockedPdfAndDataTab9Touched": false,
+  "productFilesEdited": false,
+  "testsOrBuildRepeated": false,
+  "initialTransientError": "First /api/account GET returned 500 Unexpected end of JSON input during dev compilation; subsequent account GET 200 and successful UI login/viewer. No source modification or restart. Not a general account acceptance.",
+  "cleanup": {
+    "helperProcessAbsent": true,
+    "localPortsNoListeners": [
+      65243,
+      65244
+    ],
+    "databasePostmasterPidAbsent": true,
+    "runtimeRemoved": true,
+    "snapshotRemoved": true,
+    "infoAndTemporaryLogRemoved": true,
+    "note": "SIGTERM ended helper with exit 143; empty/unserved runtime remained, verified no helper/listeners and no PostgreSQL postmaster.pid, then removed only own runtime/copy."
+  },
+  "limits": [
+    "No real Safari/iPad/Touch acceptance",
+    "No load/online acceptance",
+    "Full-file I/O/memory per range remains",
+    "Existing 28 tests/type/lint/build evidence was not repeated"
+  ]
+}

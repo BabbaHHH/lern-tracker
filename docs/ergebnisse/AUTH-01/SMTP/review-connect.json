@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-18",
+  "installedVersion": "10.1.2",
+  "installedSources": {
+    "node_modules/nodemailer/dist/cjs/smtp-connection/index.js": "8b8f2a8a4ee02e50852d1be5ac5108878102ba5baa09985b660e1e6e87a392cf",
+    "node_modules/nodemailer/dist/cjs/smtp-connection/index.d.ts": "f6ad7b7f0a7f89e54b887c2f3b6d937103e1bca0b677cb77a555858c570d841f"
+  },
+  "findings": {
+    "callbackErrorType": "index.d.ts:265",
+    "usualErrorEvent": "index.js:920",
+    "silentPreGreetingCloseCallsCallbackBeforeClose": "index.js:1000-1009",
+    "otherCallbackErrors": "index.js:227-251",
+    "realDefect": true,
+    "smallestCorrection": "accept connect callback error; fail and return before TLS/login/send"
+  },
+  "test": {
+    "command": "node --import tsx --test --test-reporter=spec --test-name-pattern='Review: connect-Callbackfehler' tests/auth-smtp.test.ts",
+    "exitCode": 0,
+    "passed": 1,
+    "failed": 0,
+    "previous15CasesNotRerun": true,
+    "connectCallbackErrorWithoutErrorEvent": true,
+    "secureRemainsTrue": true,
+    "loginAndSendCalls": 0,
+    "closeOnceAndStreamTimerCleanup": true
+  },
+  "lintExitCode": 0,
+  "typesExitCode": 0,
+  "temporaryTypeConfigurationRemoved": true,
+  "actualNetworkOrSmtpConnection": false,
+  "evidenceSha256": {
+    "review-connect-tests.log": "473f1d0a013208c2c7b56130df51a2a4bd99b297f0259e38eacd5e49392b28d7",
+    "review-connect-typen.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "review-connect-lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "quellstand.json": "0cf8d0b566a67912f444d47a37ffa6fda58cfe1e7b016507f7d1a43336e4d414",
+    "quellstand-vor-connect-review.json": "b7885be6f3c07ec1e6df2cbf44208dc0121f22ab3d2bc378d8d06472f90eb29f",
+    "pruefungen-vor-connect-review.json": "08a9a8567858c9d6c1df18d84a6eac3f3b48b9d3acacce9644affa7bf252cb64"
+  }
+}

@@ -1,0 +1,239 @@
+{
+  "date": "2026-10-13T12:32:58.969Z",
+  "evidence": [
+    {
+      "case": "I-05",
+      "variant": "before-reservation",
+      "result": "passed",
+      "details": {
+        "signal": "SIGKILL",
+        "taggedDatabaseBackendsNaturallyDisconnected": true,
+        "afterKill": {
+          "users": 0,
+          "credentials": 0,
+          "mappings": 0,
+          "consumed": 0
+        },
+        "completed": {
+          "users": 1,
+          "credentials": 1,
+          "mappings": 1,
+          "consumed": 1
+        },
+        "partialAccess": 401,
+        "afterRecoveryPendingAccess": 403
+      }
+    },
+    {
+      "case": "I-05",
+      "variant": "library-transaction",
+      "result": "passed",
+      "details": {
+        "signal": "SIGKILL",
+        "taggedDatabaseBackendsNaturallyDisconnected": true,
+        "afterKill": {
+          "users": 0,
+          "credentials": 0,
+          "mappings": 0,
+          "consumed": 0
+        },
+        "completed": {
+          "users": 1,
+          "credentials": 1,
+          "mappings": 1,
+          "consumed": 1
+        },
+        "partialAccess": 401,
+        "afterRecoveryPendingAccess": 403
+      }
+    },
+    {
+      "case": "I-05",
+      "variant": "after-auth-commit",
+      "result": "passed",
+      "details": {
+        "signal": "SIGKILL",
+        "taggedDatabaseBackendsNaturallyDisconnected": true,
+        "afterKill": {
+          "users": 1,
+          "credentials": 1,
+          "mappings": 0,
+          "consumed": 0
+        },
+        "completed": {
+          "users": 1,
+          "credentials": 1,
+          "mappings": 1,
+          "consumed": 1
+        },
+        "partialAccess": 401,
+        "afterRecoveryPendingAccess": 403
+      }
+    },
+    {
+      "case": "I-05",
+      "variant": "before-finalization",
+      "result": "passed",
+      "details": {
+        "signal": "SIGKILL",
+        "taggedDatabaseBackendsNaturallyDisconnected": true,
+        "afterKill": {
+          "users": 1,
+          "credentials": 1,
+          "mappings": 0,
+          "consumed": 0
+        },
+        "completed": {
+          "users": 1,
+          "credentials": 1,
+          "mappings": 1,
+          "consumed": 1
+        },
+        "partialAccess": 401,
+        "afterRecoveryPendingAccess": 403
+      }
+    },
+    {
+      "case": "I-06",
+      "variant": "expiry-after-auth-commit",
+      "result": "passed",
+      "details": {
+        "expiryStatus": 403,
+        "partial": {
+          "users": 1,
+          "credentials": 1,
+          "mappings": 0,
+          "consumed": 0
+        },
+        "renewedSameOwner": true,
+        "oldPasswordRetained": true
+      }
+    },
+    {
+      "case": "I-06",
+      "variant": "revoke-queued-claim-finishes",
+      "result": "passed",
+      "details": {
+        "signup": 200,
+        "management": 409,
+        "consumed": 1,
+        "secondIdentity": false
+      }
+    },
+    {
+      "case": "I-06",
+      "variant": "revoke-queued-process-killed",
+      "result": "passed",
+      "details": {
+        "signal": "SIGKILL",
+        "management": 200,
+        "oldProof": 403,
+        "partialLogin": 401,
+        "resumeSameOwner": true
+      }
+    },
+    {
+      "case": "I-06",
+      "variant": "resend-queued-claim-finishes",
+      "result": "passed",
+      "details": {
+        "signup": 200,
+        "management": 409,
+        "consumed": 1,
+        "secondIdentity": false
+      }
+    },
+    {
+      "case": "I-06",
+      "variant": "resend-queued-process-killed",
+      "result": "passed",
+      "details": {
+        "signal": "SIGKILL",
+        "management": 200,
+        "oldProof": 403,
+        "partialLogin": 401,
+        "resumeSameOwner": true
+      }
+    },
+    {
+      "case": "A-06",
+      "variant": "preselected-fake-and-real-cookies",
+      "result": "passed",
+      "details": {
+        "fakeCookieDenied": 401,
+        "newProofOnLogin": true,
+        "oldRealProofOwnerUnchanged": true,
+        "logoutOldProof": 401,
+        "adminNeedsActualTotp": true
+      }
+    },
+    {
+      "case": "R-01",
+      "variant": "pending-unconfirmed",
+      "result": "passed",
+      "details": {
+        "neutralResponse": true,
+        "localMailOnly": true,
+        "ownerStatusRoleRevisionRetained": true,
+        "factorFingerprintUnchanged": true,
+        "personalRecordsUnchanged": true,
+        "oldSession": 401,
+        "postResetStatus": 403
+      }
+    },
+    {
+      "case": "R-01",
+      "variant": "pending",
+      "result": "passed",
+      "details": {
+        "neutralResponse": true,
+        "localMailOnly": true,
+        "ownerStatusRoleRevisionRetained": true,
+        "factorFingerprintUnchanged": true,
+        "personalRecordsUnchanged": true,
+        "oldSession": 401,
+        "postResetStatus": 403
+      }
+    },
+    {
+      "case": "R-01",
+      "variant": "blocked",
+      "result": "passed",
+      "details": {
+        "neutralResponse": true,
+        "localMailOnly": true,
+        "ownerStatusRoleRevisionRetained": true,
+        "factorFingerprintUnchanged": true,
+        "personalRecordsUnchanged": true,
+        "oldSession": 401,
+        "postResetStatus": 401
+      }
+    },
+    {
+      "case": "R-01",
+      "variant": "admin",
+      "result": "passed",
+      "details": {
+        "neutralResponse": true,
+        "localMailOnly": true,
+        "ownerStatusRoleRevisionRetained": true,
+        "factorFingerprintUnchanged": true,
+        "personalRecordsUnchanged": true,
+        "oldSession": 401,
+        "postResetStatus": 200
+      }
+    },
+    {
+      "case": "R-01",
+      "variant": "expired-proof",
+      "result": "passed",
+      "details": {
+        "callback": 302,
+        "errorRedirect": true,
+        "reset": 400,
+        "generationUnchanged": true,
+        "previousPasswordAndSessionPreserved": true
+      }
+    }
+  ]
+}

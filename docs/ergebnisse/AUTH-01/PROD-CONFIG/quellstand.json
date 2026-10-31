@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-17",
+  "files": {
+    "src/lib/server/auth/runtime.ts": "3430e33a4503ca4d8a7826d0e18ecb14c9c94617eecbb2ebb889c8fbdecf2bd7",
+    "src/lib/server/auth/production-config.ts": "0344a00e6bcea0f59e179b61f87e52f662c7982e8cdb514620ff2ad1d6196146",
+    "tests/auth-production-config.test.ts": "74c43b715bf30c3bc7a3bd331ba1cdf86ba277f8d2c1125998791c3b2354997b"
+  },
+  "protectedBaselineFilesChanged": [],
+  "ownedRuntimeChangedFromBaseline": true,
+  "currentEnvironmentChanged": false,
+  "note": "Only the assigned runtime is changed among captured pre-existing product files. No private configuration read."
+}

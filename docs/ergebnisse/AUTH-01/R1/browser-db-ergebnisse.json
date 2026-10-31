@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-13T12:30:09.901Z",
+  "mailPreviewOpens": 2,
+  "invitationBefore": {
+    "users": 0,
+    "credentials": 0,
+    "mappings": 0,
+    "consumed": 0
+  },
+  "invitationAfter": {
+    "users": 0,
+    "credentials": 0,
+    "mappings": 0,
+    "consumed": 0
+  },
+  "accountStatus": "pending",
+  "accountRole": "member",
+  "accountRevision": 1,
+  "unconsumed": true,
+  "realNextRoutes": true
+}

@@ -1,0 +1,21 @@
+{
+  "head": "539bf2db8862edea310d558c4fc4e7f83725201f",
+  "sourceSha256": {
+    "db/migrations/016_auth_mail_dispatch.sql": "d30999151f5c73a81637f7f4b974d6b9072898193081537f56e4780a4931d572",
+    "src/lib/server/auth/mail-dispatcher.ts": "39c6bcb08fd2f8766a5178b36a3c9e482205bb28b02e83466148e400587bf2b0",
+    "src/lib/server/auth/mail-transport.ts": "73cc22201e1b6461daca326fa668d74c97045e77cdd9ca9b9aaab6cc262924d6",
+    "src/lib/server/persistence/backup.ts": "a23056bb3e625acea8ba182b9010581bc57a2988bef7f3e3f17b1ee589a87ac5",
+    "tests/auth-mail-dispatcher.test.ts": "50b971623560fab3c2e1f950c8e14d536145b972b492b86c5af04858ab79fd4d"
+  },
+  "protectedComparison": {
+    "checked": 23,
+    "changed": [],
+    "backupOnlyApprovedSevenColumnList": true
+  },
+  "cleanup": {
+    "temporaryTypeConfigurationRemoved": true,
+    "postgresRootAbsenceAssertedByTestAfterClose": true,
+    "clusterStopAwaitedByTestRuntime": true
+  },
+  "boundary": "No runtime/environment/secret/provider changes. Only isolated temporary PostgreSQL with synthetic data; no web/SMTP server."
+}

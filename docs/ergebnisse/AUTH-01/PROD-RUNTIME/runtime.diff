@@ -1,0 +1,38 @@
+--- runtime-before
++++ runtime-after
+@@ -6,7 +6,8 @@
+ import { PrivateFiles } from "../persistence/files";
+ import { AccountService, type AuthOptions } from "./service";
+ import { AccountError } from "./security";
+-import { readProductionAuthConfig, type AuthEnvironment } from "./production-config";
++import { type AuthEnvironment } from "./production-config";
++import { productionAccountRuntime } from "./production-runtime";
+ 
+ export interface AccountRuntimeBindings {
+   readTextFile(path: string): Promise<string>;
+@@ -20,10 +21,10 @@
+   files: root => new PrivateFiles(root),
+   service: options => new AccountService(options),
+ };
+-const environmentFields = ["NODE_ENV", "STEX_AUTH_MODE", "BETTER_AUTH_URL", "BETTER_AUTH_SECRET", "STEX_AUTH_MAIL_KEY", "DATABASE_URL", "STEX_DATABASE_TLS", "STEX_PRIVATE_FILE_ROOT", "STEX_LOCAL_DATA_DIR", "STEX_LOCAL_POSTGRES_PORT"] as const;
++const environmentFields = ["NODE_ENV", "STEX_AUTH_MODE", "STEX_AUTH_RUNTIME_RELEASE", "BETTER_AUTH_URL", "BETTER_AUTH_SECRET", "STEX_AUTH_MAIL_KEY", "DATABASE_URL", "STEX_DATABASE_TLS", "STEX_PRIVATE_FILE_ROOT", "STEX_LOCAL_DATA_DIR", "STEX_LOCAL_POSTGRES_PORT"] as const;
+ const unavailable = () => new AccountError("unavailable", "Die Kontofunktion ist noch nicht für diese Umgebung eingerichtet.", 503);
+ 
+-/** Isolated instance seam for configuration tests; production has no injectable release switch. */
++/** Isolated instance seam; only explicit server environment can release production. */
+ export function createAccountRuntime(
+   environment: () => AuthEnvironment = () => process.env,
+   dependencies: AccountRuntimeBindings = bindings,
+@@ -33,11 +34,7 @@
+   let fingerprint: string | undefined;
+   async function load(env: AuthEnvironment, currentRoot: string): Promise<AccountService> {
+     if (env.STEX_AUTH_MODE === "production") {
+-      readProductionAuthConfig(env, currentRoot);
+-      // Configuration is prepared, not a release. AI isolation, mail transport and
+-      // operational/online acceptance need their own coordinated implementation.
+-      // No environment flag can bypass this gate in the current release.
+-      throw new AccountError("production_auth_not_released", "Die Produktionsanmeldung ist noch nicht freigegeben.", 503);
++      return productionAccountRuntime(env, currentRoot, dependencies);
+     }
+     const baseURL = env.BETTER_AUTH_URL;
+     if (env.STEX_AUTH_MODE !== "local" || env.NODE_ENV === "production" || !baseURL) throw unavailable();

@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-13T17:46:53.002244+00:00",
+  "functionalTests": "existing api-pruefung.log: 16 passed; not rerun during completion",
+  "lint": {
+    "scope": [
+      "tests/auth-restfaelle.test.ts",
+      "scripts/auth/restfaelle/"
+    ],
+    "exitCode": 0,
+    "diagnostics": 0
+  },
+  "types": {
+    "scope": "isolated tsconfig.auth-r1.json; new R1 test/helpers and required read-only imports",
+    "exitCode": 0,
+    "diagnostics": 0
+  },
+  "ownTypeFix": "NODE_ENV explicitly initialized to development in snapshot.mts and browser.mts",
+  "globalTestsRun": false,
+  "productionBuildRun": false,
+  "newBrowserRunDuringCompletion": false,
+  "cleanup": {
+    "matchingR1Processes": 0,
+    "removedOwnedSourceCopies": [
+      "/private/var/folders/2z/d8k58lh10v762t58rnvqkpyc0000gn/T/stex-auth-r1-source-8ap3GG",
+      "/private/var/folders/2z/d8k58lh10v762t58rnvqkpyc0000gn/T/stex-auth-r1-source-poOEUu"
+    ],
+    "syntheticClusters": "normal runtime.close completed in existing successful API/browser runs",
+    "privateBrowserControlFileAbsent": true,
+    "removedOwnedTemporaryLogs": [
+      "/private/tmp/stex-auth-r1-run.log",
+      "/private/tmp/stex-auth-r1-browser.log",
+      "/private/tmp/stex-auth-r1-final.log",
+      "/private/tmp/stex-auth-r1-lint.log",
+      "/private/tmp/stex-auth-r1-types.log",
+      "/private/tmp/stex-auth-r1-lint-abschluss.log",
+      "/private/tmp/stex-auth-r1-types-abschluss.log"
+    ]
+  }
+}

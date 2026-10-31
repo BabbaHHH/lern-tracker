@@ -1,0 +1,11 @@
+[Unit]
+Description=Stex pilot mail polling TEMPLATE ONLY - not enabled
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=60s
+AccuracySec=10s
+Persistent=false
+Unit=stex-pilot-mail.service
+
+# No Install section: nothing is enabled by this repository.

@@ -1,0 +1,24 @@
+▲ Next.js 16.4.0 (webpack)
+- Local:         http://127.0.0.1:65244
+- Network:       http://127.0.0.1:65244
+✓ Ready in 406ms
+✓ Running next.config.ts took 145ms
+
+✓ Generated AGENTS.md for AI agents. Set `agentRules: false` in next.config to disable.
+○ Compiling /konto/page ...
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/api/account'
+}
+ GET /api/account 500 in 2.8s (next.js: 2.7s, application-code: 79ms)
+ GET /api/account 200 in 18ms (next.js: 7ms, application-code: 11ms)
+ GET /api/account/notes 200 in 10ms (next.js: 1.0ms, application-code: 9ms)
+ GET /api/catalog/pdf?klausurId=pdf-r1-synthetic&documentId=cd-376c4475-83b4-4467-bbe4-30c967e0c0f8&documentVersionId=cdv-51bd6822-86f3-49c7-808a-eafddcc51ee7&describe=1 200 in 190ms (next.js: 23ms, application-code: 168ms)
+ GET /api/catalog/pdf-engine/build/pdf.min.mjs?v=5.4.296 200 in 298ms (next.js: 291ms, application-code: 7ms)
+ GET /api/catalog/pdf-engine/build/pdf.worker.min.mjs?v=5.4.296 200 in 10ms (next.js: 1.7ms, application-code: 8ms)
+ GET /api/catalog/pdf?klausurId=pdf-r1-synthetic&documentId=cd-376c4475-83b4-4467-bbe4-30c967e0c0f8&documentVersionId=cdv-51bd6822-86f3-49c7-808a-eafddcc51ee7 200 in 99ms (next.js: 3ms, application-code: 96ms)
+ GET /api/catalog/pdf?klausurId=pdf-r1-synthetic&documentId=cd-376c4475-83b4-4467-bbe4-30c967e0c0f8&documentVersionId=cdv-51bd6822-86f3-49c7-808a-eafddcc51ee7&describe=1 200 in 12ms (next.js: 0.7ms, application-code: 11ms)
+ GET /api/catalog/pdf?klausurId=pdf-r1-synthetic&documentId=cd-376c4475-83b4-4467-bbe4-30c967e0c0f8&documentVersionId=cdv-51bd6822-86f3-49c7-808a-eafddcc51ee7&describe=1 200 in 14ms (next.js: 1.0ms, application-code: 13ms)
+ GET /api/catalog/pdf?klausurId=pdf-r1-synthetic&documentId=cd-376c4475-83b4-4467-bbe4-30c967e0c0f8&documentVersionId=cdv-51bd6822-86f3-49c7-808a-eafddcc51ee7&describe=1 200 in 85ms (next.js: 8ms, application-code: 76ms)
+ GET /api/catalog/pdf?klausurId=pdf-r1-synthetic&documentId=cd-376c4475-83b4-4467-bbe4-30c967e0c0f8&documentVersionId=cdv-51bd6822-86f3-49c7-808a-eafddcc51ee7&describe=1 200 in 19ms (next.js: 1.2ms, application-code: 18ms)
+[?25h

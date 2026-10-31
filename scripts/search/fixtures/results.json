@@ -1,0 +1,201 @@
+{
+  "syntheticOnly": true,
+  "phrase": {
+    "hits": [
+      {
+        "klausurId": "synthetic-case",
+        "documentId": "synthetic-document",
+        "documentVersionId": "synthetic-v1",
+        "role": "kombiniert",
+        "pageNumber": 1,
+        "start": 49,
+        "end": 87,
+        "occurrence": 0,
+        "evidence": "Kaufmän-\nnisches Bestätigungsschreiben",
+        "excerpt": {
+          "text": "SEARCH-A0: synthetischer Sachverhalt und Loesung\nKaufmän-\nnisches Bestätigungsschreiben\nNochmals: KAUFMÄNNISCHES BESTÄTIGUNGSSCHREIBEN\nDie office-Ligatur bleibt im Ori",
+          "start": 0,
+          "end": 167
+        },
+        "kinds": [
+          "text"
+        ],
+        "relevance": "mention",
+        "textVersion": "pdfjs-items-v1@5.4.296",
+        "indexVersion": "search-pages-v1",
+        "target": {
+          "pageNumber": 1,
+          "start": 49,
+          "end": 87,
+          "textVersion": "pdfjs-items-v1@5.4.296"
+        },
+        "viewerURL": "/konto/klausuren/pdf?klausurId=synthetic-case&documentId=synthetic-document&documentVersionId=synthetic-v1&page=1&start=49&end=87&textVersion=pdfjs-items-v1%405.4.296"
+      },
+      {
+        "klausurId": "synthetic-case",
+        "documentId": "synthetic-document",
+        "documentVersionId": "synthetic-v1",
+        "role": "kombiniert",
+        "pageNumber": 1,
+        "start": 98,
+        "end": 134,
+        "occurrence": 1,
+        "evidence": "KAUFMÄNNISCHES BESTÄTIGUNGSSCHREIBEN",
+        "excerpt": {
+          "text": "ischer Sachverhalt und Loesung\nKaufmän-\nnisches Bestätigungsschreiben\nNochmals: KAUFMÄNNISCHES BESTÄTIGUNGSSCHREIBEN\nDie office-Ligatur bleibt im Originaltext.\nBeleg ausserhalb der Metadaten: § 17",
+          "start": 18,
+          "end": 214
+        },
+        "kinds": [
+          "text"
+        ],
+        "relevance": "mention",
+        "textVersion": "pdfjs-items-v1@5.4.296",
+        "indexVersion": "search-pages-v1",
+        "target": {
+          "pageNumber": 1,
+          "start": 98,
+          "end": 134,
+          "textVersion": "pdfjs-items-v1@5.4.296"
+        },
+        "viewerURL": "/konto/klausuren/pdf?klausurId=synthetic-case&documentId=synthetic-document&documentVersionId=synthetic-v1&page=1&start=98&end=134&textVersion=pdfjs-items-v1%405.4.296"
+      },
+      {
+        "klausurId": "synthetic-case",
+        "documentId": "synthetic-document",
+        "documentVersionId": "synthetic-v2",
+        "role": "kombiniert",
+        "pageNumber": 1,
+        "start": 39,
+        "end": 75,
+        "occurrence": 0,
+        "evidence": "kaufmännisches Bestätigungsschreiben",
+        "excerpt": {
+          "text": "Neue Dokumentversion\nJetzt nur einmal: kaufmännisches Bestätigungsschreiben\n§ 172 BGB",
+          "start": 0,
+          "end": 85
+        },
+        "kinds": [
+          "text"
+        ],
+        "relevance": "mention",
+        "textVersion": "pdfjs-items-v1@5.4.296",
+        "indexVersion": "search-pages-v1",
+        "target": {
+          "pageNumber": 1,
+          "start": 39,
+          "end": 75,
+          "textVersion": "pdfjs-items-v1@5.4.296"
+        },
+        "viewerURL": "/konto/klausuren/pdf?klausurId=synthetic-case&documentId=synthetic-document&documentVersionId=synthetic-v2&page=1&start=39&end=75&textVersion=pdfjs-items-v1%405.4.296"
+      }
+    ],
+    "totalHits": 3,
+    "limited": false,
+    "coverage": {
+      "readyPages": 4,
+      "missingTextPages": 1,
+      "failedPages": 0,
+      "stalePages": 0
+    }
+  },
+  "norm": {
+    "hits": [
+      {
+        "klausurId": "synthetic-case",
+        "documentId": "synthetic-document",
+        "documentVersionId": "synthetic-v1",
+        "role": "kombiniert",
+        "pageNumber": 1,
+        "start": 210,
+        "end": 219,
+        "occurrence": 0,
+        "evidence": "§ 172 ZPO",
+        "excerpt": {
+          "text": "IBEN\nDie office-Ligatur bleibt im Originaltext.\nBeleg ausserhalb der Metadaten: § 172 ZPO.",
+          "start": 130,
+          "end": 220
+        },
+        "kinds": [
+          "norm"
+        ],
+        "relevance": "mention",
+        "textVersion": "pdfjs-items-v1@5.4.296",
+        "indexVersion": "search-pages-v1",
+        "target": {
+          "pageNumber": 1,
+          "start": 210,
+          "end": 219,
+          "textVersion": "pdfjs-items-v1@5.4.296"
+        },
+        "viewerURL": "/konto/klausuren/pdf?klausurId=synthetic-case&documentId=synthetic-document&documentVersionId=synthetic-v1&page=1&start=210&end=219&textVersion=pdfjs-items-v1%405.4.296"
+      },
+      {
+        "klausurId": "synthetic-case",
+        "documentId": "synthetic-document",
+        "documentVersionId": "synthetic-v1",
+        "role": "kombiniert",
+        "pageNumber": 2,
+        "start": 29,
+        "end": 51,
+        "occurrence": 0,
+        "evidence": "§172 Abs. 1 Satz 2 ZPO",
+        "excerpt": {
+          "text": "Normvergleich: § 172 BGB und §172 Abs. 1 Satz 2 ZPO.\nAndere Normen: § 1720 ZPO und § 172a ZPO.\nListe: §§ 172, 173 ZPO.",
+          "start": 0,
+          "end": 118
+        },
+        "kinds": [
+          "norm"
+        ],
+        "relevance": "mention",
+        "textVersion": "pdfjs-items-v1@5.4.296",
+        "indexVersion": "search-pages-v1",
+        "target": {
+          "pageNumber": 2,
+          "start": 29,
+          "end": 51,
+          "textVersion": "pdfjs-items-v1@5.4.296"
+        },
+        "viewerURL": "/konto/klausuren/pdf?klausurId=synthetic-case&documentId=synthetic-document&documentVersionId=synthetic-v1&page=2&start=29&end=51&textVersion=pdfjs-items-v1%405.4.296"
+      },
+      {
+        "klausurId": "synthetic-case",
+        "documentId": "synthetic-document",
+        "documentVersionId": "synthetic-v1",
+        "role": "kombiniert",
+        "pageNumber": 2,
+        "start": 102,
+        "end": 117,
+        "occurrence": 1,
+        "evidence": "§§ 172, 173 ZPO",
+        "excerpt": {
+          "text": "GB und §172 Abs. 1 Satz 2 ZPO.\nAndere Normen: § 1720 ZPO und § 172a ZPO.\nListe: §§ 172, 173 ZPO.",
+          "start": 22,
+          "end": 118
+        },
+        "kinds": [
+          "norm"
+        ],
+        "relevance": "mention",
+        "textVersion": "pdfjs-items-v1@5.4.296",
+        "indexVersion": "search-pages-v1",
+        "target": {
+          "pageNumber": 2,
+          "start": 102,
+          "end": 117,
+          "textVersion": "pdfjs-items-v1@5.4.296"
+        },
+        "viewerURL": "/konto/klausuren/pdf?klausurId=synthetic-case&documentId=synthetic-document&documentVersionId=synthetic-v1&page=2&start=102&end=117&textVersion=pdfjs-items-v1%405.4.296"
+      }
+    ],
+    "totalHits": 3,
+    "limited": false,
+    "coverage": {
+      "readyPages": 4,
+      "missingTextPages": 1,
+      "failedPages": 0,
+      "stalePages": 0
+    }
+  }
+}

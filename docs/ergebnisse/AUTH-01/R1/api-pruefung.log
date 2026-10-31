@@ -1,0 +1,25 @@
+▶ AUTH-A-R1: nur fünf offene lokale Varianten, echte Sitzungen und PostgreSQL
+  ✔ I-05: SIGKILL bei before-reservation, Neuaufnahme mit derselben Besitzer-ID (2878.835041ms)
+  ✔ I-05: SIGKILL bei library-transaction, Neuaufnahme mit derselben Besitzer-ID (2413.469292ms)
+  ✔ I-05: SIGKILL bei after-auth-commit, Neuaufnahme mit derselben Besitzer-ID (2154.200375ms)
+  ✔ I-05: SIGKILL bei before-finalization, Neuaufnahme mit derselben Besitzer-ID (2143.162042ms)
+  ✔ I-06: Einladung läuft nach Authcommit vor Finalisierung wirklich ab (4652.302917ms)
+  ✔ I-06: revoke während Bibliotheksanlage, finish (1198.041708ms)
+  ✔ I-06: revoke während Bibliotheksanlage, kill (2020.11375ms)
+  ✔ I-06: resend während Bibliotheksanlage, finish (1207.112833ms)
+  ✔ I-06: resend während Bibliotheksanlage, kill (2024.193541ms)
+  ✔ A-06: gefälschtes und gültiges vorher gesetztes Cookie fixieren die neue Anmeldung nicht (942.614709ms)
+  ✔ R-01: Bibliotheksreset pending-unconfirmed erhält Besitzer, Status und TOTP (737.839625ms)
+  ✔ R-01: Bibliotheksreset pending erhält Besitzer, Status und TOTP (722.430833ms)
+  ✔ R-01: Bibliotheksreset blocked erhält Besitzer, Status und TOTP (819.366625ms)
+  ✔ R-01: Bibliotheksreset admin erhält Besitzer, Status und TOTP (622.381209ms)
+  ✔ R-01: abgelaufener Resetlink verändert weder Passwort noch Kontogeneration (708.902167ms)
+✔ AUTH-A-R1: nur fünf offene lokale Varianten, echte Sitzungen und PostgreSQL (27185.65875ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 28007.2685

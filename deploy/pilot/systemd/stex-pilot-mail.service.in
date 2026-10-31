@@ -1,0 +1,26 @@
+[Unit]
+Description=Stex pilot one mail batch - PREPARATION BLOCKED
+After=network.target
+
+[Service]
+Type=oneshot
+User=stex-mail
+Group=stex-mail
+WorkingDirectory=/srv/stex/current
+EnvironmentFile=/etc/stex/common.env
+EnvironmentFile=/etc/stex/core-secrets.env
+EnvironmentFile=/etc/stex/smtp-secrets.env
+# HOST-PREPARATION-BLOCK: real SMTP use/setup has not been authorized or verified.
+ExecStartPre=/usr/bin/false
+ExecStart=/usr/bin/node --import tsx scripts/auth/mail-dispatch.mts once
+Restart=no
+TimeoutStartSec=180
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+# CLI emits only bounded numeric counters and a generic error, no mail links.
+StandardOutput=journal
+StandardError=journal

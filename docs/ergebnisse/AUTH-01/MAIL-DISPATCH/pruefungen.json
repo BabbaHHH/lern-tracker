@@ -1,0 +1,60 @@
+{
+  "recordedAt": "2026-10-17T23:07:08.799631+00:00",
+  "checks": {
+    "tests": {
+      "command": "node --import tsx --test --test-reporter=spec tests/auth-mail-dispatcher.test.ts",
+      "exitCode": 0,
+      "testEntries": 23,
+      "subtests": 22,
+      "failed": 0,
+      "skipped": 0,
+      "report": "tests.log",
+      "onlyNewSuite": true
+    },
+    "lint": {
+      "files": [
+        "src/lib/server/auth/mail-dispatcher.ts",
+        "src/lib/server/auth/mail-transport.ts",
+        "src/lib/server/persistence/backup.ts",
+        "tests/auth-mail-dispatcher.test.ts"
+      ],
+      "exitCode": 0,
+      "report": "lint.log"
+    },
+    "types": {
+      "scope": "Same four entrypoints and read-only import dependencies; no generated Next types or repository-wide scan",
+      "exitCode": 0,
+      "report": "typen.log",
+      "temporaryConfigRemoved": true
+    },
+    "sourceAndDocumentation": {
+      "sourceHashesStillMatch": true,
+      "protectedUnchanged": 23,
+      "backupOnlySevenColumnList": true,
+      "utf8FinalNewlineAndNoTrailingSpaces": true,
+      "localReportLinksExist": true
+    }
+  },
+  "executionBoundary": {
+    "initialSandboxAttempt": "EPERM on local database port selection; no functional test began",
+    "successfulLocalDatabaseExecutionAuthorized": true,
+    "realExternalMailOrProviderCalls": false,
+    "existingPrivateConfigurationRead": false,
+    "productionOpened": false,
+    "environmentSwitched": false,
+    "fullBuildOrOldAuthTests": false
+  },
+  "cleanup": {
+    "temporaryTypeConfigurationRemoved": true,
+    "postgresRootAbsenceAssertedByTestAfterClose": true,
+    "clusterStopAwaitedByTestRuntime": true
+  },
+  "evidenceSha256": {
+    "tests.log": "0d2cbce330b8f7c4df745f6546d17865d1fbc3a3c069e4210bfcc2c96a49252b",
+    "lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "typen.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "quellstand.json": "b3bcb45bb2ee7c16f4f4b057019b3443428783592d492dcbd22ebc2e76a83232",
+    "ausgangsstand.json": "16199bcef22143710aa1cd347bf8c30de0f6ec1cc6fdb4e3a20e7aff00d36bc7",
+    "SCHEMA-ABGLEICH.md": "f7476508fb5ad899d733b87621b2dc529d54d27946af85e0671a86f9c46e2c63"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-18",
+  "tests": {
+    "command": "node --import tsx --test --test-reporter=spec tests/auth-smtp.test.ts",
+    "exitCode": 0,
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "instrumentedSmtpAndCliOnly": true,
+    "realMimeCompositionOnly": true,
+    "sourceManifest": "quellstand-vor-connect-review.json"
+  },
+  "lint": {
+    "exitCode": 0,
+    "scope": "4 new TypeScript module/test files"
+  },
+  "types": {
+    "exitCode": 0,
+    "scope": "same 4 entrypoints with read-only imports and installed bundled Nodemailer types"
+  },
+  "sourceAndPackageComparison": {
+    "sourceHashesStillMatch": true,
+    "protectedUnchanged": 27,
+    "singleNewDependency": "nodemailer@10.1.2",
+    "oldPackagesUnchanged": true,
+    "installScriptsDisabled": true
+  },
+  "networkBoundary": {
+    "publicDocsAndNpmRegistryContacted": true,
+    "smtpProviderOrRecipientDnsContacted": false,
+    "smtpOrDbConnectionOpened": false,
+    "actualOperatorCliExecuted": false,
+    "realMailSent": false,
+    "privateCredentialsReadOrGenerated": false
+  },
+  "cleanup": {
+    "temporaryPackageComparisonRootRemoved": true,
+    "temporaryTypeConfigurationRemoved": true,
+    "noSocketDnsSmtpDbOrActualCliRuntimeStarted": true
+  },
+  "handoffWordCount": 586,
+  "evidenceSha256": {
+    "tests.log": "8c4a90a249e8a157ade297402020219189ce9519b03571f50b37c4dcc9cd2f84",
+    "typen.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "quellstand.json": "0cf8d0b566a67912f444d47a37ffa6fda58cfe1e7b016507f7d1a43336e4d414",
+    "ausgangsstand.json": "7e300a126f4814f68ccb81b4c3989c3bfc3b08a41cad7e8fb911a6fe59ed4d70",
+    "package.json.diff": "34d14a2ecba551f613c71094102898248a3aac62bcd511ff016c36423f3d4647",
+    "package-lock.json.diff": "7a493129408b130f4079ec9de3260f09528c4166a9bf65f57da12cd0253a83d3",
+    "ERGEBNIS.md": "eb552510943cfaf4b0f0608c07605b08b1eb7fbff6f3f64796572927d61a0036",
+    "UEBERGABE.md": "d01e7626f55e81c608e55963637765d34f1e498dc760ddd0871f7d77b8ba3c8a",
+    "review-connect.json": "89c92a563dc3d03a1aa337cfcf91a76a40a689abaa1d999252f4fdd48fa493ba"
+  },
+  "connectReview": {
+    "report": "review-connect.json",
+    "separateSingleCasePassed": true,
+    "old15NotRepeated": true,
+    "finalFull16CaseRunClaimed": false,
+    "lintExitCode": 0,
+    "typesExitCode": 0
+  }
+}

@@ -9,16 +9,21 @@
  * wo sie nur noch zwischen 3 Kandidaten wählen muss — nicht aus 280.
  */
 
+import { currentDate } from "@/lib/dates";
 import { Klausur, Area } from "./types";
 import {
   getProgress,
   getKlausurenWritten,
   getTasksForDate,
   getRecommenderWeights,
+  getCalendarEvents,
+  getOnboarding,
   RecommenderWeights,
+  WEIGHT_LABELS,
 } from "./store";
 import { getLeafTopics, TOPICS } from "./topics";
 import { format } from "date-fns";
+import { describeStudyPhase, getStudyPhase, klausurPerspective } from "./study-phases";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -48,6 +53,39 @@ function daysDiff(a: Date, b: Date): number {
   return Math.floor((a.getTime() - b.getTime()) / 86_400_000);
 }
 
+/**
+ * Leitet das Rechtsgebiet aus dem Freitext-Label eines Klausur-Events ab.
+ * Die Plan-KI erzeugt Labels im Format "ZR-Klausur (…)" / "ÖffR-Klausur (…)" /
+ * "SR-Klausur (…)" (siehe prompts.ts). Tolerant ggü. Schreibweisen; null wenn
+ * nichts erkennbar (→ kein Pin, normales Verhalten).
+ */
+export function parseAreaFromLabel(label: string): Area | null {
+  const s = label.trim().toLowerCase();
+  // 1) Area-Präfix am Anfang — so erzeugt die Plan-KI die Labels ("ÖffR-Klausur (…)").
+  if (s.startsWith("öffr") || s.startsWith("oeffr") || s.startsWith("öff") || s.startsWith("ör")) return "oeffr";
+  if (s.startsWith("zr") || s.startsWith("zivil")) return "zr";
+  if (s.startsWith("sr") || s.startsWith("str") || s.startsWith("straf")) return "sr";
+  // 2) Fallback für abweichende/manuelle Labels — eng gefasst gegen Fehltreffer.
+  if (/öffentlich|verwaltungs|polizeirecht|baurecht|kommunal|verfassungs/.test(s)) return "oeffr";
+  if (/anklage|revision|plädoyer|haftbefehl|strafbefehl|abschlussverfügung/.test(s)) return "sr";
+  if (/zivilrecht|mietrecht|kaufrecht|werkvertrag/.test(s)) return "zr";
+  return null;
+}
+
+/**
+ * Rechtsgebiet der heute zu schreibenden Klausur (aus dem Klausur-Kalender-Event),
+ * oder null wenn heute kein Klausur-Event existiert / die Area nicht erkennbar ist.
+ * Erstes Event mit erkennbarer Area gewinnt.
+ */
+export function getTodayKlausurArea(today: string): Area | null {
+  const events = getCalendarEvents().filter(e => e.eventType === "klausur" && e.date === today);
+  for (const e of events) {
+    const a = parseAreaFromLabel(e.label);
+    if (a) return a;
+  }
+  return null;
+}
+
 // ─── Context aufbauen ────────────────────────────────────────────────────────
 
 /**
@@ -69,7 +107,7 @@ export function buildScoringContext(
   // Heute's TopicIDs aus Tagesplan-Tasks
   const todayTasks = getTasksForDate(today);
   const todayTopicIds = new Set<string>(
-    todayTasks.flatMap(t => (t.linkedTopicId ? [t.linkedTopicId] : [])),
+    todayTasks.flatMap(t => t.linkedTopicIds?.length ? t.linkedTopicIds : t.linkedTopicId ? [t.linkedTopicId] : []),
   );
 
   // Dominantes Rechtsgebiet heute: zähle Tasks mit Topic je Area, Schwellenwert 60%.
@@ -82,18 +120,26 @@ export function buildScoringContext(
     const a = areaById.get(t.linkedTopicId);
     if (a) { areaCounts[a]++; totalLinked++; }
   }
+  // Dominantes Rechtsgebiet: zwei Wege qualifizieren sich
+  //   (a) Klare Mehrheit: ≥60% aller verlinkten Tasks
+  //   (b) Klare Führung: Top-Area hat strikt mehr Tasks als die zweitstärkste,
+  //       UND mindestens 2 Tasks
+  // Beispiel (b): bei 2 ZR / 1 ÖffR / 1 SR → ZR dominant. Bei 1/1/1 → keiner.
   let todayDominantArea: Area | null = null;
   if (totalLinked > 0) {
-    const top = (Object.entries(areaCounts) as [Area, number][])
-      .sort((a, b) => b[1] - a[1])[0];
-    if (top[1] / totalLinked >= 0.6) todayDominantArea = top[0];
+    const ranked = (Object.entries(areaCounts) as [Area, number][])
+      .sort((a, b) => b[1] - a[1]);
+    const [top, second] = ranked;
+    const majority = top[1] / totalLinked >= 0.6;
+    const clearLead = top[1] >= 2 && top[1] > (second?.[1] ?? 0);
+    if (majority || clearLead) todayDominantArea = top[0];
   }
 
   // Area-Lookup für die Klausuren-DB
   const klausurAreaById = new Map<string, Area>(allKlausuren.map(k => [k.id, k.area]));
 
   // Tracking-Einträge
-  const writtenEntries = getKlausurenWritten();
+  const writtenEntries = getKlausurenWritten().filter(entry => entry.date <= today);
 
   // writtenMap: pro klausurId → neuester Eintrag
   const writtenMap = new Map<string, { date: string; rating?: number }>();
@@ -106,7 +152,9 @@ export function buildScoringContext(
   }
 
   // recentByArea: letzte 14 Tage
-  const cutoff = format(new Date(Date.now() - 14 * 86_400_000), "yyyy-MM-dd");
+  const reference = new Date(`${today}T12:00:00`);
+  reference.setDate(reference.getDate() - 14);
+  const cutoff = format(reference, "yyyy-MM-dd");
   const recentByArea: Record<Area, number> = { zr: 0, oeffr: 0, sr: 0 };
   for (const e of writtenEntries) {
     if (!e.klausurId || e.date < cutoff) continue;
@@ -127,10 +175,15 @@ export function scoreKlausur(
   const breakdown: Partial<Record<keyof RecommenderWeights, number>> = {};
   let score = 0;
   const written = ctx.writtenMap.get(k.id);
-  const today = new Date();
+  const today = currentDate();
 
-  // 1. Tagesplan-Overlap: +weight pro überlappendes Thema
-  const overlapCount = k.topicIds.filter(tid => ctx.todayTopicIds.has(tid)).length;
+  // Schutz gegen kaputte Extraktions-Daten: manche Klausuren haben 50-115
+  // topicIds (ganze Taxonomie ausgekippt). Topic-basierte Signale werden
+  // gekappt, sonst dominieren diese Klausuren jedes Scoring.
+  const CAP = 10;
+
+  // 1. Tagesplan-Overlap: +weight pro überlappendes Thema (gekappt)
+  const overlapCount = Math.min(CAP, k.topicIds.filter(tid => ctx.todayTopicIds.has(tid)).length);
   breakdown.tagesplanOverlap = overlapCount * weights.tagesplanOverlap;
   score += breakdown.tagesplanOverlap;
 
@@ -148,8 +201,8 @@ export function scoreKlausur(
   }
   score += breakdown.tagesAreaMatch;
 
-  // 2. Schwache Themen (<40%): +weight pro schwachem Thema
-  const weakCount = k.topicIds.filter(tid => (ctx.progressMap[tid] ?? 0) < 40).length;
+  // 2. Schwache Themen (<40%): +weight pro schwachem Thema (gekappt)
+  const weakCount = Math.min(CAP, k.topicIds.filter(tid => (ctx.progressMap[tid] ?? 0) < 40).length);
   breakdown.schwacheThemen = weakCount * weights.schwacheThemen;
   score += breakdown.schwacheThemen;
 
@@ -157,10 +210,10 @@ export function scoreKlausur(
   breakdown.nochNieGeschrieben = !written ? weights.nochNieGeschrieben : 0;
   score += breakdown.nochNieGeschrieben;
 
-  // 4. Spaced Repetition: geschrieben vor >14 Tagen → +weight × Anzahl Topics
+  // 4. Spaced Repetition: geschrieben vor >14 Tagen → +weight × Anzahl Topics (gekappt)
   if (written) {
     const d = daysDiff(today, new Date(written.date));
-    breakdown.spacedRepetition = d > 14 ? k.topicIds.length * weights.spacedRepetition : 0;
+    breakdown.spacedRepetition = d > 14 ? Math.min(CAP, k.topicIds.length) * weights.spacedRepetition : 0;
   } else {
     breakdown.spacedRepetition = 0;
   }
@@ -223,11 +276,11 @@ export function scoreKlausur(
   }
   score += breakdown.wiederholungsDistanz;
 
-  // 10. Anspruchsgrundlagen-Frische: Topics mit 30–80% brauchen Auffrischung
-  const freshCount = k.topicIds.filter(tid => {
+  // 10. Anspruchsgrundlagen-Frische: Topics mit 30–80% brauchen Auffrischung (gekappt)
+  const freshCount = Math.min(CAP, k.topicIds.filter(tid => {
     const p = ctx.progressMap[tid] ?? 0;
     return p >= 30 && p <= 80;
-  }).length;
+  }).length);
   breakdown.anspruchsgrundlagenFrische = freshCount * weights.anspruchsgrundlagenFrische;
   score += breakdown.anspruchsgrundlagenFrische;
 
@@ -243,6 +296,10 @@ function recentTotal(r: Record<Area, number>) {
 /**
  * Gibt die Top-3 Klausuren mit Score + Breakdown zurück.
  * Diese werden an die KI geschickt die dann die finale Wahl trifft.
+ *
+ * Priorisierung: erst aus noch-nie-geschriebenen Klausuren auswählen.
+ * Nur wenn alle Klausuren bereits geschrieben wurden (Fallback) kommen
+ * auch schon geschriebene in die Auswahl — das verhindert endlose Wiederholungen.
  */
 export function getTop3Klausuren(
   allKlausuren: Klausur[],
@@ -251,13 +308,39 @@ export function getTop3Klausuren(
   const weights = getRecommenderWeights();
   const ctx = buildScoringContext(allKlausuren, today);
 
-  return allKlausuren
+  // Pool: nur ungeschriebene Klausuren; Fallback auf alle wenn keine mehr offen
+  const unwritten = allKlausuren.filter(k => !ctx.writtenMap.has(k.id));
+  const pool = unwritten.length > 0 ? unwritten : allKlausuren;
+
+  const scored = pool
     .map(k => {
       const { score, breakdown } = scoreKlausur(k, weights, ctx);
       return { klausur: k, score, breakdown };
     })
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3);
+    .sort((a, b) => b.score - a.score);
+
+  // Klausur-Schreibtag: Die HAUPTEMPFEHLUNG (#1) muss zum Rechtsgebiet der heute
+  // zu schreibenden Klausur passen (aus dem Kalender-Event geparst). Wir ziehen die
+  // höchstgescorte Klausur dieses Gebiets nach vorn — die Skizzen-Plätze (#2/#3)
+  // bleiben score-basiert und dürfen über Gebiete streuen.
+  const phase = getStudyPhase(today, getOnboarding());
+  const eventArea = getTodayKlausurArea(today);
+  const focusArea = eventArea ?? (phase?.focus !== "mixed" ? phase?.focus : null);
+  if (focusArea || (phase && phase.perspective !== "mixed")) {
+    // The main recommendation follows the station. Alternatives keep the
+    // usual score ordering so repetition across areas remains available.
+    const fit = (k: Klausur) => (focusArea && k.area === focusArea ? 3 : 0)
+      + (phase && phase.perspective !== "mixed" ? klausurPerspective(k.type) === phase.perspective ? 1 : klausurPerspective(k.type) === "mixed" ? 0 : -1 : 0);
+    const best = Math.max(...scored.map(item => fit(item.klausur)));
+    const idx = scored.findIndex(s => fit(s.klausur) === best);
+    if (idx > 0) {
+      const [primary] = scored.splice(idx, 1);
+      scored.unshift(primary);
+    }
+    // idx === 0: passt schon; idx === -1: keine offene Klausur dieses Gebiets → unverändert
+  }
+
+  return scored.slice(0, 3);
 }
 
 // ─── KI-Kontext-String ───────────────────────────────────────────────────────
@@ -269,14 +352,28 @@ export function getTop3Klausuren(
 export function buildKiCandidatesMessage(
   top3: ScoredKlausur[],
   today: string,
+  eventArea?: Area | null,
 ): string {
+  const AREA_NAME: Record<Area, string> = { zr: "Zivilrecht", oeffr: "Öffentliches Recht", sr: "Strafrecht" };
   const lines: string[] = [
     `Heute: ${today}`,
     "",
     "Die folgenden 3 Klausuren wurden deterministisch vorausgewählt (Score = Summe gewichteter Signale).",
-    "Bitte prüfe ob #1 die beste Wahl für heute ist oder ob #2/#3 vorzuziehen ist.",
-    "",
   ];
+  const phase = getStudyPhase(today, getOnboarding());
+  if (phase) lines.push(`Ausbildungsabschnitt: ${describeStudyPhase(phase)}. Begründe die tatsächliche Passung; bei fehlendem passenden Klausurtyp benenne die Abweichung.`);
+  if (eventArea) {
+    lines.push(
+      `WICHTIG: Heute ist ein ${AREA_NAME[eventArea]}-Klausur-Schreibtag. Kandidat #1 ist bereits auf dieses`,
+      `Rechtsgebiet fixiert und WIRD als Haupt-Klausur geschrieben — übernimm #1 als klausurId und begründe,`,
+      `warum sie für den ${AREA_NAME[eventArea]}-Schreibtag passt. #2/#3 sind die Skizzier-Empfehlungen (dürfen anderes Gebiet sein).`,
+    );
+  } else if (phase && (phase.focus !== "mixed" || phase.perspective !== "mixed")) {
+    lines.push("Kandidat #1 wurde nach Schwerpunkt und Perspektive des Ausbildungsabschnitts vorausgewählt. Übernimm #1 als klausurId; die Alternativen dürfen andere Gebiete wiederholen.");
+  } else {
+    lines.push("Bitte prüfe ob #1 die beste Wahl für heute ist oder ob #2/#3 vorzuziehen ist.");
+  }
+  lines.push("");
 
   top3.forEach((s, i) => {
     const k = s.klausur;
@@ -292,10 +389,11 @@ export function buildKiCandidatesMessage(
     lines.push(`   Themen (${k.topicIds.length}): ${k.topicIds.slice(0, 5).join(", ")}${k.topicIds.length > 5 ? " …" : ""}`);
     lines.push(`   Gesamt-Score: ${s.score}${writtenNote}`);
 
-    // Relevante Signale mit positivem Beitrag
+    // Relevante Signale mit Beitrag — als lesbare Labels (nicht die internen Keys),
+    // damit die KI fachlich korrekte Begriffe in die Begründung übernimmt.
     const signals = Object.entries(s.breakdown)
       .filter(([, v]) => v && v !== 0)
-      .map(([k, v]) => `${k}: ${v! > 0 ? "+" : ""}${v}`)
+      .map(([k, v]) => `${WEIGHT_LABELS[k as keyof RecommenderWeights] ?? k}: ${v! > 0 ? "+" : ""}${v}`)
       .join(" | ");
     if (signals) lines.push(`   Signale: ${signals}`);
     lines.push("");

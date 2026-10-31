@@ -1,0 +1,12 @@
+{
+  "ownTestPortsClosed": [
+    59584,
+    59663,
+    59782
+  ],
+  "syntheticClustersStopped": true,
+  "syntheticRootsRemoved": 3,
+  "sourceCopiesRemoved": 4,
+  "originalWorkspaceUntouchedByCleanup": true,
+  "ownTestTabClose": "blocked by the same Browser Use data:-URL policy; no alternate closing path attempted"
+}

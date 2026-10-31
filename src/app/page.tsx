@@ -1,4 +1,7 @@
 "use client";
+import { useAccountLearningMode } from "@/components/account-learning-boundary";
+import { AccountLearningDashboard } from "@/components/account-learning-dashboard";
+import { AccountEntryGuard } from "@/components/account-entry-guard";
 
 import { useState, useEffect } from "react";
 import { NavBar } from "@/components/nav-bar";
@@ -21,6 +24,12 @@ import { TodayProgram } from "@/components/today-program";
 import Link from "next/link";
 
 export default function DashboardPage() {
+  const accountMode = useAccountLearningMode();
+  return <AccountEntryGuard accountMode={accountMode}>
+    {accountMode ? <AccountLearningDashboard/> : <BrowserDashboardPage/>}
+  </AccountEntryGuard>;
+}
+function BrowserDashboardPage() {
   const [checkinOpen, setCheckinOpen] = useState(false);
   const [onboardingDone, setOnboardingDone] = useState(true);
 
@@ -102,7 +111,7 @@ export default function DashboardPage() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="font-serif text-[15px] font-normal text-slate-900 tracking-tight leading-tight">Lernplan anpassen</div>
-              <div className="font-sans text-[10px] uppercase tracking-[0.16em] font-bold text-slate-500 mt-1">Opus 4.6 analysiert deinen Fortschritt</div>
+              <div className="font-sans text-[10px] uppercase tracking-[0.16em] font-bold text-slate-500 mt-1">KI analysiert deinen Fortschritt</div>
             </div>
             <span className="font-sans text-[10px] uppercase tracking-[0.18em] font-bold text-slate-500 border border-slate-200 px-2 py-1 shrink-0">KI</span>
           </div>

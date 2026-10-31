@@ -1,4 +1,11 @@
-import { Progress, LearningEntry, CalendarEvent, Klausur, KlausurType, TrackingEntry } from "./types";
+import { AI_DEFAULTS, normalizeReasoningSettings, type ReasoningSettings } from "./ai-config";
+import { restoreStorage } from "./storage-backup";
+import { isDateOnly, localDate, currentDate } from "./dates";
+import { frequencyMatches } from "./recurrence";
+import type { StudyPhaseSettings } from "./study-phases";
+import { isSketchTask, taskMinutes } from "./day-budget";
+import { Progress, LearningEntry, CalendarEvent, Klausur, KlausurType, TrackingEntry, KlausurDraft, FehlerProfil, FehlerMarker, KorrekturSettings, KorrekturGranularity } from "./types";
+import { DEFAULT_KORREKTUR_MODEL, DEFAULT_PLAN_MODEL, PLAN_MODELS } from "./ai-models";
 
 /**
  * Zentrale Liste aller localStorage-Keys.
@@ -25,6 +32,12 @@ export const STORAGE_KEYS = {
   planHistory: "lerntracker-plan-history",
   planAppliedRange: "lerntracker-plan-applied-range",
   lastBackup: "lerntracker-last-backup",
+  klausurDrafts: "lerntracker-klausur-drafts",
+  fehlerProfil: "lerntracker-fehlerprofil",
+  korrekturSettings: "lerntracker-korrektur-settings",
+  planModel: "lerntracker-plan-model",
+  aiReasoning: "lerntracker-ai-reasoning",
+  freitext: "lerntracker-freitext",
   /** Prefix für tagesaktuelle Klausur-Empfehlungs-Caches: `${klausurRecPrefix}YYYY-MM-DD` */
   klausurRecPrefix: "lerntracker-klausur-rec-",
 } as const;
@@ -44,10 +57,11 @@ function load<T>(key: string, fallback: T): T {
   }
 }
 
-function save<T>(key: string, data: T): void {
-  if (typeof window === "undefined") return;
+function save<T>(key: string, data: T): boolean {
+  if (typeof window === "undefined") return false;
   try {
     localStorage.setItem(key, JSON.stringify(data));
+    return true;
   } catch (e) {
     // Quota überschritten — Nutzer informieren statt silent fail
     const isQuota = e instanceof Error && /quota|exceeded/i.test(e.message);
@@ -59,6 +73,7 @@ function save<T>(key: string, data: T): void {
     } else {
       console.error("[lerntracker] save failed", key, e);
     }
+    return false;
   }
 }
 
@@ -83,6 +98,50 @@ export function setTopicProgress(topicId: string, percent: number, source: Progr
 export function getTopicProgress(topicId: string): number {
   const all = getProgress();
   return all[topicId]?.percent ?? 0;
+}
+
+/**
+ * Setzt den Progress auf einen gesamten Teilbaum: rekursiv alle LEAF-Topics
+ * unterhalb von rootId bekommen den angegebenen Prozentwert.
+ * Branches selbst speichern keinen Progress — der wird aus den Leaves
+ * aggregiert. So bleibt die Datenstruktur konsistent.
+ */
+export function setSubtreeProgress(
+  leafIdsUnderRoot: string[],
+  percent: number,
+  source: Progress["source"] = "manual",
+): Record<string, Progress> {
+  const all = getProgress();
+  const now = new Date().toISOString();
+  const clamped = Math.max(0, Math.min(100, percent));
+  for (const id of leafIdsUnderRoot) {
+    all[id] = { topicId: id, percent: clamped, source, updatedAt: now };
+  }
+  save(STORAGE_KEYS.progress, all);
+  return all;
+}
+
+/**
+ * Schreibt mehrere Topic-Progress-Werte in einem Rutsch (eine localStorage-
+ * Operation). Wird für Branch-Slider mit proportionaler Skalierung genutzt
+ * und für Undo (Snapshot zurückspielen).
+ */
+export function setManyTopicProgress(
+  updates: Record<string, number>,
+  source: Progress["source"] = "manual",
+): Record<string, Progress> {
+  const all = getProgress();
+  const now = new Date().toISOString();
+  for (const [id, percent] of Object.entries(updates)) {
+    all[id] = {
+      topicId: id,
+      percent: Math.max(0, Math.min(100, percent)),
+      source,
+      updatedAt: now,
+    };
+  }
+  save(STORAGE_KEYS.progress, all);
+  return all;
 }
 
 // === Klausur-Progress-Boost ===
@@ -116,11 +175,12 @@ export interface KlausurBoostPreview {
 export function previewKlausurProgressBoosts(
   topicIds: string[],
   rating: number,
+  scale = 1.0,
 ): KlausurBoostPreview[] {
   const all = getProgress();
   return topicIds.map(tid => {
     const before = all[tid]?.percent ?? 0;
-    const rawDelta = calculateKlausurDelta(before, rating);
+    const rawDelta = Math.round(calculateKlausurDelta(before, rating) * scale);
     const after = Math.min(95, before + rawDelta);
     return { topicId: tid, before, after, delta: after - before };
   });
@@ -129,13 +189,14 @@ export function previewKlausurProgressBoosts(
 export function applyKlausurProgressBoosts(
   topicIds: string[],
   rating: number,
+  scale = 1.0,
 ): KlausurBoostPreview[] {
   const all = getProgress();
   const now = new Date().toISOString();
   const applied: KlausurBoostPreview[] = [];
   for (const tid of topicIds) {
     const before = all[tid]?.percent ?? 0;
-    const rawDelta = calculateKlausurDelta(before, rating);
+    const rawDelta = Math.round(calculateKlausurDelta(before, rating) * scale);
     const after = Math.min(95, before + rawDelta);
     const delta = after - before;
     if (delta > 0) {
@@ -196,11 +257,11 @@ export function removeCalendarEvent(id: string): CalendarEvent[] {
 // === Exam Date ===
 
 export function getExamDate(): string {
-  return load<string>(STORAGE_KEYS.examDate, "2026-09-03");
+  return load<string>(STORAGE_KEYS.examDate, "");
 }
 
 export function getLernstart(): string {
-  return load<string>(STORAGE_KEYS.lernstart, "2026-04-06");
+  return load<string>(STORAGE_KEYS.lernstart, "");
 }
 
 export function setLernstart(date: string): void {
@@ -243,6 +304,11 @@ export interface RepEntry {
   postHours: number;
   startDate: string;
   endDate: string;
+  /** Index des OnboardingDocument das den Schedule enthält (für Re-Parse). */
+  scheduleDocIndex?: number;
+  /** Geparste Themen-Liste pro Termin. Wenn gesetzt: jedes Rep-Datum mit
+   *  Match bekommt erweiterten Task-Titel + linkedTopicIds. */
+  schedule?: RepScheduleEntry[];
 }
 
 export interface SonstigesEntry {
@@ -256,14 +322,32 @@ export interface SonstigesEntry {
 }
 
 export interface OnboardingDocument {
+  id?: string;
   name: string;
   type: string;
   summary?: string;
   description?: string;
   topicIds?: string[];
+  /** Voller, beim Upload extrahierter Text (max 15k chars).
+   *  Wird für strukturierte Folgeparser benötigt (z.B. Rep-Schedule-Parser),
+   *  die mehr Kontext brauchen als nur summary/description. */
+  fullText?: string;
+  parseStatus?: "pending" | "ready" | "error";
+  parseError?: string;
+  textTruncated?: boolean;
 }
 
-export interface OnboardingData {
+/** Ein einzelner Termin aus dem Repetitorium-Plan (aus Doc geparst). */
+export interface RepScheduleEntry {
+  date: string;          // "2026-05-11"
+  title: string;         // "Zulässigkeit einer Klage"
+  content: string;       // Roh-Text aus dem Doc: "Prüfungsschema, Zuständigkeiten, ..."
+  topicIds: string[];    // Auf Leaf-IDs gemappt — multi-topic
+  weekNumber?: number;
+  akte?: string;         // "Akte 4: Götz u.a. ./. Becker"
+}
+
+export interface OnboardingData extends StudyPhaseSettings {
   completed: boolean;
   bundesland: string;
   examDate: string;
@@ -312,6 +396,8 @@ export interface OnboardingData {
   probeexamen1Start: string;
   probeexamen2Start: string;
   freeDayPerWeek: string;
+  /** Maximum daily workload including appointments; default 7 hours. */
+  maxDailyHours?: number;
   vacationDates: string[];
   selfAssessment: Record<string, number>;
   documents: OnboardingDocument[];
@@ -323,15 +409,19 @@ const ONBOARDING_KEY = STORAGE_KEYS.onboarding;
 const DEFAULT_ONBOARDING: OnboardingData = {
   completed: false,
   bundesland: "Berlin",
-  examDate: "2026-09-03",
-  lernstart: "2026-04-06",
+  examDate: "",
+  lernstart: "",
+  refStartDate: "",
+  studyPhasesEnabled: true,
+  studyPlanningMode: "station",
+  studyPhases: [],
   ags: [],
   lerngruppen: [],
   reps: [],
   sonstiges: [],
   kaiserSeminare: [],
-  probeexamen1Start: "2026-06-01",
-  probeexamen2Start: "2026-07-06",
+  probeexamen1Start: "",
+  probeexamen2Start: "",
   freeDayPerWeek: "Sonntag",
   vacationDates: [],
   selfAssessment: {},
@@ -346,6 +436,8 @@ function makeAgId(): string {
 export function getOnboarding(): OnboardingData {
   const stored = load<Partial<OnboardingData>>(ONBOARDING_KEY, DEFAULT_ONBOARDING);
   const merged = { ...DEFAULT_ONBOARDING, ...stored };
+  // Former opt-in checkboxes no longer turn off the onboarding default.
+  merged.studyPhasesEnabled = merged.studyPlanningMode !== "custom";
   // Migration: legacy Single-AG-Felder → ags[0]
   if ((!merged.ags || merged.ags.length === 0) && (stored.agDay || stored.agFrequency)) {
     merged.ags = [{
@@ -392,12 +484,17 @@ export function getOnboarding(): OnboardingData {
   return merged;
 }
 
-export function saveOnboarding(data: OnboardingData): void {
-  save(ONBOARDING_KEY, data);
+export function saveOnboarding(data: OnboardingData): boolean {
+  if (save(ONBOARDING_KEY, data)) {
+    setExamDate(data.examDate);
+    setLernstart(data.lernstart);
+    return true;
+  }
+  return false;
 }
 
 export function resetOnboarding(): void {
-  save(ONBOARDING_KEY, DEFAULT_ONBOARDING);
+  saveOnboarding({ ...DEFAULT_ONBOARDING });
 }
 
 export function setExamDate(date: string): void {
@@ -587,7 +684,7 @@ export function getTrackingEntries(): TrackingEntry[] {
 export function addTrackingEntry(entry: Omit<TrackingEntry, "id" | "createdAt">): TrackingEntry[] {
   const all = getTrackingEntries();
   all.unshift({ ...entry, id: crypto.randomUUID(), createdAt: new Date().toISOString() });
-  save(STORAGE_KEYS.tracking, all);
+  if (!save(STORAGE_KEYS.tracking, all)) throw new Error("Die Lerneinheit konnte nicht gespeichert werden. Bitte Browserspeicher prüfen.");
   return all;
 }
 
@@ -609,8 +706,17 @@ export function getKlausurenWritten(): TrackingEntry[] {
  */
 export const DEFAULT_KLAUSUR_DURATION_MIN = 300;
 
+/**
+ * Mehr als ~15 Topics pro Klausur ist ein Extraktions-Fehler (manche Import-
+ * JSONs haben 50-115 topicIds — ganze Taxonomie ausgekippt). Oberhalb dieser
+ * Schwelle: keine automatische Vorauswahl / kein automatischer Boost — der
+ * Nutzer muss die echten Themen manuell anwählen.
+ */
+export const PLAUSIBLE_KLAUSUR_TOPICS_MAX = 15;
+
 export interface MarkKlausurWrittenOpts {
   rating: number;
+  taskId?: string;
   /** Datum der Klausur — Default: heute */
   date?: string;
   /** Notizen — Default: "" */
@@ -619,6 +725,11 @@ export interface MarkKlausurWrittenOpts {
   topicIds?: string[];
   /** Tatsächliche Dauer der Klausur — Default: DEFAULT_KLAUSUR_DURATION_MIN (300) */
   durationMinutes?: number;
+  /**
+   * "written" (default) = vollständig geschrieben, 100% Boost.
+   * "read" = gelesen / skizziert, 50% Boost, kürzere Tracking-Dauer.
+   */
+  klausurMode?: "written" | "read";
   /**
    * Set der gültigen Leaf-Topic-IDs.
    * Pflicht, weil die Validierung sonst doppelt passieren müsste —
@@ -639,25 +750,49 @@ export function markKlausurWritten(
   klausur: Pick<Klausur, "id" | "topicIds">,
   opts: MarkKlausurWrittenOpts,
 ): { boosts: KlausurBoostPreview[] } {
-  const date = opts.date || new Date().toISOString().slice(0, 10);
+  const now = new Date().toISOString();
+  const date = opts.date || localDate();
   const note = opts.note ?? "";
-  const durationMinutes = opts.durationMinutes ?? DEFAULT_KLAUSUR_DURATION_MIN;
-  const requested = opts.topicIds ?? klausur.topicIds;
-  const validIds = requested.filter(id => opts.validLeafIds.has(id));
+  const klausurMode = opts.klausurMode ?? "written";
+  // Gelesen/skizziert → kürzere Tracking-Dauer, halber Boost
+  const durationMinutes = opts.durationMinutes ?? (klausurMode === "read" ? 120 : DEFAULT_KLAUSUR_DURATION_MIN);
+  const boostScale = klausurMode === "read" ? 0.5 : 1.0;
+  // Ohne explizite Auswahl des Nutzers: unplausibel lange Topic-Listen
+  // (Extraktions-Fehler) NICHT automatisch boosten — sonst springen 100+
+  // Themen auf einmal hoch.
+  const requested = opts.topicIds
+    ?? (klausur.topicIds.length > PLAUSIBLE_KLAUSUR_TOPICS_MAX ? [] : klausur.topicIds);
+  const validIds = [...new Set(requested.filter(id => opts.validLeafIds.has(id)))];
+  if (!isDateOnly(date) || date > localDate() || !Number.isFinite(durationMinutes) || durationMinutes <= 0 || durationMinutes > 1440 || !Number.isFinite(opts.rating) || opts.rating < 1 || opts.rating > 5) throw new Error("Bitte ein gültiges Bearbeitungsdatum (bis heute), eine Dauer und eine Bewertung von 1 bis 5 angeben.");
 
-  addTrackingEntry({
+  const existingTask = getTasks().find(task => task.linkedKlausurId === klausur.id && task.date === date
+    && (task.id === opts.taskId || (isSketchTask(task) ? "read" : "written") === klausurMode));
+  if (existingTask?.done) return { boosts: [] };
+  const entry: TrackingEntry = {
+    id: crypto.randomUUID(), createdAt: now,
     date,
     activityType: "klausur",
     topicIds: validIds,
     klausurId: klausur.id,
+    klausurMode,
     durationMinutes,
     rating: opts.rating,
     note,
-  });
+  };
+  const boosts = previewKlausurProgressBoosts(validIds, opts.rating, boostScale);
+  const progress = getProgress();
+  for (const boost of boosts) if (boost.delta > 0) progress[boost.topicId] = { topicId: boost.topicId, percent: boost.after, source: "klausur", updatedAt: now };
 
-  const boosts = validIds.length > 0
-    ? applyKlausurProgressBoosts(validIds, opts.rating)
-    : [];
+  const baseTitle = getKlausurById(klausur.id)?.title ?? existingTask?.title.replace(/^Skizze:\s*/i, "") ?? "Klausur";
+  const fields = {
+    date, title: klausurMode === "read" ? `Skizze: ${baseTitle}` : baseTitle,
+    done: true, doneAt: now, linkedKlausurId: klausur.id, linkedTopicIds: validIds,
+    durationMinutes, klausurMode, trackingEntryId: entry.id,
+    recurringKey: `klausur-written|${klausur.id}|${date}|${klausurMode}`,
+  };
+  const tasks = existingTask ? getTasks().map(task => task.id === existingTask.id ? { ...task, ...fields } : task)
+    : [{ ...fields, id: crypto.randomUUID(), source: "manual" as const, createdAt: now }, ...getTasks()];
+  restoreStorage(localStorage, [[STORAGE_KEYS.tracking, [entry, ...getTrackingEntries()]], [STORAGE_KEYS.progress, progress], [STORAGE_KEYS.tasks, tasks]]);
 
   return { boosts };
 }
@@ -703,7 +838,9 @@ export const WEIGHT_LABELS: Record<keyof RecommenderWeights, string> = {
   schwierigkeitsMatch: "Schwierigkeits-Match",
   neuheitsBonus: "Neuheits-Bonus (neuere Klausuren)",
   wiederholungsDistanz: "Gute Wiederholungs-Distanz (>21d)",
-  anspruchsgrundlagenFrische: "Anspruchsgrundlagen-Frische (pro AG >21d)",
+  // Hinweis: interner Key heißt historisch "anspruchsgrundlagenFrische", misst aber
+  // rechtsgebiets-NEUTRAL Themen mit mittlerem Lernstand (30–80%). Label entsprechend neutral.
+  anspruchsgrundlagenFrische: "Auffrischung mittlerer Lernstand (Themen 30–80 %)",
 };
 
 export function getRecommenderWeights(): RecommenderWeights {
@@ -800,11 +937,6 @@ function dateInRange(date: Date, startStr: string, endStr: string): boolean {
   return true;
 }
 
-/** Anzahl ganzer Wochen zwischen zwei Daten (Montag → Montag) */
-function weeksBetween(a: Date, b: Date): number {
-  return Math.round((b.getTime() - a.getTime()) / (7 * 86400000));
-}
-
 export function getAgDaysForWeek(weekKey: string): number[] {
   const overrides = getAgWeekOverrides();
   if (overrides[weekKey]) return overrides[weekKey].agDays;
@@ -827,29 +959,7 @@ export function getAgDaysForWeek(weekKey: string): number[] {
     // Datumsfenster prüfen (Start/End-Datum der AG)
     if (!dateInRange(agDate, ag.startDate, ag.endDate)) return;
 
-    // Frequenz-Logik
-    switch (ag.frequency) {
-      case "wöchentlich":
-      case "2x/Woche":
-        days.add(idx);
-        break;
-      case "14-tägig": {
-        // Anchor: erste mögliche Woche (Start-Datum oder erste Woche überhaupt)
-        const anchorMonday = ag.startDate
-          ? weekKeyToMonday(getWeekKey(new Date(ag.startDate + "T00:00:00Z")))
-          : monday;
-        if (anchorMonday && weeksBetween(anchorMonday, monday) % 2 === 0) {
-          days.add(idx);
-        }
-        break;
-      }
-      case "unregelmäßig":
-      case "selten":
-        // Kein Auto-Add — nur via Override.
-        break;
-      default:
-        days.add(idx);
-    }
+    if (frequencyMatches(ag.frequency, agDate, ag.startDate)) days.add(idx);
 
     // suppress unused var lint if compilers complain
     void sunday;
@@ -929,13 +1039,39 @@ export interface DailyTask {
   done: boolean;
   doneAt?: string;
   linkedTopicId?: string;
+  /** Mehrere Topics pro Task — z.B. wenn Rep an einem Tag 3 Themen abdeckt,
+   *  oder bei manueller Aufgabe "klausur Zivilurteil Mietrecht Eigenbedarf".
+   *  linkedTopicId bleibt für Single-Topic-Tasks (Tagesprogramm-Auto-Picks). */
+  linkedTopicIds?: string[];
+  /** Beschreibung des Inhalts (aus Rep-Schedule oder Lerngruppen-Eintragung).
+   *  Wird in der UI als Untertitel angezeigt. */
+  contentSummary?: string;
   /** Wenn die Task eine Klausur ist: ID aus der Klausuren-DB.
    *  Beim Abhaken öffnet sich der Eintragen-Dialog (Rating, Topics, Boost). */
   linkedKlausurId?: string;
-  /** auto = zufällig aus schwachen Themen; plan = aus KI-Lernplan; manual = manuell */
+  calendarEventId?: string;
+  klausurMode?: "written" | "read";
+  /** Preserved overflow: visible in the backlog, excluded from daily workload. */
+  deferred?: boolean;
+  rescheduledFrom?: string;
+  /** Geplante Dauer in Minuten. Wenn gesetzt, zählen Zeitbudget + Lernkalender
+   *  diese Dauer statt der 1.5h-Pauschale (z.B. Skizze 120, Klausur 300). */
+  durationMinutes?: number;
+  /** auto = nach Datum, Lernstand und Abschnitt; plan = aus KI-Lernplan; manual = eigene Aufgabe */
   source: "auto" | "manual" | "plan";
+  /** Identifies the phase configuration used for an automatic suggestion. */
+  studySuggestionKey?: string;
+  isReview?: boolean;
   createdAt: string;
   trackingEntryId?: string;
+  /** ISO-Timestamp wann diese Task an die Fortschritts-Bewertungs-KI gegeben wurde.
+   *  Verhindert doppelte Auswertung beim erneuten Auslösen. */
+  reviewedAt?: string;
+  /** Stabiler Schlüssel für wiederkehrende Termine (z.B. "lerngruppe|2026-05-12").
+   *  Wird von materializeRecurringTermine genutzt: Idempotenz-Check via recurringKey
+   *  statt via Titel, damit Titel-Änderungen (Reverse-Flow, manuelle Edits) keinen
+   *  Duplikat-Termin erzeugen. */
+  recurringKey?: string;
 }
 
 const TASKS_KEY = STORAGE_KEYS.tasks;
@@ -945,13 +1081,13 @@ export function getTasks(): DailyTask[] {
 }
 
 export function getTasksForDate(date: string): DailyTask[] {
-  return getTasks().filter((t) => t.date === date);
+  return getTasks().filter((t) => t.date === date && !t.deferred);
 }
 
 export function getTasksSince(daysBack: number): DailyTask[] {
-  const cutoff = new Date();
+  const cutoff = currentDate();
   cutoff.setDate(cutoff.getDate() - daysBack);
-  const cutoffStr = cutoff.toISOString().slice(0, 10);
+  const cutoffStr = localDate(cutoff);
   return getTasks().filter((t) => t.date >= cutoffStr);
 }
 
@@ -963,7 +1099,7 @@ export function addTask(task: Omit<DailyTask, "id" | "createdAt" | "done">): Dai
     done: false,
     createdAt: new Date().toISOString(),
   });
-  save(TASKS_KEY, all);
+  if (!save(TASKS_KEY, all)) throw new Error("Aufgaben konnten nicht gespeichert werden. Bitte Browserspeicher prüfen und Backup sichern.");
   return all;
 }
 
@@ -971,7 +1107,28 @@ export function updateTask(id: string, updates: Partial<DailyTask>): DailyTask[]
   const all = getTasks();
   const idx = all.findIndex((t) => t.id === id);
   if (idx >= 0) all[idx] = { ...all[idx], ...updates };
-  save(TASKS_KEY, all);
+  if (!save(TASKS_KEY, all)) throw new Error("Aufgaben konnten nicht gespeichert werden. Bitte Browserspeicher prüfen und Backup sichern.");
+  return all;
+}
+
+/**
+ * Markiert eine Liste von Tasks als "von KI-Review gesehen" (reviewedAt = now).
+ * Damit erscheinen sie beim nächsten Review-Lauf nicht mehr im Kontext.
+ * Idempotent: vorhandene reviewedAt werden überschrieben (neuestes Datum gewinnt).
+ */
+export function markTasksReviewed(ids: string[]): DailyTask[] {
+  if (ids.length === 0) return getTasks();
+  const set = new Set(ids);
+  const now = new Date().toISOString();
+  const all = getTasks();
+  let changed = false;
+  for (const t of all) {
+    if (set.has(t.id)) {
+      t.reviewedAt = now;
+      changed = true;
+    }
+  }
+  if (changed) save(TASKS_KEY, all);
   return all;
 }
 
@@ -992,7 +1149,7 @@ export function removeTask(id: string): DailyTask[] {
  * Abhaken einer Aufgabe: erzeugt TrackingEntry (theorie, 30 min default),
  * schreibt KEINEN Progress-Bump — Progress kommt später via KI-Review.
  */
-export function completeTask(id: string, durationMinutes = 30): DailyTask[] {
+export function completeTask(id: string, durationMinutes?: number, recallRating?: import("./spaced-repetition").RecallRating): DailyTask[] {
   const all = getTasks();
   const idx = all.findIndex((t) => t.id === id);
   if (idx < 0) return all;
@@ -1001,22 +1158,21 @@ export function completeTask(id: string, durationMinutes = 30): DailyTask[] {
   const now = new Date().toISOString();
 
   // TrackingEntry erzeugen
-  const topicIds = t.linkedTopicId ? [t.linkedTopicId] : [];
+  const topicIds = Array.from(new Set([...(t.linkedTopicIds ?? []), ...(t.linkedTopicId ? [t.linkedTopicId] : [])]));
   const trackingAll = getTrackingEntries();
   const trackingEntry: TrackingEntry = {
     id: crypto.randomUUID(),
     date: t.date,
-    activityType: "theorie",
+    activityType: t.isReview ? "wiederholung" : "theorie",
+    recallRating,
     topicIds,
-    durationMinutes,
+    durationMinutes: durationMinutes ?? taskMinutes(t),
     note: `[Task] ${t.title}`,
     createdAt: now,
   };
   trackingAll.unshift(trackingEntry);
-  save(STORAGE_KEYS.tracking, trackingAll);
-
   all[idx] = { ...t, done: true, doneAt: now, trackingEntryId: trackingEntry.id };
-  save(TASKS_KEY, all);
+  restoreStorage(localStorage, [[STORAGE_KEYS.tracking, trackingAll], [TASKS_KEY, all]]);
   return all;
 }
 
@@ -1026,12 +1182,11 @@ export function uncompleteTask(id: string): DailyTask[] {
   if (idx < 0) return all;
   const t = all[idx];
   // Tracking-Entry zurücknehmen
-  if (t.trackingEntryId) {
-    const tracking = getTrackingEntries().filter((e) => e.id !== t.trackingEntryId);
-    save(STORAGE_KEYS.tracking, tracking);
-  }
-  all[idx] = { ...t, done: false, doneAt: undefined, trackingEntryId: undefined };
-  save(TASKS_KEY, all);
+  const tracking = getTrackingEntries().filter((e) => e.id !== t.trackingEntryId);
+  // reviewedAt zurücksetzen: das Abhaken wird semantisch rückgängig gemacht,
+  // also soll die Task beim nächsten Mal wieder bewertbar sein.
+  all[idx] = { ...t, done: false, doneAt: undefined, trackingEntryId: undefined, reviewedAt: undefined };
+  restoreStorage(localStorage, [[STORAGE_KEYS.tracking, tracking], [TASKS_KEY, all]]);
   return all;
 }
 
@@ -1082,7 +1237,7 @@ export interface PlanAppliedRange {
   appliedAt: string; // ISO
 }
 
-export function setPlanAppliedRange(range: PlanAppliedRange): void {
+export function setPlanAppliedRange(range: PlanAppliedRange | null): void {
   save(STORAGE_KEYS.planAppliedRange, range);
 }
 
@@ -1144,7 +1299,51 @@ const ALL_BACKUP_KEYS = [
   STORAGE_KEYS.lernstart,
   STORAGE_KEYS.prompts,
   STORAGE_KEYS.planHistory,
+  STORAGE_KEYS.planAppliedRange,
+  STORAGE_KEYS.klausurDrafts,
+  STORAGE_KEYS.fehlerProfil,
+  STORAGE_KEYS.korrekturSettings,
+  STORAGE_KEYS.planModel,
+  STORAGE_KEYS.aiReasoning,
+  STORAGE_KEYS.freitext,
 ];
+
+// === Persönlicher Denkaufwand je Modell ===
+export function getAiReasoningSettings(): ReasoningSettings {
+  return normalizeReasoningSettings(load<unknown>(STORAGE_KEYS.aiReasoning, {}));
+}
+
+export function saveAiReasoningSettings(settings: ReasoningSettings): boolean {
+  return save(STORAGE_KEYS.aiReasoning, normalizeReasoningSettings(settings));
+}
+
+// === Plan-Modell (Modellwahl für die Lernplan-Anpassung) ===
+
+export function getPlanModel(): string {
+  const id = load<string>(STORAGE_KEYS.planModel, DEFAULT_PLAN_MODEL);
+  return PLAN_MODELS.some(model => model.id === id) ? id : DEFAULT_PLAN_MODEL;
+}
+
+export function setPlanModel(id: string): void {
+  save(STORAGE_KEYS.planModel, id);
+}
+
+// === Freitext / Notizblock (leerer TextEdit-Modus) ===
+
+/** Ein einzelner, immer vorhandener Notizblock fürs freie Schreiben. */
+export interface Freitext {
+  html: string;
+  text: string;
+  updatedAt: string;
+}
+
+export function getFreitext(): Freitext {
+  return load<Freitext>(STORAGE_KEYS.freitext, { html: "", text: "", updatedAt: "" });
+}
+
+export function saveFreitext(html: string, text: string): boolean {
+  return save(STORAGE_KEYS.freitext, { html, text, updatedAt: new Date().toISOString() });
+}
 
 export interface BackupBundle {
   version: 1;
@@ -1166,16 +1365,25 @@ export function exportAll(): BackupBundle {
 }
 
 export function importAll(bundle: BackupBundle): { restored: number } {
-  if (!bundle || bundle.version !== 1 || !bundle.data) {
+  if (!bundle || bundle.version !== 1 || !bundle.data || typeof bundle.data !== "object" || Array.isArray(bundle.data)) {
     throw new Error("Ungültiges Backup-Format");
   }
-  let restored = 0;
-  for (const [key, value] of Object.entries(bundle.data)) {
-    if (!key.startsWith("lerntracker-")) continue;
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      restored++;
-    } catch { /* ignore single failure */ }
+  const arrayKeys: string[] = [STORAGE_KEYS.entries, STORAGE_KEYS.calendar, STORAGE_KEYS.klausuren,
+    STORAGE_KEYS.tracking, STORAGE_KEYS.documents, STORAGE_KEYS.tasks, STORAGE_KEYS.planHistory, STORAGE_KEYS.klausurDrafts, STORAGE_KEYS.prompts];
+  const stringKeys: string[] = [STORAGE_KEYS.examDate, STORAGE_KEYS.lernstart, STORAGE_KEYS.theme, STORAGE_KEYS.planModel];
+  const allowed = new Set<string>(ALL_BACKUP_KEYS);
+  const entries = Object.entries(bundle.data).filter(([key]) => allowed.has(key));
+  for (const [key, value] of entries) {
+    const valid = key === STORAGE_KEYS.planAppliedRange && value === null ? true : stringKeys.includes(key) ? typeof value === "string"
+      : arrayKeys.includes(key) ? Array.isArray(value)
+      : value !== null && typeof value === "object" && !Array.isArray(value);
+    if (!valid) throw new Error(`Ungültiger Datenbereich im Backup: ${key}`);
+  }
+  if (!entries.length) throw new Error("Das Backup enthält keine bekannten Datenbereiche.");
+  const restored = restoreStorage(localStorage, entries);
+  // Recommendation caches are derived data, never restore stale cached decisions.
+  for (const key of Object.keys(localStorage)) {
+    if (key.startsWith(STORAGE_KEYS.klausurRecPrefix)) localStorage.removeItem(key);
   }
   return { restored };
 }
@@ -1199,4 +1407,120 @@ export function isBackupOverdue(days = 3): boolean {
   if (!last) return true;
   const diff = Date.now() - new Date(last).getTime();
   return diff > days * 24 * 60 * 60 * 1000;
+}
+
+// === Klausur-Schreibtraining: Entwürfe ===
+
+function newId(): string {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `id-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+export function getKlausurDrafts(): KlausurDraft[] {
+  return load<KlausurDraft[]>(STORAGE_KEYS.klausurDrafts, []);
+}
+
+export function getKlausurDraftById(id: string): KlausurDraft | undefined {
+  return getKlausurDrafts().find((d) => d.id === id);
+}
+
+/** Upsert eines Entwurfs; setzt id/createdAt bei neuen, touched updatedAt immer. */
+export function saveKlausurDraft(draft: KlausurDraft): KlausurDraft {
+  const all = getKlausurDrafts();
+  const now = new Date().toISOString();
+  const idx = all.findIndex((d) => d.id === draft.id);
+  const merged: KlausurDraft = {
+    ...draft,
+    id: draft.id || newId(),
+    createdAt: draft.createdAt || now,
+    updatedAt: now,
+  };
+  if (idx >= 0) all[idx] = merged;
+  else all.unshift(merged);
+  if (!save(STORAGE_KEYS.klausurDrafts, all)) throw new Error("Entwurf konnte nicht gespeichert werden. Bitte Text sichern und Browserspeicher prüfen.");
+  return merged;
+}
+
+export function removeKlausurDraft(id: string): void {
+  save(STORAGE_KEYS.klausurDrafts, getKlausurDrafts().filter((d) => d.id !== id));
+}
+
+/**
+ * Liefert den (ersten) Entwurf, der mit dieser Klausur verknüpft ist, oder legt
+ * einen neuen an (Titel/Rechtsgebiet/Typ vorbelegt, klausurId gesetzt). So springt
+ * der „Im Tool schreiben"-Button aus der Klausur-DB immer in denselben Entwurf,
+ * statt bei jedem Klick ein Duplikat zu erzeugen.
+ */
+export function getOrCreateDraftForKlausur(
+  klausur: Pick<Klausur, "id" | "title" | "area" | "type">,
+): KlausurDraft {
+  const existing = getKlausurDrafts().find((d) => d.klausurId === klausur.id);
+  if (existing) return existing;
+  return saveKlausurDraft({
+    id: "",
+    title: klausur.title,
+    area: klausur.area,
+    type: klausur.type,
+    klausurId: klausur.id,
+    sachverhalt: "",
+    contentHtml: "",
+    contentText: "",
+    feedback: [],
+    createdAt: "",
+    updatedAt: "",
+  });
+}
+
+// === Klausur-Schreibtraining: lernendes Fehlerprofil (Ebene 3) ===
+
+export function getFehlerProfil(): FehlerProfil {
+  return load<FehlerProfil>(STORAGE_KEYS.fehlerProfil, { markers: {}, updatedAt: new Date(0).toISOString() });
+}
+
+/**
+ * Zählt erkannte Marker ins Profil hoch. trend wird aus dem vorherigen count abgeleitet:
+ * neu → erstes Auftreten, steigend → erneut gesehen. lastSeen + optionaler byType-Zähler.
+ */
+export function mergeFehlerMarkers(markers: FehlerMarker[], type?: KlausurType): FehlerProfil {
+  const profil = getFehlerProfil();
+  const now = new Date().toISOString();
+  for (const m of markers) {
+    if (!m.key || ["__proto__", "prototype", "constructor"].includes(m.key)) continue;
+    const prev = profil.markers[m.key];
+    const count = (prev?.count ?? 0) + 1;
+    const byType = { ...(prev?.byType ?? {}) };
+    if (type) byType[type] = (byType[type] ?? 0) + 1;
+    profil.markers[m.key] = {
+      label: m.label || prev?.label || m.key,
+      count,
+      trend: prev ? "steigend" : "neu",
+      lastSeen: now,
+      byType,
+    };
+  }
+  profil.updatedAt = now;
+  save(STORAGE_KEYS.fehlerProfil, profil);
+  return profil;
+}
+
+export function resetFehlerProfil(): void {
+  save(STORAGE_KEYS.fehlerProfil, { markers: {}, updatedAt: new Date().toISOString() });
+}
+
+// === Klausur-Schreibtraining: Korrektur-Einstellungen ===
+
+const DEFAULT_KORREKTUR_SETTINGS: KorrekturSettings = {
+  model: DEFAULT_KORREKTUR_MODEL,
+  granularity: "manuell" as KorrekturGranularity,
+};
+
+export function getKorrekturSettings(): KorrekturSettings {
+  const settings = { ...DEFAULT_KORREKTUR_SETTINGS, ...load<Partial<KorrekturSettings>>(STORAGE_KEYS.korrekturSettings, {}) };
+  // Upgrade the replaced Opus version without rewriting the saved user data.
+  return settings.model === "anthropic/claude-opus-4.8" ? { ...settings, model: AI_DEFAULTS.premium.id } : settings;
+}
+
+export function saveKorrekturSettings(settings: KorrekturSettings): void {
+  save(STORAGE_KEYS.korrekturSettings, settings);
 }

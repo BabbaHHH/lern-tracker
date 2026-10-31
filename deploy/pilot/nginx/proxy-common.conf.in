@@ -1,0 +1,15 @@
+# Include inside the four locations below; not a global nginx configuration.
+proxy_pass http://127.0.0.1:3000;
+proxy_http_version 1.1;
+proxy_set_header Host __PILOT_HOST__;
+proxy_set_header X-Forwarded-Host __PILOT_HOST__;
+proxy_set_header X-Forwarded-Proto https;
+# Replace, never append to a client-supplied forwarding chain.
+proxy_set_header X-Forwarded-For $remote_addr;
+proxy_set_header Connection "";
+proxy_cache off;
+proxy_store off;
+proxy_intercept_errors off;
+proxy_connect_timeout 5s;
+proxy_send_timeout 60s;
+proxy_request_buffering on;

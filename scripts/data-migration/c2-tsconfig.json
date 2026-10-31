@@ -1,0 +1,4 @@
+{
+  "extends":"./tsconfig.project-check.json",
+  "exclude":["../../node_modules","../../.next","../../.next-qa","../../out","../../build","../auth/restfaelle"]
+}

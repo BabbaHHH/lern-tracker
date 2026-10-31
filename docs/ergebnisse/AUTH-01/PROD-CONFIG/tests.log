@@ -1,0 +1,29 @@
+✔ AUTH03: vollständiger expliziter Vertrag erzeugt feste Origin und verifizierendes pg-TLS (4.069417ms)
+✔ AUTH03: explizite Loopback-DB ist möglich, niemals ein versteckter Fallback (2.066459ms)
+✔ AUTH03: fehlende und leere Pflichtwerte bleiben geschlossen (0.615625ms)
+✔ AUTH03: HTTP, lokale/numerische Hosts, Pfade, Zugangsdaten und Redirectteile sind keine HTTPS-Origin (0.255375ms)
+✔ AUTH03: DB braucht eigenes Protokoll, Host, Port, Benutzer, Passwort und Datenbank (0.497583ms)
+✔ AUTH03: URI-/TLS-Overrides können den gewählten DB-/Prüfvertrag nicht verändern (0.259916ms)
+✔ AUTH03: Prozentkodierte DB-Zugangsdaten werden genau einmal dekodiert (0.16175ms)
+✔ AUTH03: private Wurzel ist absolut, kanonisch und außerhalb Release/public und Entwicklungsablagen (0.326916ms)
+✔ AUTH03: ein fehlender/nicht kanonischer Releasekontext kann keine private Wurzel legitimieren (0.302333ms)
+✔ AUTH03: kurze, repetitive, Platzhalter- und mehrfach verwendete Geheimnisse werden abgewiesen (0.610083ms)
+✔ AUTH03: Produktionsmodus akzeptiert weder lokale Geheimnispfade noch lokalen Port-Fallback (0.119792ms)
+✔ AUTH03: Konfigurationsfehler geben keine Werte oder ursprünglichen Parserursachen aus (17.193417ms)
+✔ AUTH03: gültige Produktion bleibt ausdrücklich 503 vor jedem Ressourcen-/Secretzugriff (0.640333ms)
+✔ AUTH03: ungültige Produktionskonfiguration kann nie in lokalen Modus ausweichen (0.13725ms)
+✔ AUTH03: fehlende/unbekannte/gemischte Modi und ungültige lokale URL bleiben ohne IO geschlossen (0.475959ms)
+✔ AUTH03: lokaler Vertrag behält Dateien, pg-Ziel, Initialisierung und gemeinsame Lazy-Instanz (0.2685ms)
+✔ AUTH03: explizite lokale Überschreibungen bleiben erhalten, Host aus DB-Umgebung wird ignoriert (0.12175ms)
+✔ AUTH03: fehlerhafte lokale Pfade/Ports öffnen keine Dateien/Verbindungen (0.204875ms)
+✔ AUTH03: lokale Initialisierungs-/Konstruktorfehler schließen Ressourcen und erlauben kontrollierte Wiederholung (0.261208ms)
+✔ AUTH03: geänderte Modi/Geheimnisse/Pfade können keine gecachte lokale Runtime übernehmen (0.367667ms)
+✔ AUTH03: Prüfen expliziter Objekte verändert weder diese Objekte noch die Prozessumgebung (0.149125ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 963.580625

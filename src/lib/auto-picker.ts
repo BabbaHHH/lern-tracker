@@ -1,30 +1,20 @@
-// Deterministischer Auto-Topic-Picker — wählt 3 schwache Themen pro Tag
-// als Fallback, wenn weder KI-Plan-Content noch (für den Tag) ein Plan-Bereich
-// existiert. Per Datum stabil, damit ein Tag immer dieselben Vorschläge bekommt.
+import { localDate } from "./dates";
+import { TOPICS, getLeafTopics } from "./topics";
+import { getOnboarding, getProgress, getTrackingEntries, getTasks } from "./store";
+import { dueTopicReviews } from "./spaced-repetition";
+import type { Topic } from "./types";
 
-import { TOPICS, getLeafTopics } from "@/lib/topics";
-import { getProgress } from "@/lib/store";
-import type { Topic } from "@/lib/types";
+import {selectAutoSprints,type AutoSprint} from './learning/preparation-selection';
+export {selectAutoSprints,type AutoSprint} from './learning/preparation-selection';
 
-function dateToDayIdx(dateStr: string): number {
-  // YYYY-MM-DD → Tage seit Epoch
-  return Math.floor(new Date(dateStr + "T00:00:00Z").getTime() / 86400000);
+export function pickAutoSprintsForDate(date: string, count = 3, asOf = localDate()): AutoSprint[] {
+  const pending = new Set(getTasks().filter(task => !task.done && !task.deferred && task.isReview && task.date >= asOf && task.date <= date).flatMap(task => task.linkedTopicIds ?? (task.linkedTopicId ? [task.linkedTopicId] : [])));
+  const doneToday = new Set(getTasks().filter(task => task.done && task.date === date).flatMap(task => task.linkedTopicIds ?? (task.linkedTopicId ? [task.linkedTopicId] : [])));
+  return selectAutoSprints(date, count, getLeafTopics(TOPICS).filter(topic => !doneToday.has(topic.id)), getProgress(), getOnboarding(), dueTopicReviews(getTrackingEntries(), date, asOf).filter(review => !pending.has(review.topicId)));
 }
-
-export function pickAutoTopicsForDate(dateStr: string, count = 3): Topic[] {
-  const leafs = getLeafTopics(TOPICS);
-  const progress = getProgress();
-  const ranked = [...leafs].sort((a, b) => {
-    const pa = progress[a.id]?.percent ?? 0;
-    const pb = progress[b.id]?.percent ?? 0;
-    return pa - pb;
-  });
-  const dayIdx = dateToDayIdx(dateStr);
-  const offset = dayIdx % Math.max(1, Math.floor(ranked.length / count));
-  return ranked.slice(offset * count, offset * count + count);
+export function pickAutoTopicsForDate(date: string, count = 3): Topic[] {
+  return pickAutoSprintsForDate(date, count).map(item => item.topic);
 }
-
 export function pickAutoTopicsToday(count = 3): Topic[] {
-  const today = new Date().toISOString().slice(0, 10);
-  return pickAutoTopicsForDate(today, count);
+  return pickAutoTopicsForDate(localDate(), count);
 }

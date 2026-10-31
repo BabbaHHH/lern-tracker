@@ -1,0 +1,10 @@
+12.10.2026
+PDF-A: 9/9 bestanden; PostgreSQL und echte Better-Auth-Sitzungen.
+Regression: 204/204 seriell bestanden.
+Isolierter Auth-Nachlauf: 26/26 bestanden.
+Lint: bestanden.
+Normale gemeinsame Typprüfung: durch vorhandene generierte Dubletten blockiert.
+Getrennte Quellkopie: vollständige Typprüfung ohne inkrementelle Ausgabe und Produktionsbuild bestanden.
+Produktions-GET/HEAD einschließlich Range/Conditional: 503, private no-store, kein Content-Range; HEAD ohne Body.
+Browser: Desktop, 1024x1366, 390x844; tatsächliche Mausbedienung und Textauswahl.
+Kein Nachweis für Touchgesten oder reale iPad-/Safari-Geräte.

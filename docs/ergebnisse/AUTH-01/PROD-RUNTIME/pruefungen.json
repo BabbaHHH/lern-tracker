@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-18",
+  "tests": {
+    "command": "node --import tsx --test --test-reporter=spec tests/auth-production-runtime.test.ts",
+    "exitCode": 0,
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0,
+    "scope": "new synthetic and instrumented runtime cases only"
+  },
+  "types": {
+    "command": "node node_modules/typescript/bin/tsc --project docs/ergebnisse/AUTH-01/PROD-RUNTIME/tsconfig.json --noEmit",
+    "exitCode": 0
+  },
+  "lint": {
+    "command": "node node_modules/eslint/bin/eslint.js src/lib/server/auth/runtime.ts src/lib/server/auth/production-runtime.ts tests/auth-production-runtime.test.ts --max-warnings 0",
+    "exitCode": 0
+  },
+  "oldSuitesRepeated": false,
+  "build": false,
+  "realResourcesOpened": false,
+  "environmentChanged": false,
+  "existingSecretsRead": false,
+  "protectedFilesUnchanged": 31,
+  "cleanup": "no servers, database, sockets, original or secret fixtures created; narrow nonincremental tsconfig retained as reproducible evidence"
+}

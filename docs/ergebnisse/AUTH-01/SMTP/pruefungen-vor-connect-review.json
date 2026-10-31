@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-18",
+  "tests": {
+    "command": "node --import tsx --test --test-reporter=spec tests/auth-smtp.test.ts",
+    "exitCode": 0,
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "instrumentedSmtpAndCliOnly": true,
+    "realMimeCompositionOnly": true
+  },
+  "lint": {
+    "exitCode": 0,
+    "scope": "4 new TypeScript module/test files"
+  },
+  "types": {
+    "exitCode": 0,
+    "scope": "same 4 entrypoints with read-only imports and installed bundled Nodemailer types"
+  },
+  "sourceAndPackageComparison": {
+    "sourceHashesStillMatch": true,
+    "protectedUnchanged": 27,
+    "singleNewDependency": "nodemailer@10.1.2",
+    "oldPackagesUnchanged": true,
+    "installScriptsDisabled": true
+  },
+  "networkBoundary": {
+    "publicDocsAndNpmRegistryContacted": true,
+    "smtpProviderOrRecipientDnsContacted": false,
+    "smtpOrDbConnectionOpened": false,
+    "actualOperatorCliExecuted": false,
+    "realMailSent": false,
+    "privateCredentialsReadOrGenerated": false
+  },
+  "cleanup": {
+    "temporaryPackageComparisonRootRemoved": true,
+    "temporaryTypeConfigurationRemoved": true,
+    "noSocketDnsSmtpDbOrActualCliRuntimeStarted": true
+  },
+  "handoffWordCount": 537,
+  "evidenceSha256": {
+    "tests.log": "8c4a90a249e8a157ade297402020219189ce9519b03571f50b37c4dcc9cd2f84",
+    "typen.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "quellstand.json": "b7885be6f3c07ec1e6df2cbf44208dc0121f22ab3d2bc378d8d06472f90eb29f",
+    "ausgangsstand.json": "7e300a126f4814f68ccb81b4c3989c3bfc3b08a41cad7e8fb911a6fe59ed4d70",
+    "package.json.diff": "34d14a2ecba551f613c71094102898248a3aac62bcd511ff016c36423f3d4647",
+    "package-lock.json.diff": "7a493129408b130f4079ec9de3260f09528c4166a9bf65f57da12cd0253a83d3",
+    "ERGEBNIS.md": "552ae61331e9186f7116d7557b1531e16da473a4d4b21bb13f6d89f02ba2390b",
+    "UEBERGABE.md": "737a131a12f7c9c08942113d06248ec8768d50942a6c8be1dc615283a00fb147"
+  }
+}

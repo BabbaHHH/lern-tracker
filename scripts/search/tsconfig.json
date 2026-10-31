@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": [
+    "../../src/lib/search/**/*.ts",
+    "../../src/lib/server/search/**/*.ts",
+    "../../tests/search-*.test.ts",
+    "../../src/components/catalog-search-app.tsx",
+    "../../src/components/catalog-import-app.tsx",
+    "../../src/components/account-app.tsx",
+    "../../src/app/api/catalog/search/route.ts",
+    "../../src/app/konto/klausuren/suche/page.tsx",
+    "./*.ts",
+    "./*.mts"
+  ],
+  "exclude": ["../../node_modules"]
+}
